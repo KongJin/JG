@@ -38,6 +38,7 @@ namespace Features.Garage.Infrastructure
 
                 string json = File.ReadAllText(path);
                 var wrapper = JsonUtility.FromJson<GarageRosterWrapper>(json);
+                // csharp-guardrails: allow-null-defense
                 var roster = wrapper?.roster ?? new GarageRoster();
                 roster.Normalize();
                 return roster;
@@ -82,6 +83,7 @@ namespace Features.Garage.Infrastructure
             for (int i = 0; i < GarageRoster.MaxSlots; i++)
             {
                 var slot = roster.GetSlot(i);
+                // csharp-guardrails: allow-null-defense
                 if (slot == null)
                     continue;
 

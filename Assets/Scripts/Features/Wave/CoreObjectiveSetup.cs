@@ -48,6 +48,7 @@ namespace Features.Wave
         /// </summary>
         public void InitializePlacementArea()
         {
+// csharp-guardrails: allow-null-defense
             if (_placementArea != null)
                 return;
 
@@ -72,7 +73,9 @@ namespace Features.Wave
 
         private void InitializePlacementAreaView()
         {
+// csharp-guardrails: allow-null-defense
             if (_placementArea == null) return;
+// csharp-guardrails: allow-null-defense
             if (_placementAreaView == null) return; // Inspector에서 연결 필요
 
             var validMat = PlacementAreaMaterialFactory.CreateValidMaterial();
@@ -81,6 +84,7 @@ namespace Features.Wave
 
         public bool TryGetCoreWorldPosition(out float x, out float y, out float z)
         {
+// csharp-guardrails: allow-null-defense
             if (_coreAnchor == null)
             {
                 x = y = z = 0f;

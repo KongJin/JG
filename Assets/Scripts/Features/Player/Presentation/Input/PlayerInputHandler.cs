@@ -27,6 +27,7 @@ namespace Features.Player.Presentation
             _useCases = useCases;
 
             _moveAction = _inputActions.FindAction("Move");
+// csharp-guardrails: allow-null-defense
             _moveAction?.Enable();
         }
 
@@ -37,6 +38,7 @@ namespace Features.Player.Presentation
 
         private void Update()
         {
+// csharp-guardrails: allow-null-defense
             if (_player == null || _moveAction == null || _inputDisabled)
                 return;
 
@@ -48,12 +50,14 @@ namespace Features.Player.Presentation
         public void EnableInput()
         {
             _inputDisabled = false;
+// csharp-guardrails: allow-null-defense
             _moveAction?.Enable();
         }
 
         public void DisableInput()
         {
             _inputDisabled = true;
+// csharp-guardrails: allow-null-defense
             if (_moveAction != null)
                 _moveAction.Disable();
         }

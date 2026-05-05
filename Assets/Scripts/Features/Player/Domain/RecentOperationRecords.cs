@@ -66,6 +66,7 @@ namespace Features.Player.Domain
 
         public void Normalize()
         {
+// csharp-guardrails: allow-null-defense
             records ??= new List<OperationRecord>();
             for (var i = records.Count - 1; i >= 0; i--)
             {

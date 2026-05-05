@@ -43,7 +43,10 @@ namespace Features.Garage.Presentation
                 return GarageSaveFlowResult.Ignored();
 
             if (evaluation == null || !evaluation.CanSave)
+            {
+// csharp-guardrails: allow-null-defense
                 return GarageSaveFlowResult.Blocked(evaluation?.SaveBlockedMessage ?? "Draft is not ready to save.");
+            }
 
             if (draftRoster == null || saveRoster == null)
                 return GarageSaveFlowResult.Failed("저장할 편성 데이터가 없습니다.");

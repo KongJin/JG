@@ -28,6 +28,7 @@ namespace Features.Lobby.Presentation
         public void Render(LobbyGarageSummaryViewModel viewModel)
         {
             viewModel ??= LobbyGarageSummaryViewModel.Empty;
+// csharp-guardrails: allow-null-defense
             if (_status != null)
             {
                 _status.text = viewModel.StatusText;
@@ -35,8 +36,10 @@ namespace Features.Lobby.Presentation
                 UitkElementUtility.SetClass(_status, StatusClosedClass, !viewModel.IsReady);
             }
 
+// csharp-guardrails: allow-null-defense
             if (_title != null)
                 _title.text = viewModel.SummaryText;
+// csharp-guardrails: allow-null-defense
             if (_body != null)
                 _body.text = viewModel.DetailText;
 

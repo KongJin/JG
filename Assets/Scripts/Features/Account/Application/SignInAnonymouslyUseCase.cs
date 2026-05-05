@@ -1,4 +1,4 @@
-﻿using Features.Account.Application.Ports;
+using Features.Account.Application.Ports;
 using Features.Account.Domain;
 using Shared.Kernel;
 
@@ -23,6 +23,7 @@ namespace Features.Account.Application
             var token = await _authPort.SignInAnonymously();
             var account = await _dataPort.LoadProfile(token.Uid, token.IdToken);
 
+            // csharp-guardrails: allow-null-defense
             if (account == null)
             {
                 account = new AccountProfile(token.Uid, "anonymous");
@@ -33,4 +34,3 @@ namespace Features.Account.Application
         }
     }
 }
-

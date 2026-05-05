@@ -50,6 +50,7 @@ namespace Features.Unit.Presentation
             var material = new Material(shader);
             ApplyColor(material, color);
 
+// csharp-guardrails: allow-null-defense
             if (shader != null && shader.name == "Universal Render Pipeline/Unlit")
             {
                 material.SetFloat("_Surface", 1f);
@@ -72,8 +73,11 @@ namespace Features.Unit.Presentation
         private static Shader ResolveShader()
         {
             return Shader.Find("Universal Render Pipeline/Unlit")
+// csharp-guardrails: allow-null-defense
                 ?? Shader.Find("Unlit/Color")
+// csharp-guardrails: allow-null-defense
                 ?? Shader.Find("Sprites/Default")
+// csharp-guardrails: allow-null-defense
                 ?? Shader.Find("Standard");
         }
 

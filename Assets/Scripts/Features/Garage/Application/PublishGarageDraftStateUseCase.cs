@@ -1,4 +1,4 @@
-﻿using Features.Garage.Domain;
+using Features.Garage.Domain;
 
 namespace Features.Garage.Application
 {
@@ -11,6 +11,7 @@ namespace Features.Garage.Application
 
             if (committedRoster == null || !committedRoster.IsValid)
             {
+                // csharp-guardrails: allow-null-defense
                 int savedUnitCount = committedRoster?.Count ?? 0;
                 int missingUnits = System.Math.Max(0, GarageRoster.MinReadySlots - savedUnitCount);
                 return new GarageDraftStateSnapshot(
@@ -39,4 +40,3 @@ namespace Features.Garage.Application
         }
     }
 }
-

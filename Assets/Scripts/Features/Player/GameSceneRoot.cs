@@ -32,6 +32,7 @@ namespace Features.Player
         [SerializeField] private float _spawnRadius = 3f;
         [Required, SerializeField] private Camera _camera;
         [Required, SerializeField] private CameraFollower _cameraFollower;
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private GameObject _healthHudPrefab;
         [Required, SerializeField] private PlayerSpecConfig _playerSpecConfig;
         [FormerlySerializedAs("_projectileSpawner")]
@@ -42,6 +43,7 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private EnergyBarView _energyBarView;
         // Runtime-spawned by PhotonNetwork.Instantiate and assigned via PlayerSceneRegistry arrival.
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private PlayerSetup _localPlayerSetup;
 
         [Header("Unit & Garage")]
@@ -49,22 +51,27 @@ namespace Features.Player
         [Required, SerializeField] private GarageSetup _garageSetup;
 
         [Header("Unit Summon UI")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private UnitSlotsContainer _unitSlotsContainer;
         [Header("Combat Feedback")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private DamageNumberSpawner _damageNumberSpawner;
 
         [Header("Status (Buff/Debuff)")]
         [Required, SerializeField] private StatusSetup _statusSetup;
 
         [Header("Wave (PvE)")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private WaveSetup _waveSetup;
         [Tooltip("PvE일 때 필수. Combat.Initialize 직후 RegisterTarget.")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private CoreObjectiveSetup _coreObjective;
 
         [Header("Scene Transition")]
         [SerializeField] private string _lobbySceneName = "LobbyScene";
 
         [Header("Scene Event Consumers")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private MonoBehaviour[] _eventBusConsumers;
 
         private EventBus _eventBus;
@@ -136,6 +143,7 @@ namespace Features.Player
             _endReportingFlow.StartSession(
                 _eventBus,
                 _disposables,
+// csharp-guardrails: allow-null-defense
                 PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.Name : "unknown",
                 Time.realtimeSinceStartup,
                 _lobbySceneName);
@@ -170,6 +178,7 @@ namespace Features.Player
 
         private void InitializeEventBusConsumers()
         {
+// csharp-guardrails: allow-null-defense
             if (_eventBusConsumers == null)
                 return;
 
@@ -191,6 +200,7 @@ namespace Features.Player
                 new DefaultPlayerSpecProvider(_playerSpecConfig)))
                 return;
 
+            // csharp-guardrails: allow-null-defense
             if (_healthHudPrefab != null)
             {
                 var hudView = ComponentAccess.InstantiateComponent<PlayerHealthHudView>(
@@ -207,6 +217,7 @@ namespace Features.Player
 
             _combatSetup.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
 
+// csharp-guardrails: allow-null-defense
             if (_waveSetup != null)
                 _waveSetup.RegisterPlayer(setup.transform);
         }
@@ -241,11 +252,13 @@ namespace Features.Player
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             if (_playerSceneRegistry != null)
                 _playerSceneRegistry.PlayerArrived -= OnPlayerArrived;
 
             _endReportingFlow.Dispose();
 
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
         }
 

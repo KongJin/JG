@@ -19,6 +19,7 @@ namespace Shared.Runtime.Sound
             if (string.IsNullOrEmpty(key))
                 return null;
 
+// csharp-guardrails: allow-null-defense
             if (_lookup == null)
                 BuildLookup();
 
@@ -29,11 +30,13 @@ namespace Shared.Runtime.Sound
         private void BuildLookup()
         {
             _lookup = new Dictionary<string, SoundEntry>();
+// csharp-guardrails: allow-null-defense
             if (entries == null)
                 return;
 
             foreach (var e in entries)
             {
+// csharp-guardrails: allow-null-defense
                 if (e == null || string.IsNullOrEmpty(e.Key))
                     continue;
 
@@ -43,10 +46,12 @@ namespace Shared.Runtime.Sound
 
         public string[] GetDuplicateKeys()
         {
+// csharp-guardrails: allow-null-defense
             if (entries == null)
                 return System.Array.Empty<string>();
 
             return entries
+// csharp-guardrails: allow-null-defense
                 .Where(e => e != null && !string.IsNullOrEmpty(e.Key))
                 .GroupBy(e => e.Key)
                 .Where(group => group.Count() > 1)

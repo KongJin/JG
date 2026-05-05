@@ -15,6 +15,7 @@ namespace Features.Garage.Presentation
             GarageEditorFocus.Frame,
             GarageEditorFocus.Firepower
         };
+        private static readonly Action Noop = () => { };
 
         private readonly FocusTabBinding[] _tabs;
         private readonly VisualElement _swipeHost;
@@ -52,7 +53,7 @@ namespace Features.Garage.Presentation
             };
             _swipeHost = UitkElementUtility.Required<VisualElement>(root, "PartSelectionPane");
             _ignoredElement = ignoredElement;
-            _suppressNextClick = suppressNextClick;
+            _suppressNextClick = suppressNextClick ?? Noop;
             BindCallbacks();
         }
 
@@ -127,7 +128,7 @@ namespace Features.Garage.Presentation
                 Mathf.Abs(delta.x) >= Mathf.Abs(delta.y) * FocusSwipeAxisBias)
             {
                 _isSwipeActive = true;
-                _suppressNextClick?.Invoke();
+                _suppressNextClick.Invoke();
             }
 
             if (_isSwipeActive)
@@ -146,7 +147,7 @@ namespace Features.Garage.Presentation
             if (!TrySelectFocusFromHorizontalDrag(delta))
                 return;
 
-            _suppressNextClick?.Invoke();
+            _suppressNextClick.Invoke();
             evt.StopImmediatePropagation();
         }
 
@@ -218,21 +219,16 @@ namespace Features.Garage.Presentation
         {
             for (int i = 0; i < _tabs.Length; i++)
             {
-                if (_tabs[i].Button != null)
-                    _tabs[i].Button.clicked -= _tabs[i].Clicked;
+                _tabs[i].Button.clicked -= _tabs[i].Clicked;
             }
 
-            if (_swipeHost != null && _swipePointerDown != null)
-                _swipeHost.UnregisterCallback(_swipePointerDown);
+            _swipeHost.UnregisterCallback(_swipePointerDown);
 
-            if (_swipeHost != null && _swipePointerMove != null)
-                _swipeHost.UnregisterCallback(_swipePointerMove);
+            _swipeHost.UnregisterCallback(_swipePointerMove);
 
-            if (_swipeHost != null && _swipePointerUp != null)
-                _swipeHost.UnregisterCallback(_swipePointerUp);
+            _swipeHost.UnregisterCallback(_swipePointerUp);
 
-            if (_swipeHost != null && _swipePointerCancel != null)
-                _swipeHost.UnregisterCallback(_swipePointerCancel);
+            _swipeHost.UnregisterCallback(_swipePointerCancel);
 
             _swipePointerDown = null;
             _swipePointerMove = null;

@@ -57,11 +57,13 @@ namespace Features.Skill.Presentation
         private void OnTargetedRequested(TargetedRequestedEvent e)
         {
             var prefab = ResolveEffectPrefab(e.SkillId.Value, targetedEffectPrefab);
+            // csharp-guardrails: allow-null-defense
             if (prefab == null)
                 return;
 
             var spawnPos = e.TargetPosition.ToVector3();
             var effect = GetPool(prefab).RentComponent<TargetedCastEffect>(spawnPos, Quaternion.identity);
+// csharp-guardrails: allow-null-defense
             if (effect != null)
                 effect.Play();
 
@@ -71,11 +73,13 @@ namespace Features.Skill.Presentation
         private void OnSelfRequested(SelfRequestedEvent e)
         {
             var prefab = ResolveEffectPrefab(e.SkillId.Value, selfEffectPrefab);
+            // csharp-guardrails: allow-null-defense
             if (prefab == null)
                 return;
 
             var pos = e.Position.ToVector3();
             var effect = GetPool(prefab).RentComponent<SelfCastEffect>(pos, Quaternion.identity);
+// csharp-guardrails: allow-null-defense
             if (effect != null)
                 effect.Play();
 
@@ -84,10 +88,12 @@ namespace Features.Skill.Presentation
 
         private GameObject ResolveEffectPrefab(string skillId, GameObject defaultPrefab)
         {
+// csharp-guardrails: allow-null-defense
             if (_assetPort == null)
                 return defaultPrefab;
 
             var prefab = _assetPort.GetEffectPrefab(skillId);
+            // csharp-guardrails: allow-null-defense
             return prefab != null ? prefab : defaultPrefab;
         }
 

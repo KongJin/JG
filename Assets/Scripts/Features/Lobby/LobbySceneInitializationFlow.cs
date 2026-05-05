@@ -40,6 +40,7 @@ internal sealed class LobbySceneInitializationFlow
         soundPlayer.PlayBgm("bgm_lobby", 0.25f);
 
         view.Initialize(eventBus, eventBus, useCases, operationRecordStore);
+// csharp-guardrails: allow-null-defense
         eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
 
         if (unitSetup != null)

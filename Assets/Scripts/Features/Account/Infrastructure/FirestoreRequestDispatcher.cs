@@ -27,6 +27,7 @@ namespace Features.Account.Infrastructure
                         return;
                     }
 
+                    // csharp-guardrails: allow-null-defense
                     var error = request.error ?? "Unknown error";
                     Debug.LogError($"[Firestore] Request failed ({elapsedTime}ms): HTTP {request.responseCode} - {error}\n{request.downloadHandler?.text}");
                     tcs.TrySetResult(new SendResult { success = false, error = $"HTTP {request.responseCode}: {error}" });

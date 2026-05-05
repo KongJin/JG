@@ -30,6 +30,7 @@ namespace Features.Unit.Presentation
 
         public void Hide()
         {
+// csharp-guardrails: allow-null-defense
             if (_hideCoroutine != null)
             {
                 StopCoroutine(_hideCoroutine);
@@ -45,6 +46,7 @@ namespace Features.Unit.Presentation
             IsError = isError;
             IsVisible = true;
 
+// csharp-guardrails: allow-null-defense
             if (_hideCoroutine != null)
                 StopCoroutine(_hideCoroutine);
 

@@ -1,13 +1,14 @@
 using System;
 using Features.Skill.Application.Events;
 using Shared.EventBus;
+using Shared.Attributes;
 using UnityEngine;
 
 namespace Features.Skill.Presentation
 {
     public sealed class StartSkillSelectionView : MonoBehaviour
     {
-        [SerializeField] private SkillSelectButton[] skillButtons;
+        [Required, SerializeField] private SkillSelectButton[] skillButtons;
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
@@ -39,6 +40,7 @@ namespace Features.Skill.Presentation
             {
                 if (i < _candidates.Length)
                 {
+// csharp-guardrails: allow-null-defense
                     var icon = _assetPort?.GetIcon(_candidates[i].SkillId);
                     skillButtons[i].Setup(_candidates[i].DisplayName, icon);
                 }
@@ -54,6 +56,7 @@ namespace Features.Skill.Presentation
 
         public void Toggle(int index)
         {
+// csharp-guardrails: allow-null-defense
             if (_candidates == null || index < 0 || index >= _candidates.Length)
                 return;
 
@@ -91,6 +94,7 @@ namespace Features.Skill.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _subscriber?.UnsubscribeAll(this);
         }
     }

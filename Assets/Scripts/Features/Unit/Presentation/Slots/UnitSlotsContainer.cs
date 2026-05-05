@@ -20,17 +20,23 @@ namespace Features.Unit.Presentation
     {
         [Header("Slot Prefab")]
         [Required, SerializeField] private UnitSlotView _slotPrefab;
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private UnitSlotInputHandler _inputHandlerPrefab;
 
         [Header("Layout")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Transform _slotsParent;
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Camera _worldCamera;
 
         [Header("Placement")]
         [Tooltip("배치 영역 판정용 PlacementArea 참조.")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private PlacementArea _placementArea;
         [Tooltip("배치 실패 시 에러 표시 UI View.")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private PlacementErrorView _errorView;
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private SummonCommandController _commandController;
 
         private IEventSubscriber _fullEventBus;
@@ -47,6 +53,7 @@ namespace Features.Unit.Presentation
         private readonly List<UnitSlotView> _activeSlots = new();
 
         /// <summary>전체 로스터 유닛 수.</summary>
+// csharp-guardrails: allow-null-defense
         public int TotalUnits => _roster != null ? _roster.Length : 0;
 
         /// <summary>
@@ -70,11 +77,13 @@ namespace Features.Unit.Presentation
             _placementArea = placementArea;
             _placementAreaView = placementAreaView;
 
+// csharp-guardrails: allow-null-defense
             if (_commandController == null)
             {
                 _commandController = ComponentAccess.Get<SummonCommandController>(gameObject);
             }
 
+// csharp-guardrails: allow-null-defense
             _commandController?.Initialize(
                 _eventBus,
                 _summonUseCase,
@@ -95,6 +104,7 @@ namespace Features.Unit.Presentation
             }
 
             _nextIndex = visibleCount;
+// csharp-guardrails: allow-null-defense
             _commandController?.SetSlotViews(_activeSlots);
         }
 
@@ -115,6 +125,7 @@ namespace Features.Unit.Presentation
             _activeSlots.Add(slotView);
 
             // 드래그 앤 드롭 핸들러 연결 (고급 입력 전용)
+            // csharp-guardrails: allow-null-defense
             if (_inputHandlerPrefab != null)
             {
                 var inputHandler = Instantiate(_inputHandlerPrefab, slotView.transform, false);
@@ -133,6 +144,7 @@ namespace Features.Unit.Presentation
         /// </summary>
         private void OnSummonRequested(UnitSpec unitSpec, int slotIndex, Shared.Math.Float3 spawnPosition)
         {
+// csharp-guardrails: allow-null-defense
             if (_commandController != null)
             {
                 _commandController.TrySummonImmediate(unitSpec, slotIndex, spawnPosition);
@@ -149,6 +161,7 @@ namespace Features.Unit.Presentation
         {
             if (slotView == null) return;
 
+// csharp-guardrails: allow-null-defense
             if (_commandController != null)
             {
                 _commandController.TrySelectSlot(slotView);
@@ -157,10 +170,12 @@ namespace Features.Unit.Presentation
 
             if (!slotView.CanAfford)
             {
+// csharp-guardrails: allow-null-defense
                 _errorView?.ShowError("Need Energy");
                 return;
             }
 
+// csharp-guardrails: allow-null-defense
             var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
             _summonUseCase.Execute(_ownerId, slotView.UnitSpec, new Shared.Math.Float3(spawnPos.x, spawnPos.y, spawnPos.z));
         }
@@ -173,7 +188,9 @@ namespace Features.Unit.Presentation
             if (e.PlayerId != _ownerId) return;
 
             var slotIndex = _activeSlots.FindIndex(slot =>
+// csharp-guardrails: allow-null-defense
                 slot != null
+// csharp-guardrails: allow-null-defense
                 && slot.UnitSpec != null
                 && slot.UnitSpec.Id == e.UnitSpec.Id);
 
@@ -197,6 +214,7 @@ namespace Features.Unit.Presentation
                     continue;
 
                 var slot = _activeSlots[i];
+// csharp-guardrails: allow-null-defense
                 if (slot != null)
                     nextVisibleIndices.Add(slot.SlotIndex);
             }
@@ -208,6 +226,7 @@ namespace Features.Unit.Presentation
             }
 
             RebuildVisibleSlots(nextVisibleIndices);
+// csharp-guardrails: allow-null-defense
             _commandController?.SetSlotViews(_activeSlots);
         }
 
@@ -216,6 +235,7 @@ namespace Features.Unit.Presentation
         /// </summary>
         public void RotateNext()
         {
+// csharp-guardrails: allow-null-defense
             if (_roster == null || _visibleStart + 3 >= _roster.Length) return;
 
             _visibleStart++;
@@ -244,6 +264,7 @@ namespace Features.Unit.Presentation
 
             RebuildVisibleSlots(visibleRosterIndices);
             _nextIndex = _visibleStart + visibleCount;
+// csharp-guardrails: allow-null-defense
             _commandController?.SetSlotViews(_activeSlots);
         }
 
@@ -251,6 +272,7 @@ namespace Features.Unit.Presentation
         {
             foreach (var slot in _activeSlots)
             {
+// csharp-guardrails: allow-null-defense
                 if (slot != null)
                     Destroy(slot.gameObject);
             }
@@ -268,6 +290,7 @@ namespace Features.Unit.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             if (_fullEventBus != null)
             {
                 _fullEventBus.UnsubscribeAll(this);

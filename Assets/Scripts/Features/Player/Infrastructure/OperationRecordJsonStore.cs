@@ -31,6 +31,7 @@ namespace Features.Player.Infrastructure
 
                 var json = File.ReadAllText(_path);
                 var wrapper = JsonUtility.FromJson<OperationRecordWrapper>(json);
+// csharp-guardrails: allow-null-defense
                 var records = wrapper?.records ?? new RecentOperationRecords();
                 records.Normalize();
                 return records;

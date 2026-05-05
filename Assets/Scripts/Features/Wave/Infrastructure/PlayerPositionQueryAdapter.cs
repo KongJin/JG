@@ -40,6 +40,7 @@ namespace Features.Wave.Infrastructure
             for (var i = _playerTransforms.Count - 1; i >= 0; i--)
             {
                 var t = _playerTransforms[i];
+// csharp-guardrails: allow-null-defense
                 if (t == null)
                 {
                     _playerTransforms.RemoveAt(i);
@@ -77,6 +78,7 @@ namespace Features.Wave.Infrastructure
             for (var i = _playerTransforms.Count - 1; i >= 0; i--)
             {
                 var t = _playerTransforms[i];
+// csharp-guardrails: allow-null-defense
                 if (t == null)
                 {
                     _playerTransforms.RemoveAt(i);

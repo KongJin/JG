@@ -12,7 +12,6 @@
   "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs tools/docs-lint/tests/sync-recurrence-closeout.test.mjs; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
-    "artifacts/rules/issue-recurrence-closeout.json",
-    "docs/owners/operations/document_management_workflow.md"
+    "artifacts/rules/issue-recurrence-closeout.json"
   ]
 }

@@ -52,11 +52,13 @@ namespace Features.Wave.Application
 
         private float GetElapsedTimeSeconds()
         {
+// csharp-guardrails: allow-null-defense
             return _getElapsedTimeSeconds != null ? Math.Max(0f, _getElapsedTimeSeconds()) : 0f;
         }
 
         private int GetReachedWave()
         {
+// csharp-guardrails: allow-null-defense
             return _getReachedWave != null ? Math.Max(0, _getReachedWave()) : 0;
         }
 

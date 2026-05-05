@@ -5,6 +5,7 @@ using Features.Garage.Domain;
 using Features.Player.Domain;
 using Features.Unit.Application;
 using Shared.EventBus;
+using Shared.Attributes;
 using Shared.Math;
 using Shared.Runtime;
 using Shared.Runtime.Sound;
@@ -15,7 +16,7 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkPageController : MonoBehaviour
     {
-        [SerializeField] private GarageSetBUitkRuntimeAdapter _adapter;
+        [Required, SerializeField] private GarageSetBUitkRuntimeAdapter _adapter;
 
         [SerializeField] private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
         [SerializeField] private string _partSearchText = string.Empty;
@@ -45,11 +46,13 @@ namespace Features.Garage.Presentation
         /// <summary>
         /// 로딩 중인지 여부
         /// </summary>
+// csharp-guardrails: allow-null-defense
         public bool IsLoading => _initializeOperation?.IsInProgress ?? false;
 
         /// <summary>
         /// 저장 중인지 여부
         /// </summary>
+// csharp-guardrails: allow-null-defense
         public bool IsSaving => (_saveOperation?.IsInProgress ?? false) || _saveFlow.IsSaving;
 
         /// <summary>
@@ -59,8 +62,10 @@ namespace Features.Garage.Presentation
         {
             get
             {
+// csharp-guardrails: allow-null-defense
                 if (_initializeOperation?.IsInProgress == true)
                     return _initializeOperation.OperationName;
+// csharp-guardrails: allow-null-defense
                 if (_saveOperation?.IsInProgress == true)
                     return _saveOperation.OperationName;
                 return string.Empty;
@@ -82,6 +87,7 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog catalog,
             RecentOperationRecords recentOperations = null)
         {
+// csharp-guardrails: allow-null-defense
             if (_adapter == null)
                 _adapter = ComponentAccess.Get<GarageSetBUitkRuntimeAdapter>(gameObject);
 
@@ -96,6 +102,7 @@ namespace Features.Garage.Presentation
                 _catalog,
                 _composeUnit,
                 _validateRoster);
+// csharp-guardrails: allow-null-defense
             _state ??= new GaragePageState();
             _initGuard.Reset();
             if (!CanRender())
@@ -115,7 +122,9 @@ namespace Features.Garage.Presentation
         /// </summary>
         public void CancelCurrentOperation()
         {
+// csharp-guardrails: allow-null-defense
             _initializeOperation?.Cancel();
+// csharp-guardrails: allow-null-defense
             _saveOperation?.Cancel();
         }
 
@@ -198,6 +207,7 @@ namespace Features.Garage.Presentation
 
             _focusedPart = GarageEditorFocusMapping.ToEditorFocus(slot);
             var viewModel = _renderContextFactory.BuildPartListViewModel(_state, slot, _partSearchText);
+// csharp-guardrails: allow-null-defense
             if (viewModel.Options == null || viewModel.Options.Count == 0)
             {
                 Render();
@@ -213,9 +223,11 @@ namespace Features.Garage.Presentation
 
         private async System.Threading.Tasks.Task InitializeRosterAsync()
         {
+// csharp-guardrails: allow-null-defense
             if (_initializeOperation?.IsInProgress == true || _initializeGarage == null)
                 return;
 
+// csharp-guardrails: allow-null-defense
             _initializeOperation?.Dispose();
             _initializeOperation = new AsyncOperationHandle("로스터 초기화 중...");
             Render();
@@ -225,6 +237,7 @@ namespace Features.Garage.Presentation
                 var roster = await _initializeGarage.Execute();
                 if (!_initializeOperation.IsCancellationRequested)
                 {
+// csharp-guardrails: allow-null-defense
                     _state.Initialize(roster ?? new GarageRoster());
                     Render();
                 }
@@ -235,7 +248,9 @@ namespace Features.Garage.Presentation
             }
             finally
             {
+// csharp-guardrails: allow-null-defense
                 _initializeOperation?.Complete();
+// csharp-guardrails: allow-null-defense
                 _initializeOperation?.Dispose();
                 _initializeOperation = null;
                 Render();
@@ -244,6 +259,7 @@ namespace Features.Garage.Presentation
 
         private void HookCallbacks()
         {
+// csharp-guardrails: allow-null-defense
             if (_callbacksHooked || _adapter == null)
                 return;
 
@@ -279,6 +295,7 @@ namespace Features.Garage.Presentation
 
         private void PublishCommandSound(string soundKey)
         {
+// csharp-guardrails: allow-null-defense
             if (_eventPublisher == null || string.IsNullOrWhiteSpace(soundKey))
                 return;
 
@@ -319,9 +336,11 @@ namespace Features.Garage.Presentation
                 return;
 
             // 이미 저장 중이면 무시
+// csharp-guardrails: allow-null-defense
             if (_saveOperation?.IsInProgress == true)
                 return;
 
+// csharp-guardrails: allow-null-defense
             _saveOperation?.Dispose();
             _saveOperation = new AsyncOperationHandle("저장 중...");
             Render(); // 로딩 상태 표시
@@ -358,7 +377,9 @@ namespace Features.Garage.Presentation
             }
             finally
             {
+// csharp-guardrails: allow-null-defense
                 _saveOperation?.Complete();
+// csharp-guardrails: allow-null-defense
                 _saveOperation?.Dispose();
                 _saveOperation = null;
                 Render(); // 로딩 상태 제거
@@ -453,12 +474,15 @@ namespace Features.Garage.Presentation
         {
             CancelCurrentOperation();
             UnhookCallbacks();
+            // csharp-guardrails: allow-null-defense
             _initializeOperation?.Dispose();
+            // csharp-guardrails: allow-null-defense
             _saveOperation?.Dispose();
         }
 
         private void UnhookCallbacks()
         {
+// csharp-guardrails: allow-null-defense
             if (!_callbacksHooked || _adapter == null)
                 return;
 

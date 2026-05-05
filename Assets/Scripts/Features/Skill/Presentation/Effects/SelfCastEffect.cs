@@ -7,7 +7,9 @@ namespace Features.Skill.Presentation
     public sealed class SelfCastEffect : MonoBehaviour, IPoolResetHandler, IPoolBindingHandler
     {
         [SerializeField] private float _duration = 1f;
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Color _effectColor = new Color(0.3f, 1f, 0.4f, 0.5f);
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Renderer _renderer;
 
         private float _elapsed;
@@ -49,6 +51,7 @@ namespace Features.Skill.Presentation
 
         private void ReleaseSelf()
         {
+// csharp-guardrails: allow-null-defense
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

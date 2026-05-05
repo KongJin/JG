@@ -27,6 +27,7 @@ namespace Features.Combat.Infrastructure
             for (var i = 0; i < _targets.Length; i++)
             {
                 var config = _targets[i];
+                // csharp-guardrails: allow-null-defense
                 if (config.EntityIdHolder == null)
                 {
                     Debug.LogError($"[CombatTargetAdapter] EntityIdHolder is missing at index {i}.", this);

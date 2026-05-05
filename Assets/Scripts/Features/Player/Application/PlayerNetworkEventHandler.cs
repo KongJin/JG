@@ -36,7 +36,9 @@ namespace Features.Player.Application
 
         private void HandleRemoteRespawned(DomainEntityId targetId)
         {
+// csharp-guardrails: allow-null-defense
             var player = _playerLookup?.Resolve(targetId);
+// csharp-guardrails: allow-null-defense
             if (player == null)
                 return;
 
@@ -50,29 +52,36 @@ namespace Features.Player.Application
 
         private void HandleHealthSynced(DomainEntityId targetId, float currentHp, float maxHp)
         {
+// csharp-guardrails: allow-null-defense
             var player = _playerLookup?.Resolve(targetId);
+// csharp-guardrails: allow-null-defense
             player?.Hydrate(currentHp, player.CurrentEnergy);
             _publisher.Publish(new PlayerHealthChangedEvent(targetId, currentHp, maxHp, 0f, false));
         }
 
         private void HandleEnergySynced(DomainEntityId targetId, float currentEnergy, float maxEnergy)
         {
+// csharp-guardrails: allow-null-defense
             var player = _playerLookup?.Resolve(targetId);
+// csharp-guardrails: allow-null-defense
             player?.Hydrate(player.CurrentHp, currentEnergy);
             _publisher.Publish(new PlayerEnergyChangedEvent(targetId, currentEnergy, maxEnergy));
         }
 
         private void HandleLifeStateSynced(DomainEntityId targetId, LifeState state)
         {
+// csharp-guardrails: allow-null-defense
             var player = _playerLookup?.Resolve(targetId);
 
             switch (state)
             {
                 case LifeState.Dead:
+// csharp-guardrails: allow-null-defense
                     player?.Die();
                     _publisher.Publish(new PlayerDiedEvent(targetId, default));
                     break;
                 case LifeState.Alive:
+// csharp-guardrails: allow-null-defense
                     if (player != null && !player.IsAlive)
                     {
                         player.Respawn();

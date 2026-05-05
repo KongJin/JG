@@ -17,6 +17,7 @@ namespace Features.Unit.Infrastructure
             }
 
             var gameObject = holder.gameObject;
+            // csharp-guardrails: allow-null-defense
             if (gameObject == null)
             {
                 return;

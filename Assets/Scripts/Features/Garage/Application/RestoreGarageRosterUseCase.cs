@@ -23,6 +23,7 @@ namespace Features.Garage.Application
         {
             var roster = _networkPort.GetLocalPlayerRoster();
 
+            // csharp-guardrails: allow-null-defense
             if (roster == null || !roster.IsValid)
             {
                 return new GarageRoster.UnitLoadout[0];
@@ -38,6 +39,7 @@ namespace Features.Garage.Application
         {
             var roster = _networkPort.GetPlayerRoster(playerId);
 
+            // csharp-guardrails: allow-null-defense
             if (roster == null || !roster.IsValid)
             {
                 return new GarageRoster.UnitLoadout[0];
@@ -57,6 +59,7 @@ namespace Features.Garage.Application
             foreach (var kvp in allRosters)
             {
                 var roster = kvp.Value;
+                // csharp-guardrails: allow-null-defense
                 if (roster != null && roster.IsValid)
                 {
                     result[kvp.Key] = roster.GetFilledLoadouts();

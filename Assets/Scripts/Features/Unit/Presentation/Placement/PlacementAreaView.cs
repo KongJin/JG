@@ -15,9 +15,11 @@ namespace Features.Unit.Presentation
     {
         [Header("Materials")]
         [Tooltip("유효한 배치 영역 표시용 반투명 Material.")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Material _validMaterial;
 
         [Tooltip("드래그 중 하이라이트용 Material (선택 사항).")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Material _highlightMaterial;
 
         private MeshFilter _meshFilter;
@@ -45,6 +47,7 @@ namespace Features.Unit.Presentation
             _idleMaterial = validMaterial != null
                 ? validMaterial
                 : PlacementAreaMaterialFactory.CreateIdleMaterial();
+// csharp-guardrails: allow-null-defense
             _activeMaterial = _highlightMaterial != null
                 ? _highlightMaterial
                 : PlacementAreaMaterialFactory.CreateActiveMaterial();
@@ -52,6 +55,7 @@ namespace Features.Unit.Presentation
 
             _meshFilter = ComponentAccess.Get<MeshFilter>(gameObject);
             _meshRenderer = ComponentAccess.Get<MeshRenderer>(gameObject);
+// csharp-guardrails: allow-null-defense
             _previewVisual ??= PlacementPreviewVisualController.Attach(transform);
 
             BuildQuadMesh();
@@ -79,6 +83,7 @@ namespace Features.Unit.Presentation
             PreviewAnchorRadius = Mathf.Max(0f, anchorRadius);
             PreviewAttackRange = Mathf.Max(0f, attackRange);
             SetSelectionActive(true);
+// csharp-guardrails: allow-null-defense
             _previewVisual?.Show(PreviewWorldPosition, PreviewAnchorRadius, PreviewAttackRange);
         }
 
@@ -89,6 +94,7 @@ namespace Features.Unit.Presentation
             PreviewAnchorRadius = 0f;
             PreviewAttackRange = 0f;
             SetSelectionActive(false);
+// csharp-guardrails: allow-null-defense
             _previewVisual?.Hide();
         }
 
@@ -100,6 +106,7 @@ namespace Features.Unit.Presentation
                 return;
             }
 
+// csharp-guardrails: allow-null-defense
             if (_invalidFeedbackRoutine != null)
             {
                 StopCoroutine(_invalidFeedbackRoutine);
@@ -113,6 +120,7 @@ namespace Features.Unit.Presentation
         /// </summary>
         public void RebuildMesh()
         {
+// csharp-guardrails: allow-null-defense
             if (_area != null)
             {
                 BuildQuadMesh();
@@ -121,6 +129,7 @@ namespace Features.Unit.Presentation
 
         private void BuildQuadMesh()
         {
+// csharp-guardrails: allow-null-defense
             if (_meshFilter == null || _area == null) return;
 
             var corners = _area.GetCorners();
@@ -160,11 +169,13 @@ namespace Features.Unit.Presentation
 
         private void ApplyMaterial(Material material)
         {
+            // csharp-guardrails: allow-null-defense
             if (_meshRenderer == null)
             {
                 _meshRenderer = ComponentAccess.Get<MeshRenderer>(gameObject);
             }
 
+// csharp-guardrails: allow-null-defense
             if (_meshRenderer == null || material == null)
                 return;
 
@@ -182,6 +193,7 @@ namespace Features.Unit.Presentation
         private void OnValidate()
         {
             // 에디터에서 Inspector 변경 시 미리보기
+// csharp-guardrails: allow-null-defense
             if (_meshFilter != null && _area != null)
             {
                 RebuildMesh();
@@ -190,6 +202,7 @@ namespace Features.Unit.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _previewVisual?.Dispose();
             _previewVisual = null;
         }

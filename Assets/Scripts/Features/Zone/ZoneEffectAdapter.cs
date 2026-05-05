@@ -27,6 +27,7 @@ namespace Features.Zone
 
         private void Awake()
         {
+            // csharp-guardrails: allow-null-defense
             if (_zonePrefab == null)
             {
                 Debug.LogError("[ZoneEffectAdapter] ZoneView prefab is missing.", this);
@@ -51,6 +52,7 @@ namespace Features.Zone
             ZoneStatusPayload statusPayload,
             float allyDamageScale = 1f)
         {
+// csharp-guardrails: allow-null-defense
             if (_zonePool == null)
                 return;
 

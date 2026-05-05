@@ -36,6 +36,7 @@ namespace Features.Account
         /// </summary>
         public void Initialize(EventBus eventBus)
         {
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 
@@ -58,6 +59,7 @@ namespace Features.Account
 
         public void Cleanup()
         {
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = null;
         }

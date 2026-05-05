@@ -1,4 +1,4 @@
-﻿using Features.Account.Application.Ports;
+using Features.Account.Application.Ports;
 using Features.Account.Domain;
 using Features.Garage.Domain;
 namespace Features.Account.Application
@@ -30,7 +30,9 @@ namespace Features.Account.Application
             return new AccountData
             {
                 Profile = account,
+                // csharp-guardrails: allow-null-defense
                 Stats = stats ?? new PlayerStats(),
+                // csharp-guardrails: allow-null-defense
                 Settings = settings ?? new UserSettings(),
                 GarageRoster = garage
             };

@@ -28,6 +28,7 @@ internal sealed class LobbyAccountBootstrapFlow
                 }
 
                 if (loginLoadingView != null)
+// csharp-guardrails: allow-null-defense
                     loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
             }
             catch (System.Exception ex)

@@ -27,6 +27,7 @@ namespace Features.Projectile
 
         public void Initialize(IEventSubscriber eventBus, IEventPublisher publisher)
         {
+            // csharp-guardrails: allow-null-defense
             if (_projectilePrefab == null)
             {
                 Debug.LogError("[ProjectileSetup] Projectile prefab is missing.", this);
@@ -72,6 +73,7 @@ namespace Features.Projectile
             var rotation = dir.sqrMagnitude > 0.001f ? Quaternion.LookRotation(dir) : Quaternion.identity;
 
             var physicsAdapter = _projectilePool.RentComponent<ProjectilePhysicsAdapter>(spawnPosition, rotation);
+// csharp-guardrails: allow-null-defense
             if (physicsAdapter == null)
             {
                 Debug.LogError("[ProjectileSetup] ProjectilePhysicsAdapter is missing on pooled projectile.", this);

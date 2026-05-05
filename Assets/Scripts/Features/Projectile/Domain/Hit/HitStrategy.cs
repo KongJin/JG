@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Features.Projectile.Domain.Hit
 {

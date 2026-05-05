@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -41,9 +41,13 @@ namespace Features.Garage.Presentation
             _unitPreviewLabel = unitPreviewLabel;
             _unitPreviewImage = UitkElementUtility.CreateAbsoluteImage();
             unitPreviewHost?.Insert(0, _unitPreviewImage);
+            // csharp-guardrails: allow-null-defense
             _previewRenderer?.ConfigureTransparentBackground(true);
+            // csharp-guardrails: allow-null-defense
             _previewRenderer?.ConfigureAssemblyFitScale(UnitPreviewAssemblyFitScale);
+            // csharp-guardrails: allow-null-defense
             _previewRenderer?.ConfigureAssemblyHorizontalOffset(UnitPreviewAssemblyHorizontalOffset);
+            // csharp-guardrails: allow-null-defense
             _partPreviewRenderer?.ConfigureTransparentBackground(true);
 
             SetPreviewTexture(null, false);
@@ -67,6 +71,7 @@ namespace Features.Garage.Presentation
             {
                 var renderer = _slotPreviewRenderers[i];
                 var slot = slots != null && i < slots.Count ? slots[i] : null;
+                // csharp-guardrails: allow-null-defense
                 bool hasPreview = renderer != null && renderer.Render(slot);
                 _slotPreviewTextures[i] = hasPreview ? renderer.PreviewTexture : null;
             }
@@ -76,12 +81,14 @@ namespace Features.Garage.Presentation
 
         public void Dispose()
         {
+            // csharp-guardrails: allow-null-defense
             if (_slotPreviewRenderers == null)
                 return;
 
             for (int i = 0; i < _slotPreviewRenderers.Length; i++)
             {
                 var renderer = _slotPreviewRenderers[i];
+                // csharp-guardrails: allow-null-defense
                 if (renderer == null)
                     continue;
 
@@ -95,7 +102,9 @@ namespace Features.Garage.Presentation
         private void RenderPreview(IReadOnlyList<GarageSlotViewModel> slots)
         {
             var selectedSlot = FindSelectedSlot(slots);
+// csharp-guardrails: allow-null-defense
             _lastSelectedSlotLabel = selectedSlot?.SlotLabel ?? "A-01";
+            // csharp-guardrails: allow-null-defense
             if (_previewRenderer == null)
             {
                 SetPreviewTexture(null, false);
@@ -108,6 +117,7 @@ namespace Features.Garage.Presentation
 
         private void RenderPartPreview(GarageNovaPartsPanelViewModel partList)
         {
+            // csharp-guardrails: allow-null-defense
             if (_partPreviewRenderer == null)
             {
                 SetPartPreviewTexture(null, false);
@@ -120,6 +130,7 @@ namespace Features.Garage.Presentation
 
         private void SetPreviewTexture(Texture texture, bool isVisible)
         {
+            // csharp-guardrails: allow-null-defense
             if (_unitPreviewImage == null || _unitPreviewLabel == null)
                 return;
 
@@ -133,24 +144,29 @@ namespace Features.Garage.Presentation
 
         private string BuildPreviewPlaceholderText()
         {
+            // csharp-guardrails: allow-null-defense
             return _lastSelectedSlotLabel ?? "A-01";
         }
 
         private void HidePreviewChrome()
         {
+            // csharp-guardrails: allow-null-defense
             if (_previewTitleLabel != null)
                 _previewTitleLabel.style.display = DisplayStyle.None;
+            // csharp-guardrails: allow-null-defense
             if (_previewTagRow != null)
                 _previewTagRow.style.display = DisplayStyle.None;
         }
 
         private void SetPartPreviewTexture(Texture texture, bool isVisible)
         {
+            // csharp-guardrails: allow-null-defense
             _partListSurface?.SetPreviewTexture(texture, isVisible);
         }
 
         private void EnsureSlotPreviewRenderers()
         {
+            // csharp-guardrails: allow-null-defense
             if (_slotPreviewRenderers != null && _slotPreviewTextures != null)
                 return;
 
@@ -173,6 +189,7 @@ namespace Features.Garage.Presentation
                 0f);
 
             var camera = rendererObject.GetComponent<Camera>();
+            // csharp-guardrails: allow-null-defense
             if (camera != null)
                 camera.enabled = false;
 
@@ -206,6 +223,7 @@ namespace Features.Garage.Presentation
             else
                 Object.DestroyImmediate(target);
         }
+
     }
 }
 

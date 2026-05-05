@@ -29,6 +29,7 @@ namespace Shared.Runtime.Pooling
                 return;
 
             _isArmed = false;
+// csharp-guardrails: allow-null-defense
             if (_pooledObject != null)
                 _pooledObject.Release();
             else

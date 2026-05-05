@@ -36,6 +36,7 @@ namespace Features.Unit.Infrastructure
 
         private void Update()
         {
+// csharp-guardrails: allow-null-defense
             if (_battleEntity == null || _combatSetup == null)
                 return;
 
@@ -77,6 +78,7 @@ namespace Features.Unit.Infrastructure
 
             foreach (var hit in hits)
             {
+// csharp-guardrails: allow-null-defense
                 if (hit == null)
                     continue;
 

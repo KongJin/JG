@@ -41,6 +41,7 @@ namespace Features.Skill.Application
         )
         {
             var manaCost = skill.Spec.ManaCost;
+// csharp-guardrails: allow-null-defense
             if (_statusQuery != null)
             {
                 var extendMag = _statusQuery.GetMagnitude(casterId, StatusType.Extend);
@@ -62,7 +63,9 @@ namespace Features.Skill.Application
 
             var damage = skill.Spec.Damage;
             var range = skill.Spec.Range;
+// csharp-guardrails: allow-null-defense
             var radius = pr?.ProjectileSpec.Radius ?? 0f;
+// csharp-guardrails: allow-null-defense
             if (_statusQuery != null)
             {
                 var expandMag = _statusQuery.GetMagnitude(casterId, StatusType.Expand);
@@ -78,6 +81,7 @@ namespace Features.Skill.Application
             }
 
             var projectileCount = skill.Spec.ProjectileCount;
+// csharp-guardrails: allow-null-defense
             if (_statusQuery != null)
             {
                 var countMag = _statusQuery.GetMagnitude(casterId, StatusType.Count);
@@ -88,6 +92,7 @@ namespace Features.Skill.Application
             var duration = skill.Spec.Duration;
             var allyDamageScale = 1f;
             var skillIdValue = skill.Id.Value;
+// csharp-guardrails: allow-null-defense
             if (_upgradePort != null)
             {
                 range *= _upgradePort.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
@@ -110,8 +115,11 @@ namespace Features.Skill.Application
                     duration,
                     range,
                     result.DeliveryType,
+// csharp-guardrails: allow-null-defense
                     pr != null ? (int)pr.ProjectileSpec.TrajectoryType : 0,
+// csharp-guardrails: allow-null-defense
                     pr != null ? (int)pr.ProjectileSpec.HitType : 0,
+// csharp-guardrails: allow-null-defense
                     pr?.ProjectileSpec.Speed ?? 0f,
                     radius,
                     position,

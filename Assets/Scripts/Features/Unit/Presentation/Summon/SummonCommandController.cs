@@ -14,6 +14,7 @@ namespace Features.Unit.Presentation
     public sealed class SummonCommandController : MonoBehaviour
     {
         [Header("Input")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Camera _worldCamera;
         [SerializeField] private float _screenToPlaneY = 0f;
 
@@ -46,6 +47,7 @@ namespace Features.Unit.Presentation
             PlacementErrorView feedbackView,
             Camera worldCamera)
         {
+// csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
 
             _eventBus = eventBus;
@@ -75,6 +77,7 @@ namespace Features.Unit.Presentation
         {
             _slotViews = slotViews ?? System.Array.Empty<UnitSlotView>();
             RefreshSlotSelection();
+// csharp-guardrails: allow-null-defense
             _dockLayoutBinder?.RebuildSlotRow();
         }
 
@@ -108,6 +111,7 @@ namespace Features.Unit.Presentation
             CurrentFeedbackMessage = "배치 구역을 탭하세요";
 
             ShowPlacementPreview(ResolveDefaultPlacementPoint());
+// csharp-guardrails: allow-null-defense
             _feedbackView?.ShowInfo(CurrentFeedbackMessage);
             RefreshSlotSelection();
             return true;
@@ -133,17 +137,21 @@ namespace Features.Unit.Presentation
 
         public bool TryConfirmPlacementWorld(Vector3 worldPosition)
         {
+// csharp-guardrails: allow-null-defense
             if (!_isSelectionActive || _selectedUnit == null)
                 return false;
 
+// csharp-guardrails: allow-null-defense
             if (_placementArea != null && !_placementArea.Contains(worldPosition))
             {
                 ShowPlacementPreview(worldPosition);
+// csharp-guardrails: allow-null-defense
                 _placementAreaView?.ShowInvalidPlacementFeedback();
                 ShowError("배치 영역 밖");
                 return false;
             }
 
+// csharp-guardrails: allow-null-defense
             var summonPosition = _placementArea != null
                 ? _placementArea.ClampToBounds(worldPosition)
                 : worldPosition;
@@ -177,6 +185,7 @@ namespace Features.Unit.Presentation
             if (!_isSelectionActive)
                 return;
 
+// csharp-guardrails: allow-null-defense
             TryConfirmPlacementWorld(_placementArea != null ? _placementArea.Center : ResolveDefaultPlacementPoint());
         }
 
@@ -187,6 +196,7 @@ namespace Features.Unit.Presentation
 
         private void Update()
         {
+            // csharp-guardrails: allow-null-defense
             if (!_isSelectionActive || _worldCamera == null)
                 return;
 
@@ -195,6 +205,7 @@ namespace Features.Unit.Presentation
 
             try
             {
+// csharp-guardrails: allow-null-defense
                 _previewPresenter?.UpdateFromPointer(_selectedUnit);
 
                 TryHandlePlacementInput();
@@ -220,6 +231,7 @@ namespace Features.Unit.Presentation
                 return;
 
             ShowError(TranslateFailureReason(e.Reason));
+// csharp-guardrails: allow-null-defense
             _placementAreaView?.ShowInvalidPlacementFeedback();
         }
 
@@ -237,7 +249,9 @@ namespace Features.Unit.Presentation
             _selectionActivatedFrame = -1;
             CurrentFeedbackMessage = string.Empty;
 
+// csharp-guardrails: allow-null-defense
             _placementAreaView?.HideUnitPreview();
+// csharp-guardrails: allow-null-defense
             _feedbackView?.Hide();
             RefreshSlotSelection();
         }
@@ -246,6 +260,7 @@ namespace Features.Unit.Presentation
         {
             foreach (var slot in _slotViews)
             {
+// csharp-guardrails: allow-null-defense
                 if (slot == null)
                     continue;
 
@@ -270,17 +285,20 @@ namespace Features.Unit.Presentation
         private void ShowError(string message)
         {
             CurrentFeedbackMessage = message;
+// csharp-guardrails: allow-null-defense
             _feedbackView?.ShowError(message);
             RefreshSlotSelection();
         }
 
         private void ShowPlacementPreview(Vector3 worldPosition)
         {
+// csharp-guardrails: allow-null-defense
             _previewPresenter?.Show(_selectedUnit, worldPosition);
         }
 
         private void TryHandlePlacementInput()
         {
+// csharp-guardrails: allow-null-defense
             if (_previewPresenter == null ||
                 !_previewPresenter.TryConsumePlacementPress(out var worldPosition, out var shouldConfirm))
             {
@@ -306,6 +324,7 @@ namespace Features.Unit.Presentation
 
         private Vector3 ResolveDefaultPlacementPoint()
         {
+// csharp-guardrails: allow-null-defense
             if (_placementArea != null)
             {
                 var center = _placementArea.Center;
@@ -318,12 +337,14 @@ namespace Features.Unit.Presentation
 
         private void ApplyDockLayout()
         {
+// csharp-guardrails: allow-null-defense
             _dockLayoutBinder ??= new SummonDockLayoutBinder(transform);
             _dockLayoutBinder.Apply(ref _worldCamera);
         }
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
     }

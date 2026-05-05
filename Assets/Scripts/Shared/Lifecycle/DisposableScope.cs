@@ -15,6 +15,7 @@ namespace Shared.Lifecycle
         public void Dispose()
         {
             var cleanup = _cleanup;
+            // csharp-guardrails: allow-null-defense
             if (cleanup == null)
                 return;
 

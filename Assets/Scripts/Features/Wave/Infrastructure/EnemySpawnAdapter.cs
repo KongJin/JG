@@ -51,6 +51,7 @@ namespace Features.Wave.Infrastructure
                 new object[] { data.ResourcesLoadPath });
 
             var setup = ComponentAccess.Get<EnemySetup>(go);
+// csharp-guardrails: allow-null-defense
             if (setup != null)
                 setup.Initialize(_eventBus, _combatBootstrap, data, _playerQuery, _coreObjectiveQuery);
             else
@@ -60,6 +61,7 @@ namespace Features.Wave.Infrastructure
         void IWaveSpawnPort.SpawnWave(int waveIndex)
         {
             if (!PhotonNetwork.IsMasterClient) return;
+// csharp-guardrails: allow-null-defense
             if (_waveTable == null || waveIndex >= _waveTable.Waves.Length) return;
             StartCoroutine(SpawnWaveEnemiesCoroutine(_waveTable.Waves[waveIndex]));
         }

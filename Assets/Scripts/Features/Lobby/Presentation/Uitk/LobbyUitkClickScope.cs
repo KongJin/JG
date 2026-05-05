@@ -43,6 +43,7 @@ namespace Features.Lobby.Presentation
 
             public void Unbind()
             {
+// csharp-guardrails: allow-null-defense
                 if (Button != null && Callback != null)
                     Button.clicked -= Callback;
             }
@@ -91,6 +92,7 @@ namespace Features.Lobby.Presentation
 
         public void EnsureRecords()
         {
+// csharp-guardrails: allow-null-defense
             if (_recordsPage == null || _recordsPage.childCount > 0 || _operationMemoryTree == null)
                 return;
 
@@ -101,6 +103,7 @@ namespace Features.Lobby.Presentation
 
         public void EnsureAccount()
         {
+// csharp-guardrails: allow-null-defense
             if (_accountPage == null || _accountPage.childCount > 0 || _accountSyncTree == null)
                 return;
 
@@ -111,6 +114,7 @@ namespace Features.Lobby.Presentation
 
         public void EnsureConnection()
         {
+// csharp-guardrails: allow-null-defense
             if (_connectionPage == null || _connectionPage.childCount > 0 || _connectionReconnectTree == null)
                 return;
 

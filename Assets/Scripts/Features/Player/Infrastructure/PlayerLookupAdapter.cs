@@ -16,6 +16,7 @@ namespace Features.Player.Infrastructure
 
         public Domain.Player Resolve(DomainEntityId id)
         {
+// csharp-guardrails: allow-null-defense
             if (_registry.TryGet(id, out var setup) && setup.DomainPlayer != null)
                 return setup.DomainPlayer;
 
@@ -26,6 +27,7 @@ namespace Features.Player.Infrastructure
         {
             foreach (var setup in _registry.All)
             {
+// csharp-guardrails: allow-null-defense
                 if (setup.DomainPlayer == null || setup.transform == null)
                     continue;
 

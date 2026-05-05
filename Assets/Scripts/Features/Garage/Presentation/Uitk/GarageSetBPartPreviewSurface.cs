@@ -51,22 +51,33 @@ namespace Features.Garage.Presentation
 
         public void Render(GarageNovaPartsPanelViewModel partList)
         {
-            var slot = partList?.ActiveSlot ?? GarageNovaPartPanelSlot.Mobility;
+            var slot = GarageNovaPartPanelSlot.Mobility;
+            var selectedNameText = string.Empty;
+            var selectedMetaText = string.Empty;
+            var selectedEnergyText = string.Empty;
+            IReadOnlyList<GarageNovaPartStatViewModel> selectedStats = null;
+
+            if (partList != null)
+            {
+                slot = partList.ActiveSlot;
+                selectedNameText = partList.SelectedNameText;
+                selectedMetaText = partList.SelectedMetaText;
+                selectedEnergyText = partList.SelectedEnergyText;
+                selectedStats = partList.SelectedStats;
+            }
+
             _partPreviewKickerLabel.text = BuildSelectedPartKicker(partList);
-            _partPreviewTitleLabel.text = string.IsNullOrWhiteSpace(partList?.SelectedNameText)
+            _partPreviewTitleLabel.text = string.IsNullOrWhiteSpace(selectedNameText)
                 ? BuildPartListTitle(slot)
-                : partList.SelectedNameText;
-            _partPreviewMetaLabel.text = BuildPartPreviewMeta(slot, partList?.SelectedMetaText);
+                : selectedNameText;
+            _partPreviewMetaLabel.text = BuildPartPreviewMeta(slot, selectedMetaText);
             _partPreviewLabel.text = BuildPartPreviewPlaceholderText(slot);
-            RenderPartEnergy(partList?.SelectedEnergyText);
-            RenderPartPreviewStats(partList?.SelectedStats);
+            RenderPartEnergy(selectedEnergyText);
+            RenderPartPreviewStats(selectedStats);
         }
 
         public void SetPreviewTexture(Texture texture, bool isVisible)
         {
-            if (_partPreviewImage == null || _partPreviewLabel == null)
-                return;
-
             _partPreviewImage.image = isVisible ? texture : null;
             _partPreviewImage.style.display = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
             _partPreviewLabel.style.display = isVisible ? DisplayStyle.None : DisplayStyle.Flex;
@@ -109,10 +120,7 @@ namespace Features.Garage.Presentation
 
         private void RenderPartEnergy(string energyText)
         {
-            if (_partEnergyLabel == null)
-                return;
-
-            bool hasEnergy = !string.IsNullOrWhiteSpace(energyText);
+            var hasEnergy = !string.IsNullOrWhiteSpace(energyText);
             _partEnergyLabel.text = hasEnergy ? energyText.Trim() : string.Empty;
             _partEnergyLabel.style.display = hasEnergy ? DisplayStyle.Flex : DisplayStyle.None;
         }

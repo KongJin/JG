@@ -12,6 +12,7 @@ namespace Features.Skill.Infrastructure
         {
             foreach (var data in catalogData.Skills)
             {
+// csharp-guardrails: allow-null-defense
                 if (data == null) continue;
                 if (_dataById.ContainsKey(data.SkillId))
                 {

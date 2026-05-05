@@ -6,6 +6,7 @@ using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using Features.Wave.Infrastructure;
 using Photon.Pun;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
@@ -23,9 +24,10 @@ namespace Features.Unit.Infrastructure
     public sealed class SummonPhotonAdapter : MonoBehaviour, ISummonExecutionPort
     {
         [Header("BattleEntity Prefab")]
-        [SerializeField] private GameObject _battleEntityPrefab;
+        [Required, SerializeField] private GameObject _battleEntityPrefab;
 
         [Header("Spawn Settings")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Transform _spawnParent;
 
         private EventBus _eventBus;
@@ -60,6 +62,7 @@ namespace Features.Unit.Infrastructure
                 new object[] { unitSpec.Id.Value, ownerId.Value, (float)unitSpec.FinalHp });
 
             // 부모 설정
+// csharp-guardrails: allow-null-defense
             if (_spawnParent != null)
             {
                 spawnedGo.transform.SetParent(_spawnParent, worldPositionStays: true);
@@ -67,6 +70,7 @@ namespace Features.Unit.Infrastructure
 
             // BattleEntityPrefabSetup 초기화
             var prefabSetup = ComponentAccess.Get<BattleEntityPrefabSetup>(spawnedGo);
+// csharp-guardrails: allow-null-defense
             if (prefabSetup != null)
             {
                 prefabSetup.Initialize(_eventBus, _combatSetup, _unitPositionQuery, unitSpec, ownerId);

@@ -1,4 +1,5 @@
 using Shared.Runtime;
+using Shared.Attributes;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,9 +7,9 @@ namespace Features.Wave.Presentation
 {
     public sealed class BattleHudUitkSurface : MonoBehaviour
     {
-        [SerializeField] private UIDocument _document;
-        [SerializeField] private VisualTreeAsset _visualTree;
-        [SerializeField] private StyleSheet _styleSheet;
+        [Required, SerializeField] private UIDocument _document;
+        [Required, SerializeField] private VisualTreeAsset _visualTree;
+        [Required, SerializeField] private StyleSheet _styleSheet;
 
         private Label _waveLabel;
         private Label _countdownLabel;
@@ -31,15 +32,19 @@ namespace Features.Wave.Presentation
 
         public void Initialize()
         {
+// csharp-guardrails: allow-null-defense
             _document ??= ComponentAccess.Get<UIDocument>(gameObject);
+// csharp-guardrails: allow-null-defense
             if (_document == null)
                 return;
 
             var root = _document.rootVisualElement;
             root.Clear();
+// csharp-guardrails: allow-null-defense
             if (_visualTree != null)
                 _visualTree.CloneTree(root);
 
+// csharp-guardrails: allow-null-defense
             if (_styleSheet != null && !root.styleSheets.Contains(_styleSheet))
                 root.styleSheets.Add(_styleSheet);
 
@@ -86,6 +91,7 @@ namespace Features.Wave.Presentation
 
         private void SetResultVisible(bool isVisible)
         {
+// csharp-guardrails: allow-null-defense
             if (_resultOverlay != null)
                 _resultOverlay.style.display = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
         }

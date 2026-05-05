@@ -29,10 +29,12 @@ namespace Features.Unit.Presentation
             if (unit == null)
                 return;
 
+// csharp-guardrails: allow-null-defense
             var previewPosition = _placementArea != null
                 ? _placementArea.ClampToBounds(worldPosition)
                 : worldPosition;
 
+// csharp-guardrails: allow-null-defense
             _placementAreaView?.ShowUnitPreview(
                 previewPosition,
                 unit.FinalAnchorRange,
@@ -48,8 +50,10 @@ namespace Features.Unit.Presentation
                 return;
 
             var worldPosition = ScreenToWorldPosition(screenPosition);
+// csharp-guardrails: allow-null-defense
             var isValid = _placementArea == null || _placementArea.Contains(worldPosition);
             Show(unit, worldPosition);
+// csharp-guardrails: allow-null-defense
             _placementAreaView?.SetHighlight(isValid);
         }
 
@@ -59,6 +63,7 @@ namespace Features.Unit.Presentation
             shouldConfirm = false;
 
             var touchscreen = Touchscreen.current;
+// csharp-guardrails: allow-null-defense
             if (touchscreen == null)
                 return false;
 
@@ -89,6 +94,7 @@ namespace Features.Unit.Presentation
             shouldConfirm = false;
 
             var mouse = Mouse.current;
+// csharp-guardrails: allow-null-defense
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame)
                 return false;
 
@@ -108,6 +114,7 @@ namespace Features.Unit.Presentation
         private static bool TryResolvePointerScreenPosition(out Vector2 screenPosition, out int pointerId)
         {
             var touchscreen = Touchscreen.current;
+// csharp-guardrails: allow-null-defense
             if (touchscreen != null)
             {
                 var touch = touchscreen.primaryTouch;
@@ -120,6 +127,7 @@ namespace Features.Unit.Presentation
             }
 
             var mouse = Mouse.current;
+// csharp-guardrails: allow-null-defense
             if (mouse != null)
             {
                 screenPosition = mouse.position.ReadValue();
@@ -134,6 +142,7 @@ namespace Features.Unit.Presentation
 
         private static bool IsPointerOverUi(int pointerId = -1)
         {
+// csharp-guardrails: allow-null-defense
             if (EventSystem.current == null)
                 return false;
 

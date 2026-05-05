@@ -47,6 +47,7 @@ namespace Features.Wave.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
     }

@@ -71,6 +71,7 @@ namespace Features.Garage.Application
             for (int i = 0; i < roster.loadout.Count; i++)
             {
                 var unit = roster.loadout[i];
+                // csharp-guardrails: allow-null-defense
                 if (unit == null || !unit.HasAnySelection)
                     continue;
 

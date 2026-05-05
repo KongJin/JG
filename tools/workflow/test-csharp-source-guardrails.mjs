@@ -200,8 +200,91 @@ function removeAttributeBlocks(line) {
   return line.replace(/\[[^\]]+\]/gu, " ").trim();
 }
 
+const serializedFieldTypesWithoutRequired = new Set([
+  "bool",
+  "byte",
+  "sbyte",
+  "short",
+  "ushort",
+  "int",
+  "uint",
+  "long",
+  "ulong",
+  "float",
+  "double",
+  "decimal",
+  "char",
+  "string",
+  "Color",
+  "Color32",
+  "Vector2",
+  "Vector2Int",
+  "Vector3",
+  "Vector3Int",
+  "Vector4",
+  "Quaternion",
+  "Rect",
+  "RectInt",
+  "Bounds",
+  "BoundsInt",
+  "LayerMask",
+]);
+
+const fieldModifiers = new Set([
+  "public",
+  "private",
+  "protected",
+  "internal",
+  "static",
+  "readonly",
+  "volatile",
+  "new",
+  "unsafe",
+]);
+
+function collectEnumNames(files) {
+  const enumNames = new Set();
+  for (const filePath of files) {
+    const sanitizedLines = stripCommentsAndStrings(fs.readFileSync(filePath, "utf8")).split("\n");
+    for (const line of sanitizedLines) {
+      const match = line.match(/\benum\s+([A-Za-z_]\w*)\b/u);
+      if (match) enumNames.add(match[1]);
+    }
+  }
+
+  return enumNames;
+}
+
+function parseFieldDeclaration(fieldCandidate) {
+  const declaration = fieldCandidate.slice(0, fieldCandidate.indexOf(";")).split("=")[0].trim();
+  const tokens = declaration.split(/\s+/u).filter(Boolean);
+  const meaningfulTokens = tokens.filter((token) => !fieldModifiers.has(token));
+  if (meaningfulTokens.length < 2) return null;
+
+  const name = meaningfulTokens[meaningfulTokens.length - 1];
+  const type = meaningfulTokens.slice(0, -1).join(" ");
+  return { type, name };
+}
+
+function normalizeFieldType(typeName) {
+  return typeName
+    .replace(/\?$/u, "")
+    .replace(/\[\]$/u, "")
+    .split(".")
+    .pop()
+    .trim();
+}
+
+function canSerializeWithoutRequired(fieldCandidate, enumNames) {
+  const declaration = parseFieldDeclaration(fieldCandidate);
+  if (!declaration) return false;
+
+  const normalizedType = normalizeFieldType(declaration.type);
+  return serializedFieldTypesWithoutRequired.has(normalizedType) || enumNames.has(normalizedType);
+}
+
 function parseClassDeclaration(line) {
-  const match = line.match(/\bclass\s+([A-Za-z_]\w*)(?:\s*:\s*([^{]+))?/u);
+  const match = line.match(/\b(?:class|struct)\s+([A-Za-z_]\w*)(?:\s*:\s*([^{]+))?/u);
   if (!match) return null;
 
   return {
@@ -263,6 +346,14 @@ function extractCallableHeader(signature) {
 
 function isNullDefenseLine(sanitizedLine) {
   return nullDefenseRegexes.some((regex) => regex.test(sanitizedLine));
+}
+
+function isAcceptedNullDefenseLine(sanitizedLine) {
+  return isDelegateInvocationLine(sanitizedLine);
+}
+
+function isDelegateInvocationLine(sanitizedLine) {
+  return /\?\.\s*Invoke\s*\(/u.test(sanitizedLine);
 }
 
 function extractParameterNames(parametersText) {
@@ -356,7 +447,7 @@ function createIssue(code, relativePath, line, key, message) {
   };
 }
 
-function analyzeFile(filePath, root, classBases) {
+function analyzeFile(filePath, root, classBases, enumNames) {
   const relativePath = repoRelative(filePath, root);
   const rawText = normalizeNewlines(fs.readFileSync(filePath, "utf8"));
   const rawLines = rawText.split("\n");
@@ -420,14 +511,18 @@ function analyzeFile(filePath, root, classBases) {
       }
 
       const fieldCandidate = removeAttributeBlocks(sanitizedLine);
-      if (fieldCandidate.length > 0 && fieldCandidate.includes(";") && !fieldCandidate.includes("(")) {
+      const fieldDeclarationCandidate = fieldCandidate.includes(";")
+        ? fieldCandidate.slice(0, fieldCandidate.indexOf(";")).split("=")[0]
+        : "";
+      if (fieldCandidate.length > 0 && fieldCandidate.includes(";") && !fieldDeclarationCandidate.includes("(")) {
         const serializeIndex = pendingAttributes.findIndex((attribute) => attribute.name === "SerializeField");
         if (serializeIndex >= 0) {
           const requiredIndex = pendingAttributes.findIndex((attribute) => attribute.name === "Required");
-          const fieldMatch = fieldCandidate.match(/\b([A-Za-z_]\w*)\s*(?:=[^;]*)?;/u);
-          const fieldName = fieldMatch?.[1] ?? fieldCandidate.slice(0, fieldCandidate.indexOf(";")).trim();
+          const fieldDeclaration = parseFieldDeclaration(fieldCandidate);
+          const fieldName = fieldDeclaration?.name ?? fieldCandidate.slice(0, fieldCandidate.indexOf(";")).trim();
           if (
             (requiredIndex < 0 || requiredIndex > serializeIndex) &&
+            !canSerializeWithoutRequired(fieldCandidate, enumNames) &&
             !hasDirective(rawLines, index, "allow-serialized-field-without-required")
           ) {
             issues.push(
@@ -477,7 +572,11 @@ function analyzeFile(filePath, root, classBases) {
     }
 
     const nullDefenseCallable = callableStack[callableStack.length - 1];
-    if (isNullDefenseLine(trimmed) && !hasDirective(rawLines, index, "allow-null-defense")) {
+    if (
+      isNullDefenseLine(trimmed) &&
+      !hasDirective(rawLines, index, "allow-null-defense") &&
+      !isAcceptedNullDefenseLine(trimmed)
+    ) {
       if (
         !nullDefenseCallable?.allowsNullDefense ||
         !nullDefenseTargetsOnlyParameters(trimmed, nullDefenseCallable.parameterNames ?? [])
@@ -515,7 +614,8 @@ function lint(root = repoRoot) {
     .filter((filePath) => !repoRelative(filePath, root).includes("/Generated/"))
     .sort((left, right) => left.localeCompare(right));
   const classBases = collectClassBases(files, root);
-  return files.flatMap((filePath) => analyzeFile(filePath, root, classBases));
+  const enumNames = collectEnumNames(files);
+  return files.flatMap((filePath) => analyzeFile(filePath, root, classBases, enumNames));
 }
 
 function readBaseline() {
@@ -562,8 +662,13 @@ using Shared.Attributes;
 public sealed class FooController : MonoBehaviour
 {
     [SerializeField] private GameObject missingRequired;
+    [SerializeField] private float serializedFloatOk;
+    [SerializeField] private string serializedStringOk;
+    [SerializeField] private FooMode serializedEnumOk;
     [Required, SerializeField] private GameObject requiredOk;
     private object _cached;
+    private event System.Action Ready;
+    private GameObject _previewPrefab;
 
     public FooController(object ctorValue)
     {
@@ -572,6 +677,13 @@ public sealed class FooController : MonoBehaviour
     }
 
     private void Awake()
+    {
+        if (_cached == null) return;
+        if (_previewPrefab == null) return;
+        Ready?.Invoke();
+    }
+
+    public void Dispose()
     {
         if (_cached == null) return;
     }
@@ -586,6 +698,11 @@ public sealed class FooController : MonoBehaviour
     public void OneLineAllowed(object value) { if (value == null) return; }
     public void OneLineBlocked(object value) { if (_cached == null) return; }
 }
+
+public enum FooMode
+{
+    One,
+}
 `,
       "utf8",
     );
@@ -594,7 +711,7 @@ public sealed class FooController : MonoBehaviour
     assert.equal(issues.filter((issue) => issue.code === "serialized-field-requires-required").length, 1);
     assert.equal(
       issues.filter((issue) => issue.code === "null-defense-only-in-constructors-or-parameterized-functions").length,
-      5,
+      7,
     );
   } finally {
     fs.rmSync(tempRoot, { recursive: true, force: true });

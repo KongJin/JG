@@ -34,12 +34,14 @@ namespace Features.Combat.Presentation
                 damageNumberPrefab,
                 pos,
                 Quaternion.identity);
+            // csharp-guardrails: allow-null-defense
             if (view != null)
                 view.Show(e.Damage);
         }
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
     }

@@ -34,6 +34,7 @@ namespace Features.Enemy.Presentation
         private void LateUpdate()
         {
             var cam = Camera.main;
+            // csharp-guardrails: allow-null-defense
             if (cam != null)
                 transform.forward = cam.transform.forward;
         }
@@ -61,6 +62,7 @@ namespace Features.Enemy.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
     }

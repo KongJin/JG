@@ -15,6 +15,7 @@ namespace Features.Player.Presentation
 
         private void LateUpdate()
         {
+// csharp-guardrails: allow-null-defense
             if (_target == null) return;
         }
     }

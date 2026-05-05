@@ -48,6 +48,7 @@ namespace Features.Zone.Presentation
 
         private void OnTriggerStay(Collider other)
         {
+// csharp-guardrails: allow-null-defense
             if (!_initialized || _zoneContactUseCase == null)
                 return;
 

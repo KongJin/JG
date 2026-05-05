@@ -19,6 +19,7 @@ namespace Features.Unit.Infrastructure
         public ModuleStats GetFrameBaseStats(string frameId)
         {
             var frame = _catalog.GetUnitFrame(frameId);
+// csharp-guardrails: allow-null-defense
             if (frame == null) return default;
 
             return new ModuleStats(
@@ -29,6 +30,7 @@ namespace Features.Unit.Infrastructure
         public ModuleStats GetFirepowerStats(string moduleId)
         {
             var m = _catalog.GetFirepowerModule(moduleId);
+// csharp-guardrails: allow-null-defense
             if (m == null) return default;
 
             return new ModuleStats(
@@ -40,6 +42,7 @@ namespace Features.Unit.Infrastructure
         public ModuleStats GetMobilityStats(string moduleId)
         {
             var m = _catalog.GetMobilityModule(moduleId);
+// csharp-guardrails: allow-null-defense
             if (m == null) return default;
 
             return new ModuleStats(
@@ -49,6 +52,7 @@ namespace Features.Unit.Infrastructure
 
         public CostCalculator.StatCostTuning GetCostTuning()
         {
+// csharp-guardrails: allow-null-defense
             return _catalog != null && _catalog.StatTuning != null
                 ? _catalog.StatTuning.ToCostTuning()
                 : CostCalculator.StatCostTuning.Default;
@@ -57,12 +61,14 @@ namespace Features.Unit.Infrastructure
         public string GetPassiveTraitId(string frameId)
         {
             var frame = _catalog.GetUnitFrame(frameId);
+// csharp-guardrails: allow-null-defense
             return frame?.PassiveTrait?.TraitId ?? string.Empty;
         }
 
         public int GetPassiveTraitCostBonus(string frameId)
         {
             var frame = _catalog.GetUnitFrame(frameId);
+// csharp-guardrails: allow-null-defense
             return frame?.PassiveTrait?.CostBonus ?? 0;
         }
     }

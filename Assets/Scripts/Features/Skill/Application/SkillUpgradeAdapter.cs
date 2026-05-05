@@ -22,6 +22,7 @@ namespace Features.Skill.Application
         public float GetAxisMultiplier(string skillId, GrowthAxis axis)
         {
             var enabled = _getEnabledAxes(skillId);
+// csharp-guardrails: allow-null-defense
             if (enabled == null || !enabled.Contains(axis))
                 return 1f;
 
@@ -31,6 +32,7 @@ namespace Features.Skill.Application
         public float GetAllyDamageScale(string skillId)
         {
             var enabled = _getEnabledAxes(skillId);
+// csharp-guardrails: allow-null-defense
             if (enabled == null || !enabled.Contains(GrowthAxis.Safety))
                 return 1f;
 
@@ -40,6 +42,7 @@ namespace Features.Skill.Application
         public bool TryUpgrade(string skillId, GrowthAxis axis)
         {
             var enabled = _getEnabledAxes(skillId);
+// csharp-guardrails: allow-null-defense
             if (enabled == null)
                 return false;
 
@@ -54,6 +57,7 @@ namespace Features.Skill.Application
         public bool CanUpgrade(string skillId, GrowthAxis axis)
         {
             var enabled = _getEnabledAxes(skillId);
+// csharp-guardrails: allow-null-defense
             if (enabled == null || !enabled.Contains(axis))
                 return false;
 

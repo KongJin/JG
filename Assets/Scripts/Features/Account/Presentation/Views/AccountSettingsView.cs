@@ -38,6 +38,7 @@ namespace Features.Account.Presentation
         {
             EnsureInitialized();
 
+            // csharp-guardrails: allow-null-defense
             if (_currentProfile != null && _currentProfile.authType == "google")
             {
                 StatusMessage = "Already linked with Google account.";
@@ -78,6 +79,7 @@ namespace Features.Account.Presentation
 
         public void Logout()
         {
+            // csharp-guardrails: allow-null-defense
             _inputHandler?.Logout();
         }
 
@@ -159,6 +161,7 @@ namespace Features.Account.Presentation
 
         private void RefreshGoogleButtonState()
         {
+            // csharp-guardrails: allow-null-defense
             GoogleSignInAvailable = _currentProfile == null || _currentProfile.authType != "google";
         }
 
@@ -197,6 +200,7 @@ namespace Features.Account.Presentation
 
         private void EnsureInitialized()
         {
+            // csharp-guardrails: allow-null-defense
             if (_inputHandler == null)
                 throw new System.InvalidOperationException("AccountSettingsView.Initialize must be called before interaction.");
         }

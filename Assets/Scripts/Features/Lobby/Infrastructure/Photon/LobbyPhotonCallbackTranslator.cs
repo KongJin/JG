@@ -16,6 +16,7 @@ namespace Features.Lobby.Infrastructure.Photon
         public void HandleCreatedRoom(LobbyPhotonPendingState pendingState, System.Action<DomainRoom> onCreateRoomSucceeded)
         {
             var room = pendingState.TakePendingCreateRoom();
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 Debug.LogWarning("[LobbyPhotonAdapter] Unexpected OnCreatedRoom: no pending create.");
@@ -51,11 +52,13 @@ namespace Features.Lobby.Infrastructure.Photon
             if (photonRoom.Players.TryGetValue(photonRoom.MasterClientId, out var masterPlayer))
             {
                 var member = LobbyPhotonRoomMapper.BuildMemberFromPlayer(masterPlayer);
+// csharp-guardrails: allow-null-defense
                 if (member != null)
                     masterMemberId = member.Id;
             }
 
             var localMember = LobbyPhotonRoomMapper.BuildMemberFromPlayer(PhotonNetwork.LocalPlayer);
+// csharp-guardrails: allow-null-defense
             var localMemberId = localMember != null ? localMember.Id : default;
             var difficultyPreset = LobbyPhotonRoomMapper.ReadDifficultyPresetFromProps(photonRoom.CustomProperties);
 
@@ -76,6 +79,7 @@ namespace Features.Lobby.Infrastructure.Photon
                 return;
 
             var member = LobbyPhotonRoomMapper.BuildMemberFromPlayer(newPlayer);
+// csharp-guardrails: allow-null-defense
             if (member == null)
             {
                 Debug.LogWarning("[LobbyPhotonAdapter] Remote player entered but has no memberId property.");

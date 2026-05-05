@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Features.Enemy;
+using Shared.Attributes;
 using UnityEngine;
 
 namespace Features.Player
@@ -8,14 +9,15 @@ namespace Features.Player
     {
         private static GameSceneRuntimeSpawnRegistrar _active;
 
-        [SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
-        [SerializeField] private EnemySceneRegistry _enemySceneRegistry;
+        [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
+        [Required, SerializeField] private EnemySceneRegistry _enemySceneRegistry;
 
         private readonly HashSet<int> _announcedPlayers = new();
         private readonly HashSet<int> _announcedEnemies = new();
 
         public static void NotifyPlayerArrived(PlayerSetup playerSetup)
         {
+// csharp-guardrails: allow-null-defense
             if (_active == null)
                 return;
 
@@ -24,6 +26,7 @@ namespace Features.Player
 
         public static void NotifyEnemyArrived(EnemySetup enemySetup)
         {
+// csharp-guardrails: allow-null-defense
             if (_active == null)
                 return;
 
@@ -38,6 +41,7 @@ namespace Features.Player
 
         private void Awake()
         {
+// csharp-guardrails: allow-null-defense
             if (_active != null && _active != this)
                 Debug.LogWarning("[GameSceneRuntimeSpawnRegistrar] Replacing active scene registrar.", this);
 
@@ -52,6 +56,7 @@ namespace Features.Player
 
         private void AnnouncePlayer(PlayerSetup playerSetup)
         {
+// csharp-guardrails: allow-null-defense
             if (_playerSceneRegistry == null || playerSetup == null)
                 return;
 
@@ -64,6 +69,7 @@ namespace Features.Player
 
         private void AnnounceEnemy(EnemySetup enemy)
         {
+// csharp-guardrails: allow-null-defense
             if (_enemySceneRegistry == null || enemy == null)
                 return;
 

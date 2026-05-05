@@ -46,6 +46,7 @@ namespace Features.Garage.Presentation
                 return false;
 
             SurfaceRoot = root;
+// csharp-guardrails: allow-null-defense
             ScreenRoot = root.Q<VisualElement>("GarageSetBScreen") ?? root;
 
             WorkspaceScroll = UitkElementUtility.Required<VisualElement>(root, "WorkspaceScroll");
@@ -101,6 +102,7 @@ namespace Features.Garage.Presentation
             SaveValidationLabel = null;
         }
 
+        // csharp-guardrails: allow-null-defense
         public bool IsBound => SurfaceRoot != null;
     }
 }

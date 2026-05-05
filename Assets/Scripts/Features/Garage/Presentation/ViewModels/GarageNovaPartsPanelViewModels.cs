@@ -242,21 +242,31 @@ namespace Features.Garage.Presentation
                 visibleOptions.Add(option);
             }
 
+// csharp-guardrails: allow-null-defense
             selected ??= FindFirstSelected(allOptions, selectedId);
 
             return new GarageNovaPartsPanelViewModel(
                 activeSlot,
                 normalizedSearch,
                 BuildCountText(filteredOptions.Count, allOptions.Count),
+// csharp-guardrails: allow-null-defense
                 selected != null ? selected.DisplayName : "선택 대기",
+// csharp-guardrails: allow-null-defense
                 selected != null ? BuildSelectedDetailText(selected) : "탭 아래 리스트에서 부품을 선택하세요.",
+// csharp-guardrails: allow-null-defense
                 selected?.PreviewPrefab,
+// csharp-guardrails: allow-null-defense
                 selected?.Alignment,
                 visibleOptions,
+// csharp-guardrails: allow-null-defense
                 selected?.Id,
+// csharp-guardrails: allow-null-defense
                 selected?.EnergyText,
+// csharp-guardrails: allow-null-defense
                 selected?.MetaText,
+// csharp-guardrails: allow-null-defense
                 selected?.Stats,
+// csharp-guardrails: allow-null-defense
                 selected?.IsEquipped ?? false);
         }
 

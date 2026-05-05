@@ -117,10 +117,11 @@ namespace Features.Garage.Domain
                 Normalize();
                 int count = 0;
                 for (int i = 0; i < loadout.Count; i++)
-                {
-                    if (loadout[i]?.IsComplete == true)
-                        count++;
-                }
+            {
+                // csharp-guardrails: allow-null-defense
+                if (loadout[i]?.IsComplete == true)
+                    count++;
+            }
 
                 return count;
             }
@@ -142,9 +143,11 @@ namespace Features.Garage.Domain
         /// </summary>
         public void Normalize()
         {
+            // csharp-guardrails: allow-null-defense
             loadout ??= new List<UnitLoadout>();
 
             for (int i = 0; i < loadout.Count; i++)
+                // csharp-guardrails: allow-null-defense
                 loadout[i] ??= new UnitLoadout();
 
             while (loadout.Count < MaxSlots)
@@ -163,6 +166,7 @@ namespace Features.Garage.Domain
             if (index < 0 || index >= MaxSlots)
                 return new UnitLoadout();
 
+            // csharp-guardrails: allow-null-defense
             return loadout[index] ?? new UnitLoadout();
         }
 

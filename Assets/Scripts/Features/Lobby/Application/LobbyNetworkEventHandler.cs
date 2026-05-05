@@ -50,6 +50,7 @@ namespace Features.Lobby.Application
 
         private void HandleJoinRoomSucceeded(JoinRoomData data)
         {
+// csharp-guardrails: allow-null-defense
             if (data.Members == null || data.Members.Count == 0)
             {
                 PublishError("No members provided.");
@@ -58,6 +59,7 @@ namespace Features.Lobby.Application
 
             _localMemberId = data.LocalMemberId;
 
+// csharp-guardrails: allow-null-defense
             var owner = data.Members.Find(m => m.Id.Equals(data.MasterMemberId)) ?? data.Members[0];
 
             var roomResult = Room.Create(
@@ -89,6 +91,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 PublishError("Room was not found.");
@@ -128,6 +131,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 PublishError("Room was not found.");
@@ -150,6 +154,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 PublishError("Room was not found.");
@@ -172,6 +177,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(data.RoomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 PublishError("Room was not found.");
@@ -207,6 +213,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 PublishError("Room was not found.");

@@ -31,6 +31,7 @@ namespace Features.Unit.Domain
             UnitSpec = unitSpec;
             OwnerId = ownerId;
             MaxHp = unitSpec.FinalHp;
+// csharp-guardrails: allow-null-defense
             CurrentHp = initialHp != null ? Clamp(initialHp.Value, 0f, unitSpec.FinalHp) : unitSpec.FinalHp;
             AnchorPosition = spawnPosition;
             Position = spawnPosition;

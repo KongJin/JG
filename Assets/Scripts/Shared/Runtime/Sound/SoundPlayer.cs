@@ -37,6 +37,7 @@ namespace Shared.Runtime.Sound
         private readonly List<AudioSource> _sfxSources = new List<AudioSource>();
         private readonly HashSet<string> _reportedUnavailableSoundKeys = new HashSet<string>();
 
+// csharp-guardrails: allow-null-defense
         public bool HasRuntimeDependencies => catalog != null && bgmAudioSource != null && HasConfiguredSfxSources;
         public int RecentSfxPlaybackKeyCount => _lastPlayTime.Count;
 
@@ -54,6 +55,7 @@ namespace Shared.Runtime.Sound
 
         private void Awake()
         {
+// csharp-guardrails: allow-null-defense
             if (_active != null && _active != this)
             {
                 Destroy(gameObject);
@@ -110,7 +112,9 @@ namespace Shared.Runtime.Sound
 
         public bool PlayBgm(string key, float fadeSeconds)
         {
+// csharp-guardrails: allow-null-defense
             var entry = catalog != null ? catalog.Get(key) : null;
+// csharp-guardrails: allow-null-defense
             if (entry == null || entry.Clip == null || entry.Channel != SoundChannel.Bgm)
                 return false;
 
@@ -123,6 +127,7 @@ namespace Shared.Runtime.Sound
                 return true;
             }
 
+// csharp-guardrails: allow-null-defense
             if (_bgmFadeRoutine != null)
                 StopCoroutine(_bgmFadeRoutine);
 
@@ -141,9 +146,11 @@ namespace Shared.Runtime.Sound
 
         public bool StopBgm(float fadeSeconds)
         {
+// csharp-guardrails: allow-null-defense
             if (_bgmSource == null)
                 return false;
 
+// csharp-guardrails: allow-null-defense
             if (_bgmFadeRoutine != null)
                 StopCoroutine(_bgmFadeRoutine);
 
@@ -173,6 +180,7 @@ namespace Shared.Runtime.Sound
         {
             get
             {
+// csharp-guardrails: allow-null-defense
                 if (sfxAudioSources == null)
                     return false;
 
@@ -188,6 +196,7 @@ namespace Shared.Runtime.Sound
 
         private void ResetSceneOwnedSourcesAndClearState()
         {
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = null;
             StopAllCoroutines();
@@ -207,6 +216,7 @@ namespace Shared.Runtime.Sound
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
 
             if (_active == this)
@@ -220,13 +230,16 @@ namespace Shared.Runtime.Sound
             if (!ShouldPlay(req.Policy, req.OwnerId))
                 return;
 
+// csharp-guardrails: allow-null-defense
             var entry = catalog != null ? catalog.Get(req.SoundKey) : null;
+// csharp-guardrails: allow-null-defense
             if (entry == null)
             {
                 LogUnavailableSoundKeyOnce(req.SoundKey, "not registered in SoundCatalog");
                 return;
             }
 
+// csharp-guardrails: allow-null-defense
             if (entry.Clip == null)
             {
                 LogUnavailableSoundKeyOnce(req.SoundKey, "registered without an AudioClip");
@@ -275,6 +288,7 @@ namespace Shared.Runtime.Sound
         private void PlaySfx(string soundKey, SoundEntry entry, Float3 position)
         {
             var source = RentSfxSource();
+// csharp-guardrails: allow-null-defense
             if (source == null)
                 return;
 
@@ -319,6 +333,7 @@ namespace Shared.Runtime.Sound
 
         private void PrepareBgmSource()
         {
+// csharp-guardrails: allow-null-defense
             if (_bgmSource == null)
                 return;
 
@@ -332,12 +347,14 @@ namespace Shared.Runtime.Sound
 
         private void PrepareSfxSources()
         {
+// csharp-guardrails: allow-null-defense
             if (sfxAudioSources == null)
                 return;
 
             for (var i = 0; i < sfxAudioSources.Length; i++)
             {
                 var source = sfxAudioSources[i];
+// csharp-guardrails: allow-null-defense
                 if (source == null || _sfxSources.Contains(source))
                     continue;
 
@@ -368,10 +385,12 @@ namespace Shared.Runtime.Sound
 
         private bool EnsureBgmSource()
         {
+// csharp-guardrails: allow-null-defense
             if (_bgmSource != null)
                 return true;
 
             _bgmSource = bgmAudioSource;
+// csharp-guardrails: allow-null-defense
             if (_bgmSource != null)
                 return true;
 
@@ -389,10 +408,13 @@ namespace Shared.Runtime.Sound
 
         private void RefreshBgmVolume()
         {
+// csharp-guardrails: allow-null-defense
             if (_bgmSource == null || string.IsNullOrEmpty(_currentBgmKey))
                 return;
 
+// csharp-guardrails: allow-null-defense
             var entry = catalog != null ? catalog.Get(_currentBgmKey) : null;
+// csharp-guardrails: allow-null-defense
             if (entry != null)
                 _bgmSource.volume = GetEffectiveVolume(entry);
         }

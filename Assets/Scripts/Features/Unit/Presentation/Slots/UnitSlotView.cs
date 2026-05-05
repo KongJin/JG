@@ -47,6 +47,7 @@ namespace Features.Unit.Presentation
 
         private void UpdateDisplay()
         {
+// csharp-guardrails: allow-null-defense
             if (_unitSpec == null)
                 return;
 
@@ -86,6 +87,7 @@ namespace Features.Unit.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
     }

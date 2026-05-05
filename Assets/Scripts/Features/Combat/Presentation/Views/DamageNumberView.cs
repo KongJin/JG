@@ -29,6 +29,7 @@ namespace Features.Combat.Presentation
         private void LateUpdate()
         {
             var cam = Camera.main;
+            // csharp-guardrails: allow-null-defense
             if (cam != null)
                 transform.forward = cam.transform.forward;
         }

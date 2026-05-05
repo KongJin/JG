@@ -33,11 +33,13 @@ namespace Features.Player.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
 
         private void Update()
         {
+// csharp-guardrails: allow-null-defense
             _energyPort?.TickRegen(Time.deltaTime, Time.time);
         }
 

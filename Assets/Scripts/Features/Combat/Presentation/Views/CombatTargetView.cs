@@ -31,6 +31,7 @@ namespace Features.Combat.Presentation
 
         public void Initialize(IEventSubscriber eventBus)
         {
+            // csharp-guardrails: allow-null-defense
             if (_entityIdHolder == null)
             {
                 Log.Error(
@@ -44,6 +45,7 @@ namespace Features.Combat.Presentation
             _eventBus = eventBus;
             _eventBus.Subscribe(this, new System.Action<DamageAppliedEvent>(OnDamageApplied));
 
+            // csharp-guardrails: allow-null-defense
             if (_renderer != null)
             {
                 _baseColor = _renderer.material.color;
@@ -66,11 +68,13 @@ namespace Features.Combat.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
 
         private void OnDamageApplied(DamageAppliedEvent e)
         {
+            // csharp-guardrails: allow-null-defense
             if (_entityIdHolder == null || !_entityIdHolder.IsInitialized)
                 return;
 

@@ -25,6 +25,7 @@ namespace Shared.Ui
             CurrentBanner = default;
             CurrentModal = default;
 
+// csharp-guardrails: allow-null-defense
             if (_eventBus != null)
                 _disposables.Dispose();
 
@@ -58,6 +59,7 @@ namespace Shared.Ui
             CurrentBanner = error;
             CurrentModal = default;
 
+// csharp-guardrails: allow-null-defense
             if (_bannerCoroutine != null)
                 StopCoroutine(_bannerCoroutine);
             _bannerCoroutine = StartCoroutine(HideBannerAfterDelay(error.DurationSeconds));

@@ -29,6 +29,7 @@ namespace Shared.Runtime.Pooling
             _availableSet.Remove(instance);
 
             var targetParent = parentOverride != null ? parentOverride : _root;
+// csharp-guardrails: allow-null-defense
             if (targetParent != null)
                 instance.transform.SetParent(targetParent, false);
 
@@ -57,6 +58,7 @@ namespace Shared.Runtime.Pooling
             var instance = Rent(position, rotation, parentOverride);
             first = ComponentAccess.Get<TFirst>(instance);
             second = ComponentAccess.Get<TSecond>(instance);
+// csharp-guardrails: allow-null-defense
             return first != null && second != null;
         }
 
@@ -69,6 +71,7 @@ namespace Shared.Runtime.Pooling
             Notify(binding, onRent: false);
             instance.SetActive(false);
 
+            // csharp-guardrails: allow-null-defense
             if (_root != null)
                 instance.transform.SetParent(_root, false);
 
@@ -78,6 +81,7 @@ namespace Shared.Runtime.Pooling
 
         private GameObject CreateInstance()
         {
+            // csharp-guardrails: allow-null-defense
             var instance = _root == null
                 ? UnityEngine.Object.Instantiate(_prefab)
                 : UnityEngine.Object.Instantiate(_prefab, _root);

@@ -83,6 +83,7 @@ namespace Features.Account.Infrastructure
 
                 if (request.result != UnityWebRequest.Result.Success)
                 {
+                    // csharp-guardrails: allow-null-defense
                     var error = request.error ?? "Unknown error";
                     Debug.LogError($"[FirebaseAuth] Request failed ({elapsedTime}ms): {error} - {request.url}");
                     tcs.TrySetException(new Exception($"[{elapsedTime}ms] {error}"));

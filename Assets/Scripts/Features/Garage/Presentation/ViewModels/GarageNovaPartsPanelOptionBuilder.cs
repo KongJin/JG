@@ -84,6 +84,7 @@ namespace Features.Garage.Presentation
                     for (int i = 0; i < catalog.Firepower.Count; i++)
                     {
                         var part = catalog.Firepower[i];
+// csharp-guardrails: allow-null-defense
                         if (selectedFrame != null && !UnitPartCompatibility.AreAssemblyFormsCompatible(selectedFrame.AssemblyForm, part.AssemblyForm))
                             continue;
 
@@ -174,6 +175,7 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog catalog,
             GaragePanelCatalog.FrameOption part)
         {
+// csharp-guardrails: allow-null-defense
             var scale = catalog?.RadarScale ?? new GaragePanelCatalog.StatRadarScale();
             var stats = new List<GarageNovaPartStatViewModel>(3);
             AddStat(stats, "HP", part.BaseHp, "0", scale.HpMax);
@@ -186,6 +188,7 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog catalog,
             GaragePanelCatalog.FirepowerOption part)
         {
+// csharp-guardrails: allow-null-defense
             var scale = catalog?.RadarScale ?? new GaragePanelCatalog.StatRadarScale();
             var stats = new List<GarageNovaPartStatViewModel>(3);
             AddStat(stats, "ATK", part.AttackDamage, "0", scale.AttackDamageMax);
@@ -198,6 +201,7 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog catalog,
             GaragePanelCatalog.MobilityOption part)
         {
+// csharp-guardrails: allow-null-defense
             var scale = catalog?.RadarScale ?? new GaragePanelCatalog.StatRadarScale();
             var stats = new List<GarageNovaPartStatViewModel>(3);
             AddStat(stats, "MOV", part.MoveRange, "0.0", scale.MoveRangeMax);

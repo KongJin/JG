@@ -46,8 +46,10 @@ namespace Features.Lobby.Presentation
                 UitkElementUtility.SetClass(route.NavButton, SelectedNavClass, isSelected);
             }
 
+// csharp-guardrails: allow-null-defense
             if (_shellTitle != null)
                 _shellTitle.text = selectedRoute.Title;
+// csharp-guardrails: allow-null-defense
             if (_shellState != null)
                 _shellState.text = selectedRoute.State;
         }

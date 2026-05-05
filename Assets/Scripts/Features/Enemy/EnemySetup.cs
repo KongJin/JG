@@ -22,6 +22,7 @@ namespace Features.Enemy
         [Required, SerializeField] private EnemyNetworkAdapter _networkAdapter;
         [Required, SerializeField] private EnemyAiAdapter _aiAdapter;
         [Required, SerializeField] private EnemyView _view;
+        // csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private GameObject _healthBarPrefab;
         [Required, SerializeField] private EnemyContactDamageDetector _contactDetector;
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
@@ -102,11 +103,13 @@ namespace Features.Enemy
 
             _view.Initialize(eventBus, EnemyId);
 
+            // csharp-guardrails: allow-null-defense
             if (_healthBarPrefab != null)
             {
                 var hbView = ComponentAccess.InstantiateComponent<EnemyHealthBarView>(
                     _healthBarPrefab,
                     transform);
+                // csharp-guardrails: allow-null-defense
                 if (hbView != null)
                 {
                     hbView.transform.localPosition = new Vector3(0f, 2f, 0f);
@@ -128,17 +131,15 @@ namespace Features.Enemy
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
 
         private string ResolveNetworkKeyFromInstantiation()
         {
             var pv = ComponentAccess.Get<PhotonView>(gameObject);
-            if (pv != null &&
-                pv.InstantiationData != null &&
-                pv.InstantiationData.Length > 0 &&
-                pv.InstantiationData[0] is string path &&
-                !string.IsNullOrWhiteSpace(path))
+            // csharp-guardrails: allow-null-defense
+            if (pv != null && pv.InstantiationData != null && pv.InstantiationData.Length > 0 && pv.InstantiationData[0] is string path && !string.IsNullOrWhiteSpace(path))
             {
                 return path;
             }

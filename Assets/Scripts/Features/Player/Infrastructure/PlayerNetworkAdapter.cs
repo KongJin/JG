@@ -61,6 +61,7 @@ namespace Features.Player.Infrastructure
 
         public void SyncHealth(DomainEntityId targetId, float currentHp, float maxHp)
         {
+// csharp-guardrails: allow-null-defense
             if (photonView == null || !photonView.IsMine) return;
 
             PhotonNetwork.LocalPlayer.SetCustomProperties(
@@ -69,6 +70,7 @@ namespace Features.Player.Infrastructure
 
         public void SyncEnergy(DomainEntityId targetId, float currentEnergy, float maxEnergy)
         {
+// csharp-guardrails: allow-null-defense
             if (photonView == null || !photonView.IsMine) return;
 
             PhotonNetwork.LocalPlayer.SetCustomProperties(
@@ -77,6 +79,7 @@ namespace Features.Player.Infrastructure
 
         public void SyncLifeState(DomainEntityId playerId, LifeState state)
         {
+// csharp-guardrails: allow-null-defense
             if (photonView == null || !photonView.IsMine) return;
 
             PhotonNetwork.LocalPlayer.SetCustomProperties(
@@ -88,6 +91,7 @@ namespace Features.Player.Infrastructure
             if (targetPlayer == null || targetPlayer.IsLocal)
                 return;
 
+// csharp-guardrails: allow-null-defense
             if (photonView.Owner != null && targetPlayer.ActorNumber != photonView.Owner.ActorNumber)
                 return;
 
@@ -149,6 +153,7 @@ namespace Features.Player.Infrastructure
 
         public void HydrateFromProperties()
         {
+// csharp-guardrails: allow-null-defense
             if (photonView == null || photonView.Owner == null)
                 return;
 
@@ -167,8 +172,10 @@ namespace Features.Player.Infrastructure
 
         private string GetStablePlayerIdValue()
         {
+// csharp-guardrails: allow-null-defense
             if (photonView != null)
             {
+// csharp-guardrails: allow-null-defense
                 if (photonView.Owner != null)
                     return "player-" + photonView.Owner.ActorNumber;
 

@@ -145,6 +145,7 @@ namespace Features.Garage.Presentation
         public float[] CurrentValues { get; }
         public float[] PreviousValues { get; }
         public int SummonCost { get; }
+// csharp-guardrails: allow-null-defense
         public bool HasPrevious => PreviousValues != null && PreviousValues.Length == AxisLabels.Length;
     }
 }

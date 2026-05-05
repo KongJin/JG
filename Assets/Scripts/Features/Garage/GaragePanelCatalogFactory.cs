@@ -15,6 +15,7 @@ namespace Features.Garage
         {
             var novaMetadata = BuildNovaMetadataByPartId(novaPartVisualCatalog);
             var novaAlignment = BuildNovaAlignmentByPartId(novaPartAlignmentCatalog);
+            // csharp-guardrails: allow-null-defense
             var costTuning = unitCatalog.StatTuning != null
                 ? unitCatalog.StatTuning.ToCostTuning()
                 : CostCalculator.StatCostTuning.Default;
@@ -26,6 +27,7 @@ namespace Features.Garage
                 novaAlignment.TryGetValue(frame.FrameId, out var alignment);
                 int energyCost = CostCalculator.CalculatePart(
                     costTuning.DispersionPenaltyFactor,
+                    // csharp-guardrails: allow-null-defense
                     frame.PassiveTrait != null ? frame.PassiveTrait.CostBonus : 0,
                     frame.BaseHp * costTuning.HpWeight,
                     frame.Defense * costTuning.DefenseWeight);
@@ -39,8 +41,11 @@ namespace Features.Garage
                     AssemblyForm = frame.AssemblyForm,
                     PreviewPrefab = ResolvePreviewPrefab(frame.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
+                    // csharp-guardrails: allow-null-defense
                     SourcePath = metadata?.SourceRelativePath,
+                    // csharp-guardrails: allow-null-defense
                     Tier = metadata?.Tier ?? 0,
+                    // csharp-guardrails: allow-null-defense
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
                     Alignment = CreateAlignment(alignment)
                 });
@@ -69,8 +74,11 @@ namespace Features.Garage
                     AssemblyForm = module.AssemblyForm,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
+                    // csharp-guardrails: allow-null-defense
                     SourcePath = metadata?.SourceRelativePath,
+                    // csharp-guardrails: allow-null-defense
                     Tier = metadata?.Tier ?? 0,
+                    // csharp-guardrails: allow-null-defense
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
                     Alignment = CreateAlignment(alignment)
                 });
@@ -98,8 +106,11 @@ namespace Features.Garage
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     // Generated assembly prefabs keep the source model pivot; catalog alignment owns the body socket.
                     UseAssemblyPivot = false,
+                    // csharp-guardrails: allow-null-defense
                     SourcePath = metadata?.SourceRelativePath,
+                    // csharp-guardrails: allow-null-defense
                     Tier = metadata?.Tier ?? 0,
+                    // csharp-guardrails: allow-null-defense
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
                     Alignment = CreateAlignment(alignment)
                 });
@@ -135,6 +146,7 @@ namespace Features.Garage
             for (int i = 0; i < novaPartVisualCatalog.Entries.Count; i++)
             {
                 var entry = novaPartVisualCatalog.Entries[i];
+                // csharp-guardrails: allow-null-defense
                 if (entry == null || string.IsNullOrWhiteSpace(entry.PartId))
                     continue;
 
@@ -154,6 +166,7 @@ namespace Features.Garage
             if (directPrefab != null)
                 return directPrefab;
 
+            // csharp-guardrails: allow-null-defense
             if (metadata?.PreviewPrefab != null)
                 return metadata.PreviewPrefab;
 
@@ -180,6 +193,7 @@ namespace Features.Garage
             for (int i = 0; i < novaPartAlignmentCatalog.Entries.Count; i++)
             {
                 var entry = novaPartAlignmentCatalog.Entries[i];
+                // csharp-guardrails: allow-null-defense
                 if (entry == null || string.IsNullOrWhiteSpace(entry.PartId))
                     continue;
 

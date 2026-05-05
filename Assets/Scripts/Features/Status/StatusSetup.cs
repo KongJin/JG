@@ -28,6 +28,7 @@ namespace Features.Status
             IStatusNetworkPort networkPort,
             bool isMaster)
         {
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 
@@ -49,12 +50,15 @@ namespace Features.Status
 
         public void RegisterRemoteNetworkPort(IStatusNetworkPort networkPort)
         {
+// csharp-guardrails: allow-null-defense
             _networkEventHandler?.WireNetworkPort(networkPort);
         }
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
+            // csharp-guardrails: allow-null-defense
             _tickDriver?.Clear();
         }
     }

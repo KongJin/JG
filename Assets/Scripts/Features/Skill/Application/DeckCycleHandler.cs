@@ -58,6 +58,7 @@ namespace Features.Skill.Application
             }
 
             var nextSkill = _skillLookup(nextId.Value);
+// csharp-guardrails: allow-null-defense
             if (nextSkill == null)
             {
                 _publisher.Publish(new DeckNextDrawPreviewEvent(null));

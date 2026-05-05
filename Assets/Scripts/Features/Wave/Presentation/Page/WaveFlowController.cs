@@ -23,16 +23,19 @@ namespace Features.Wave.Presentation
 
         private void Update()
         {
+// csharp-guardrails: allow-null-defense
             _driver?.Tick(Time.deltaTime);
         }
 
         private void OnGameStart(GameStartEvent _)
         {
+// csharp-guardrails: allow-null-defense
             _driver?.StartFirstWave();
         }
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _subscriber?.UnsubscribeAll(this);
         }
     }

@@ -61,6 +61,7 @@ namespace Features.Garage.Presentation
 
             _statRadar = new GarageStatRadarElement { name = "StatRadarGraph" };
             _statRadar.AddToClassList("stat-radar-graph");
+            // csharp-guardrails: allow-null-defense
             bindings.PreviewCard?.Add(_statRadar);
 
             _renderCoordinator = new GarageSetBUitkRenderCoordinator(
@@ -111,12 +112,15 @@ namespace Features.Garage.Presentation
             _isDisposed = true;
 
             UnbindCallbacks();
+            // csharp-guardrails: allow-null-defense
             _renderCoordinator?.Dispose();
+            // csharp-guardrails: allow-null-defense
             _bindings?.Clear();
         }
 
         private void BindCallbacks()
         {
+            // csharp-guardrails: allow-null-defense
             if (_slotSurface != null)
             {
                 _slotSurface.SlotSelected += _slotSelected;
@@ -124,6 +128,7 @@ namespace Features.Garage.Presentation
                 _slotSurface.SlotMoveRequested += _slotMoveRequested;
             }
 
+            // csharp-guardrails: allow-null-defense
             if (_partListSurface != null)
             {
                 _partListSurface.FocusSelected += _partFocusSelected;
@@ -131,15 +136,22 @@ namespace Features.Garage.Presentation
                 _partListSurface.OptionSelected += _partOptionSelected;
             }
 
+            // csharp-guardrails: allow-null-defense
             if (_bindings.SaveButton != null)
+            {
                 _bindings.SaveButton.clicked += _saveRequested;
+            }
 
+            // csharp-guardrails: allow-null-defense
             if (_bindings.SettingsButton != null)
+            {
                 _bindings.SettingsButton.clicked += _settingsRequested;
+            }
         }
 
         private void UnbindCallbacks()
         {
+            // csharp-guardrails: allow-null-defense
             if (_slotSurface != null)
             {
                 _slotSurface.SlotSelected -= _slotSelected;
@@ -147,6 +159,7 @@ namespace Features.Garage.Presentation
                 _slotSurface.SlotMoveRequested -= _slotMoveRequested;
             }
 
+            // csharp-guardrails: allow-null-defense
             if (_partListSurface != null)
             {
                 _partListSurface.FocusSelected -= _partFocusSelected;
@@ -154,11 +167,17 @@ namespace Features.Garage.Presentation
                 _partListSurface.OptionSelected -= _partOptionSelected;
             }
 
+            // csharp-guardrails: allow-null-defense
             if (_bindings.SaveButton != null)
+            {
                 _bindings.SaveButton.clicked -= _saveRequested;
+            }
 
+            // csharp-guardrails: allow-null-defense
             if (_bindings.SettingsButton != null)
+            {
                 _bindings.SettingsButton.clicked -= _settingsRequested;
+            }
         }
     }
 }

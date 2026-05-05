@@ -17,6 +17,7 @@ namespace Features.Lobby.Presentation
             IReadOnlyList<RoomSnapshot> rooms,
             DomainEntityId selectedRoomId = default)
         {
+// csharp-guardrails: allow-null-defense
             var count = rooms?.Count ?? 0;
             var rows = new List<LobbyRoomRowViewModel>(count);
             if (rooms != null)
@@ -24,6 +25,7 @@ namespace Features.Lobby.Presentation
                 for (var i = 0; i < rooms.Count; i++)
                 {
                     var room = rooms[i];
+// csharp-guardrails: allow-null-defense
                     var memberCount = room.Members?.Count ?? 0;
                     rows.Add(new LobbyRoomRowViewModel(
                         room.Id,
@@ -44,6 +46,7 @@ namespace Features.Lobby.Presentation
             IReadOnlyList<RoomListItem> rooms,
             DomainEntityId selectedRoomId = default)
         {
+// csharp-guardrails: allow-null-defense
             var count = rooms?.Count ?? 0;
             var rows = new List<LobbyRoomRowViewModel>(count);
             if (rooms != null)
@@ -80,6 +83,7 @@ namespace Features.Lobby.Presentation
                 if (room.Id != selectedRoomId)
                     continue;
 
+// csharp-guardrails: allow-null-defense
                 var memberCount = room.Members?.Count ?? 0;
                 var canJoin = memberCount < room.Capacity;
                 return new LobbyRoomSelectionViewModel(
@@ -130,6 +134,7 @@ namespace Features.Lobby.Presentation
 
         public LobbyRoomDetailViewModel BuildRoomDetail(RoomSnapshot room, DomainEntityId localMemberId)
         {
+// csharp-guardrails: allow-null-defense
             var members = room.Members ?? Array.Empty<RoomMemberSnapshot>();
             var memberRows = new List<string>(members.Count);
             var localIsReady = false;
@@ -166,6 +171,7 @@ namespace Features.Lobby.Presentation
             var uidText = string.IsNullOrWhiteSpace(profile?.uid)
                 ? "UID WAIT"
                 : $"UID {Shorten(profile.uid)}";
+// csharp-guardrails: allow-null-defense
             var garageCount = accountData?.GarageRoster?.Count ?? 0;
             var settings = accountData?.Settings;
 
@@ -190,7 +196,9 @@ namespace Features.Lobby.Presentation
         public LobbyGarageSummaryViewModel BuildGarageSummary(AccountData accountData)
         {
             var roster = accountData?.GarageRoster;
+// csharp-guardrails: allow-null-defense
             var activeCount = roster?.Count ?? 0;
+// csharp-guardrails: allow-null-defense
             var isReady = roster != null && roster.IsValid;
             if (isReady)
             {
@@ -336,6 +344,7 @@ namespace Features.Lobby.Presentation
 
         private static string BuildRosterSummary(OperationRecord record)
         {
+// csharp-guardrails: allow-null-defense
             if (record?.primaryRosterUnits == null || record.primaryRosterUnits.Count == 0)
                 return "NO ROSTER";
 

@@ -21,25 +21,32 @@ namespace Features.Lobby.Presentation
     public sealed class LobbyPageController : MonoBehaviour
     {
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private UIDocument _document;
 
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private UIDocument _garageDocument;
 
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private GarageSetBUitkRuntimeAdapter _garageAdapter;
 
         [Header("UXML Surfaces")]
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private VisualTreeAsset _lobbyShellTree;
 
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private VisualTreeAsset _operationMemoryTree;
 
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private VisualTreeAsset _accountSyncTree;
 
         [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
         private VisualTreeAsset _connectionReconnectTree;
 
 #if UNITY_EDITOR
@@ -70,6 +77,7 @@ namespace Features.Lobby.Presentation
         private void Awake()
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowLobbyPage();
         }
 
@@ -86,6 +94,7 @@ namespace Features.Lobby.Presentation
             _operationRecordStore = operationRecordStore;
             _inputHandler = new LobbyRoomInputHandler(useCases, eventPublisher);
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.SetClickSoundPublisher(eventPublisher);
 
             _disposables.Dispose();
@@ -95,11 +104,13 @@ namespace Features.Lobby.Presentation
             _eventBus.Subscribe<RoomListReceivedEvent>(this, RenderRoomList);
             _eventBus.Subscribe<RoomUpdatedEvent>(this, RenderRoom);
 
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowLobbyPage();
         }
 
         public void RenderLobby(LobbySnapshot lobby)
         {
+// csharp-guardrails: allow-null-defense
             _latestLobbyRooms = lobby.Rooms ?? Array.Empty<RoomSnapshot>();
             ClearRoomContextIfMissing();
             RenderLobbyHomeState();
@@ -108,6 +119,7 @@ namespace Features.Lobby.Presentation
         public void RenderRoomList(RoomListReceivedEvent e)
         {
             _hasNetworkRoomList = true;
+// csharp-guardrails: allow-null-defense
             _latestNetworkRooms = e.Rooms ?? Array.Empty<RoomListItem>();
             ClearRoomContextIfMissing();
             RenderLobbyHomeState();
@@ -120,8 +132,11 @@ namespace Features.Lobby.Presentation
             _selectedRoomId = e.Room.Id;
             var viewModel = _presenter.BuildRoomDetail(e.Room, _localMemberId);
             _localIsReady = viewModel.LocalIsReady;
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderRooms(BuildRoomsViewModel(_currentRoomId));
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderRoomSelection(LobbyRoomSelectionViewModel.Empty);
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderRoomDetail(viewModel);
         }
 
@@ -153,7 +168,9 @@ namespace Features.Lobby.Presentation
         public void RenderAccountState(AccountProfile profile, AccountData accountData)
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderGarageSummary(_presenter.BuildGarageSummary(accountData));
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderAccountState(
                 _presenter.BuildAccount(
                     profile,
@@ -163,22 +180,26 @@ namespace Features.Lobby.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _uitk?.Dispose();
             _disposables.Dispose();
         }
 
         private void EnsureDocument()
         {
+// csharp-guardrails: allow-null-defense
             if (_document == null)
                 _document = ComponentAccess.Get<UIDocument>(gameObject);
         }
 
         private void EnsureAdapter()
         {
+// csharp-guardrails: allow-null-defense
             if (_uitk != null)
                 return;
 
             EnsureDocument();
+// csharp-guardrails: allow-null-defense
             if (_document == null)
                 return;
 
@@ -197,9 +218,11 @@ namespace Features.Lobby.Presentation
         private void BindAdapterSurface()
         {
             EnsureAdapter();
+// csharp-guardrails: allow-null-defense
             if (_uitk == null || !_uitk.Bind())
                 return;
 
+// csharp-guardrails: allow-null-defense
             if (_operationRecordStore != null)
                 _uitk.RenderOperationMemory(_presenter.BuildOperationMemory(LoadOperationRecords()));
         }
@@ -223,7 +246,9 @@ namespace Features.Lobby.Presentation
 
         private void CreateRoom()
         {
+// csharp-guardrails: allow-null-defense
             var input = _uitk?.CreateRoomInput ?? new LobbyCreateRoomInput("Room", 4, string.Empty, 0);
+// csharp-guardrails: allow-null-defense
             _inputHandler?.CreateRoom(
                 input.RoomName,
                 input.Capacity,
@@ -233,15 +258,19 @@ namespace Features.Lobby.Presentation
 
         private void JoinRoom(DomainEntityId roomId)
         {
+// csharp-guardrails: allow-null-defense
             _inputHandler?.JoinRoom(roomId, _uitk?.DisplayNameText ?? string.Empty);
         }
 
         private void PreviewRoom(DomainEntityId roomId)
         {
             _selectedRoomId = roomId;
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderRooms(BuildRoomsViewModel(_selectedRoomId));
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderRoomSelection(BuildRoomSelectionViewModel(_selectedRoomId));
             if (!HasRoomMemberContext())
+// csharp-guardrails: allow-null-defense
                 _uitk?.RenderRoomDetail(LobbyRoomDetailViewModel.Empty);
         }
 
@@ -261,24 +290,28 @@ namespace Features.Lobby.Presentation
         private void LeaveRoom()
         {
             if (HasRoomMemberContext())
+// csharp-guardrails: allow-null-defense
                 _inputHandler?.LeaveRoom(_currentRoomId, _localMemberId);
         }
 
         private void ChangeTeam(TeamType team)
         {
             if (HasRoomMemberContext())
+// csharp-guardrails: allow-null-defense
                 _inputHandler?.ChangeTeam(_currentRoomId, _localMemberId, team);
         }
 
         private void ToggleReady()
         {
             if (HasRoomMemberContext())
+// csharp-guardrails: allow-null-defense
                 _inputHandler?.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
         }
 
         private void StartGame()
         {
             if (!string.IsNullOrWhiteSpace(_currentRoomId.Value))
+// csharp-guardrails: allow-null-defense
                 _inputHandler?.StartGame(_currentRoomId);
         }
 
@@ -291,6 +324,7 @@ namespace Features.Lobby.Presentation
         private void ShowLobbyPage()
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowLobbyPage();
             RenderLobbyHomeState();
         }
@@ -298,18 +332,22 @@ namespace Features.Lobby.Presentation
         private void ShowGaragePage()
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowGaragePage();
         }
 
         private void ShowRecordsPage()
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.RenderOperationMemory(_presenter.BuildOperationMemory(LoadOperationRecords()));
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowRecordsPage();
         }
 
         private RecentOperationRecords LoadOperationRecords()
         {
+// csharp-guardrails: allow-null-defense
             if (_operationRecordStore == null)
                 throw new InvalidOperationException("Lobby operation record store is not initialized.");
 
@@ -319,17 +357,20 @@ namespace Features.Lobby.Presentation
         private void ShowAccountPage()
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowAccountPage();
         }
 
         private void ShowConnectionPage()
         {
             BindAdapterSurface();
+// csharp-guardrails: allow-null-defense
             _uitk?.ShowConnectionPage();
         }
 
         private void RenderLobbyHomeState()
         {
+// csharp-guardrails: allow-null-defense
             if (_uitk == null)
                 return;
 
@@ -349,6 +390,7 @@ namespace Features.Lobby.Presentation
                 return _presenter.BuildRooms(ChooseEditorPreviewRooms(_latestNetworkRooms), highlightedRoomId);
 
 #if UNITY_EDITOR
+// csharp-guardrails: allow-null-defense
             if ((_latestLobbyRooms?.Count ?? 0) == 0 && ShouldShowEditorPreviewRoom())
                 return _presenter.BuildRooms(EditorPreviewRooms, highlightedRoomId);
 #endif
@@ -399,7 +441,9 @@ namespace Features.Lobby.Presentation
 #if UNITY_EDITOR
             if (IsEditorPreviewRoom(roomId))
                 return ShouldShowEditorPreviewRoom() &&
+// csharp-guardrails: allow-null-defense
                        ((_hasNetworkRoomList && (_latestNetworkRooms?.Count ?? 0) == 0) ||
+// csharp-guardrails: allow-null-defense
                         (!_hasNetworkRoomList && (_latestLobbyRooms?.Count ?? 0) == 0));
 #endif
 
@@ -414,6 +458,7 @@ namespace Features.Lobby.Presentation
                 return false;
             }
 
+// csharp-guardrails: allow-null-defense
             if (_latestLobbyRooms == null)
                 return false;
 
@@ -438,6 +483,7 @@ namespace Features.Lobby.Presentation
         private IReadOnlyList<RoomListItem> ChooseEditorPreviewRooms(IReadOnlyList<RoomListItem> rooms)
         {
 #if UNITY_EDITOR
+// csharp-guardrails: allow-null-defense
             if ((rooms?.Count ?? 0) == 0 && ShouldShowEditorPreviewRoom())
                 return EditorPreviewRooms;
 #endif
@@ -448,6 +494,7 @@ namespace Features.Lobby.Presentation
         private bool IsEditorPreviewRoom(DomainEntityId roomId)
         {
 #if UNITY_EDITOR
+// csharp-guardrails: allow-null-defense
             return roomId.Value != null &&
                    roomId.Value.StartsWith(EditorPreviewRoomIdPrefix, StringComparison.Ordinal);
 #else

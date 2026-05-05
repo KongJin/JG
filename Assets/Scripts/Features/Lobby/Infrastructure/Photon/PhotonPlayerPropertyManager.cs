@@ -13,6 +13,7 @@ namespace Features.Lobby.Infrastructure.Photon
     {
         public bool SetLocalMemberProperties(RoomMember member)
         {
+// csharp-guardrails: allow-null-defense
             if (PhotonNetwork.LocalPlayer == null)
                 return false;
 
@@ -33,6 +34,7 @@ namespace Features.Lobby.Infrastructure.Photon
         {
             memberId = default;
 
+// csharp-guardrails: allow-null-defense
             if (PhotonNetwork.LocalPlayer == null)
                 return false;
             if (!PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(LobbyPhotonConstants.MemberIdKey, out var value))

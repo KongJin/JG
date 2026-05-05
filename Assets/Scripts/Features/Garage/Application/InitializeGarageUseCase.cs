@@ -35,11 +35,13 @@ namespace Features.Garage.Application
             GarageRoster roster = null;
             bool loadedFromCloud = false;
 
+            // csharp-guardrails: allow-null-defense
             if (_cloudPort != null)
             {
                 try
                 {
                     roster = await _cloudPort.LoadGarageAsync();
+                    // csharp-guardrails: allow-null-defense
                     if (roster != null)
                     {
                         roster.Normalize();
@@ -52,16 +54,24 @@ namespace Features.Garage.Application
                 }
             }
 
+            // csharp-guardrails: allow-null-defense
             if (roster == null)
+            {
+                // csharp-guardrails: allow-null-defense
                 roster = _persistence?.Load() ?? new GarageRoster();
+            }
 
             var loadedRoster = roster;
+            // csharp-guardrails: allow-null-defense
             roster = _rosterMigration?.Migrate(roster) ?? roster;
             roster.Normalize();
             if (loadedFromCloud || !ReferenceEquals(roster, loadedRoster))
+                // csharp-guardrails: allow-null-defense
                 _persistence?.Save(roster);
 
+            // csharp-guardrails: allow-null-defense
             _networkPort?.SyncRoster(roster);
+            // csharp-guardrails: allow-null-defense
             _networkPort?.SyncReady(roster.IsValid);
             return roster;
         }

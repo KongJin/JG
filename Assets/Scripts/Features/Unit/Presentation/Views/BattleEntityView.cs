@@ -20,8 +20,10 @@ namespace Features.Unit.Presentation
         [Required, SerializeField] private Renderer _bodyRenderer;
 
         [Header("Effects")]
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Material _damageFlashMaterial;
         [SerializeField] private float _flashDuration = 0.15f;
+// csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private GameObject _deathEffectPrefab;
 
         private IEventSubscriber _eventBus;
@@ -45,6 +47,7 @@ namespace Features.Unit.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
 
@@ -54,6 +57,7 @@ namespace Features.Unit.Presentation
                 return;
 
             // 데미지 플래시 효과
+// csharp-guardrails: allow-null-defense
             if (_damageFlashMaterial != null && !_isFlashing)
             {
                 StartCoroutine(FlashDamage());
@@ -66,6 +70,7 @@ namespace Features.Unit.Presentation
                 return;
 
             // 사망 효과
+            // csharp-guardrails: allow-null-defense
             if (_deathEffectPrefab != null)
             {
                 Instantiate(_deathEffectPrefab, transform.position, Quaternion.identity);

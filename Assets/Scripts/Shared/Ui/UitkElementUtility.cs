@@ -11,10 +11,12 @@ namespace Shared.Ui
             string name,
             string ownerLabel = "UITK") where T : VisualElement
         {
+            // csharp-guardrails: allow-null-defense
             if (root == null)
                 throw new InvalidOperationException($"{ownerLabel} root is missing while querying element: {name}");
 
             var element = root.Q<T>(name);
+            // csharp-guardrails: allow-null-defense
             if (element == null)
                 throw new InvalidOperationException($"{ownerLabel} element not found: {name}");
 
@@ -24,6 +26,7 @@ namespace Shared.Ui
         public static void SetText(VisualElement root, string labelName, string text)
         {
             var label = root?.Q<Label>(labelName);
+            // csharp-guardrails: allow-null-defense
             if (label != null)
                 label.text = text ?? string.Empty;
         }

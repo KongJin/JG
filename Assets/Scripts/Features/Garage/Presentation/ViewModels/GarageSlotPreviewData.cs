@@ -64,8 +64,11 @@ namespace Features.Garage.Presentation
             !string.IsNullOrWhiteSpace(FrameId) &&
             !string.IsNullOrWhiteSpace(FirepowerId) &&
             !string.IsNullOrWhiteSpace(MobilityId) &&
+            // csharp-guardrails: allow-null-defense
             FramePreviewPrefab != null &&
+            // csharp-guardrails: allow-null-defense
             FirepowerPreviewPrefab != null &&
+            // csharp-guardrails: allow-null-defense
             MobilityPreviewPrefab != null;
 
         /// <summary>

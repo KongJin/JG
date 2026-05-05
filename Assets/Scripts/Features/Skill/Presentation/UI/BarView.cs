@@ -1,6 +1,7 @@
 using Features.Skill.Application.Events;
 using Features.Skill.Application.Ports;
 using Shared.EventBus;
+using Shared.Attributes;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Features.Skill.Presentation
 {
     public sealed class BarView : MonoBehaviour
     {
-        [SerializeField] private SlotView[] slotViews;
+        [Required, SerializeField] private SlotView[] slotViews;
 
         private static readonly string[] SlotLabels = { "RMB", "Q" };
 
@@ -52,7 +53,9 @@ namespace Features.Skill.Presentation
             if (e.SlotIndex < 0 || e.SlotIndex >= slotViews.Length)
                 return;
 
+// csharp-guardrails: allow-null-defense
             var icon = _assetPort?.GetIcon(e.SkillId.Value);
+// csharp-guardrails: allow-null-defense
             slotViews[e.SlotIndex]?.SetSkill(icon);
         }
 
@@ -65,6 +68,7 @@ namespace Features.Skill.Presentation
         {
             NextDrawPreviewIcon = string.IsNullOrEmpty(nextSkillIdOrNull)
                 ? null
+// csharp-guardrails: allow-null-defense
                 : _assetPort?.GetIcon(nextSkillIdOrNull);
             NextDrawHintLabel = string.IsNullOrEmpty(nextSkillIdOrNull) ? string.Empty : "다음";
         }

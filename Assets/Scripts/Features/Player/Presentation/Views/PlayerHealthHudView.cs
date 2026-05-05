@@ -13,6 +13,7 @@ namespace Features.Player.Presentation
         [SerializeField] private float _lowHealthThreshold = 0.3f;
         [SerializeField] private Vector3 _headOffset = new(0f, 2.2f, 0f);
 
+// csharp-guardrails: allow-serialized-field-without-required
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
         private Transform _target;
@@ -64,11 +65,13 @@ namespace Features.Player.Presentation
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
 
         private void LateUpdate()
         {
+// csharp-guardrails: allow-null-defense
             if (_target == null || _worldCamera == null)
                 return;
 

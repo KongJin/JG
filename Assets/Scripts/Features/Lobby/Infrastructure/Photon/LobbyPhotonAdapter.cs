@@ -61,6 +61,7 @@ namespace Features.Lobby.Infrastructure.Photon
                 return Result.Failure("Room capacity exceeds Photon max byte size.");
 
             var owner = room.FindMember(room.OwnerId);
+// csharp-guardrails: allow-null-defense
             if (owner == null)
                 return Result.Failure("Room owner is required.");
 

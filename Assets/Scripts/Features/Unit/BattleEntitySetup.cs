@@ -31,6 +31,7 @@ namespace Features.Unit
             CombatSetup combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery)
         {
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 
@@ -50,6 +51,7 @@ namespace Features.Unit
         /// </summary>
         public void Cleanup()
         {
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = null;
         }

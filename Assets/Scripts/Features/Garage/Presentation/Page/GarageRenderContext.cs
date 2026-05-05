@@ -57,11 +57,13 @@ namespace Features.Garage.Presentation
         /// <summary>
         /// 저장 가능 여부
         /// </summary>
+// csharp-guardrails: allow-null-defense
         public bool CanSave => ResultViewModel?.CanSave ?? false;
 
         /// <summary>
         /// 드래프트 변경사항 존재 여부
         /// </summary>
+// csharp-guardrails: allow-null-defense
         public bool HasDraftChanges => Evaluation?.HasDraftChanges ?? false;
 
         /// <summary>

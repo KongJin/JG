@@ -41,19 +41,25 @@ namespace Features.Lobby.Presentation
         public bool Render(LobbyRoomSelectionViewModel viewModel)
         {
             viewModel ??= LobbyRoomSelectionViewModel.Empty;
+            // csharp-guardrails: allow-null-defense
             _slotRow?.Clear();
 
+// csharp-guardrails: allow-null-defense
             if (_title != null)
                 _title.text = viewModel.TitleText;
+// csharp-guardrails: allow-null-defense
             if (_meta != null)
                 _meta.text = viewModel.MetaText;
+// csharp-guardrails: allow-null-defense
             if (_status != null)
             {
                 _status.text = viewModel.StatusText;
                 UitkElementUtility.SetClass(_status, StatusClosedClass, !viewModel.CanJoin);
             }
+// csharp-guardrails: allow-null-defense
             if (_body != null)
                 _body.text = viewModel.BodyText;
+            // csharp-guardrails: allow-null-defense
             if (_joinButton != null)
             {
                 _joinButton.text = viewModel.JoinButtonText;

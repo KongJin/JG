@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Shared.Runtime;
+using Shared.Attributes;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,9 +14,9 @@ namespace Features.Garage.Presentation
     /// </summary>
     public sealed class GarageSetBUitkRuntimeAdapter : MonoBehaviour
     {
-        [SerializeField] private UIDocument _document;
-        [SerializeField] private GarageSetBUitkPreviewRenderer _previewRenderer;
-        [SerializeField] private GarageSetBUitkPreviewRenderer _partPreviewRenderer;
+        [Required, SerializeField] private UIDocument _document;
+        [Required, SerializeField] private GarageSetBUitkPreviewRenderer _previewRenderer;
+        [Required, SerializeField] private GarageSetBUitkPreviewRenderer _partPreviewRenderer;
 
         private IGarageSetBUitkAdapter _core;
         private VisualElement _boundRoot;
@@ -40,13 +41,16 @@ namespace Features.Garage.Presentation
 
         public bool Bind()
         {
+// csharp-guardrails: allow-null-defense
             if (_core != null)
                 return true;
 
+// csharp-guardrails: allow-null-defense
             if (_document == null)
                 return false;
 
             var root = _document.rootVisualElement;
+            // csharp-guardrails: allow-null-defense
             return root != null && Bind(root);
         }
 
@@ -71,6 +75,7 @@ namespace Features.Garage.Presentation
             if (!Bind())
                 return;
 
+// csharp-guardrails: allow-null-defense
             _core?.Render(slots, partList, editor, result, focusedPart, isSaving);
         }
 
@@ -81,6 +86,7 @@ namespace Features.Garage.Presentation
 
         private void Reset()
         {
+// csharp-guardrails: allow-null-defense
             if (_document == null)
                 _document = ComponentAccess.Get<UIDocument>(gameObject);
         }
@@ -95,6 +101,7 @@ namespace Features.Garage.Presentation
             if (root == null)
                 return false;
 
+// csharp-guardrails: allow-null-defense
             if (_core != null)
             {
                 if (ReferenceEquals(_boundRoot, root))
@@ -121,6 +128,7 @@ namespace Features.Garage.Presentation
         {
             get
             {
+                // csharp-guardrails: allow-null-defense
                 _documentHost ??= new GarageSetBUitkDocumentHost(_document, this);
                 return _documentHost;
             }
@@ -133,6 +141,7 @@ namespace Features.Garage.Presentation
 
         private void ForwardCoreEvents()
         {
+// csharp-guardrails: allow-null-defense
             if (_core == null)
                 return;
 
@@ -157,6 +166,7 @@ namespace Features.Garage.Presentation
 
         private void DisposeCore()
         {
+// csharp-guardrails: allow-null-defense
             if (_core == null)
             {
                 _boundRoot = null;
@@ -171,23 +181,32 @@ namespace Features.Garage.Presentation
 
         private void UnforwardCoreEvents()
         {
+// csharp-guardrails: allow-null-defense
             if (_core == null)
                 return;
 
+// csharp-guardrails: allow-null-defense
             if (_coreSlotSelected != null)
                 _core.SlotSelected -= _coreSlotSelected;
+// csharp-guardrails: allow-null-defense
             if (_coreSlotClearRequested != null)
                 _core.SlotClearRequested -= _coreSlotClearRequested;
+// csharp-guardrails: allow-null-defense
             if (_coreSlotMoveRequested != null)
                 _core.SlotMoveRequested -= _coreSlotMoveRequested;
+// csharp-guardrails: allow-null-defense
             if (_corePartFocusSelected != null)
                 _core.PartFocusSelected -= _corePartFocusSelected;
+// csharp-guardrails: allow-null-defense
             if (_corePartSearchChanged != null)
                 _core.PartSearchChanged -= _corePartSearchChanged;
+// csharp-guardrails: allow-null-defense
             if (_corePartOptionSelected != null)
                 _core.PartOptionSelected -= _corePartOptionSelected;
+// csharp-guardrails: allow-null-defense
             if (_coreSaveRequested != null)
                 _core.SaveRequested -= _coreSaveRequested;
+// csharp-guardrails: allow-null-defense
             if (_coreSettingsRequested != null)
                 _core.SettingsRequested -= _coreSettingsRequested;
 

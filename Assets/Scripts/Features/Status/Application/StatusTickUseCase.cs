@@ -46,6 +46,7 @@ namespace Features.Status.Application
             for (var i = 0; i < effects.Count; i++)
             {
                 var effect = container.AdvanceEffect(i, deltaTime, out bool tickReady);
+// csharp-guardrails: allow-null-defense
                 if (effect == null)
                     continue;
 

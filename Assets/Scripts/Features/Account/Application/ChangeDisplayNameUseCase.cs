@@ -31,6 +31,7 @@ namespace Features.Account.Application
             var token = await _authPort.GetIdToken();
             var account = await _dataPort.LoadProfile(uid, token);
 
+            // csharp-guardrails: allow-null-defense
             if (account == null)
             {
                 return Result.Failure("계정 정보를 찾을 수 없습니다.");

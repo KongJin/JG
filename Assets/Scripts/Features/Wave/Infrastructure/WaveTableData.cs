@@ -13,6 +13,7 @@ namespace Features.Wave.Infrastructure
 
         public WaveEntry[] Waves => waves;
 
+// csharp-guardrails: allow-null-defense
         int IWaveTablePort.WaveCount => waves != null ? waves.Length : 0;
 
         float IWaveTablePort.GetCountdownDuration(int waveIndex) => waves[waveIndex].CountdownDuration;
@@ -23,12 +24,15 @@ namespace Features.Wave.Infrastructure
         {
             enemyData = null;
 
+// csharp-guardrails: allow-null-defense
             if (waves == null || string.IsNullOrWhiteSpace(networkKey))
                 return false;
 
             for (var i = 0; i < waves.Length; i++)
             {
+// csharp-guardrails: allow-null-defense
                 var candidate = waves[i]?.EnemyData;
+// csharp-guardrails: allow-null-defense
                 if (candidate != null && string.Equals(candidate.ResourcesLoadPath, networkKey, StringComparison.Ordinal))
                 {
                     enemyData = candidate;

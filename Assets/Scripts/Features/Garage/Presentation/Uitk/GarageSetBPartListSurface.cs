@@ -61,18 +61,14 @@ namespace Features.Garage.Presentation
 
         protected override void DisposeSurface()
         {
-            if (_focusSwipeHandler != null)
-                _focusSwipeHandler.FocusSelected -= _focusSelected;
+            _focusSwipeHandler.FocusSelected -= _focusSelected;
 
-            if (_rowListSurface != null)
-            {
-                _rowListSurface.SearchChanged -= _searchChanged;
-                _rowListSurface.OptionSelected -= _optionSelected;
-            }
+            _rowListSurface.SearchChanged -= _searchChanged;
+            _rowListSurface.OptionSelected -= _optionSelected;
 
-            _focusSwipeHandler?.Dispose();
-            _rowListSurface?.Dispose();
-            _previewSurface?.Dispose();
+            _focusSwipeHandler.Dispose();
+            _rowListSurface.Dispose();
+            _previewSurface.Dispose();
         }
     }
 }

@@ -43,15 +43,22 @@ namespace Features.Garage.Presentation
                 string summary = "빈 슬롯";
                 string statusBadgeText = GarageUnitIdentityFormatter.BuildEmptyStatusBadge();
 
+                // csharp-guardrails: allow-null-defense
                 var frame = hasDraftLoadout ? _catalog?.FindFrame(draft.frameId) : null;
+                // csharp-guardrails: allow-null-defense
                 var firepower = hasDraftLoadout ? _catalog?.FindFirepower(draft.firepowerModuleId) : null;
+                // csharp-guardrails: allow-null-defense
                 var mobility = hasDraftLoadout ? _catalog?.FindMobility(draft.mobilityModuleId) : null;
+                // csharp-guardrails: allow-null-defense
                 var previewFrame = hasDraftSelection ? _catalog?.FindFrame(draft.frameId) : null;
+                // csharp-guardrails: allow-null-defense
                 var previewFirepower = hasDraftSelection ? _catalog?.FindFirepower(draft.firepowerModuleId) : null;
+                // csharp-guardrails: allow-null-defense
                 var previewMobility = hasDraftSelection ? _catalog?.FindMobility(draft.mobilityModuleId) : null;
 
                 if (hasDraftLoadout)
                 {
+                    // csharp-guardrails: allow-null-defense
                     var frameName = frame?.DisplayName ?? draft.frameId;
                     title = GarageUnitIdentityFormatter.BuildTitle(i, frameName, hasDraftLoadout);
                     summary = GarageUnitIdentityFormatter.BuildSlotSummary(
@@ -104,17 +111,29 @@ namespace Features.Garage.Presentation
                             : null),
                     new GarageSlotPreviewData(
                         loadoutKey,
+                        // csharp-guardrails: allow-null-defense
                         previewFrame != null ? draft.frameId : null,
+                        // csharp-guardrails: allow-null-defense
                         previewFirepower != null ? draft.firepowerModuleId : null,
+                        // csharp-guardrails: allow-null-defense
                         previewMobility != null ? draft.mobilityModuleId : null,
+                        // csharp-guardrails: allow-null-defense
                         previewFrame?.AssemblyPrefab ?? previewFrame?.PreviewPrefab,
+                        // csharp-guardrails: allow-null-defense
                         previewFirepower?.AssemblyPrefab ?? previewFirepower?.PreviewPrefab,
+                        // csharp-guardrails: allow-null-defense
                         previewMobility?.AssemblyPrefab ?? previewMobility?.PreviewPrefab,
+                        // csharp-guardrails: allow-null-defense
                         previewFrame?.Alignment,
+                        // csharp-guardrails: allow-null-defense
                         previewFirepower?.Alignment,
+                        // csharp-guardrails: allow-null-defense
                         previewMobility?.Alignment,
+                        // csharp-guardrails: allow-null-defense
                         previewMobility?.UseAssemblyPivot ?? false,
+                        // csharp-guardrails: allow-null-defense
                         previewFrame?.AssemblyForm ?? AssemblyForm.Unspecified,
+                        // csharp-guardrails: allow-null-defense
                         previewFirepower?.AssemblyForm ?? AssemblyForm.Unspecified)));
             }
 

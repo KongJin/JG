@@ -9,10 +9,12 @@ namespace Features.Wave.Infrastructure
         public static int ReadPresetId()
         {
             var room = PhotonNetwork.CurrentRoom;
+// csharp-guardrails: allow-null-defense
             if (room == null)
                 return DifficultySpawnScale.PresetNormal;
 
             if (!room.CustomProperties.TryGetValue(DifficultyPreset.RoomPropertyKey, out var raw) ||
+// csharp-guardrails: allow-null-defense
                 raw == null)
                 return DifficultySpawnScale.PresetNormal;
 

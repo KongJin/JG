@@ -31,6 +31,7 @@ namespace Features.Account.Application
             var token = await _authPort.SignInWithGoogle(googleIdToken);
             var account = await _dataPort.LoadProfile(token.Uid, token.IdToken);
 
+            // csharp-guardrails: allow-null-defense
             if (account == null)
             {
                 account = new AccountProfile(token.Uid, "google");

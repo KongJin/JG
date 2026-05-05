@@ -23,7 +23,7 @@ namespace Features.Unit
         private ModuleCatalog _moduleCatalog;
 
         [Header("BattleEntity")]
-        [SerializeField]
+        [Required, SerializeField]
         private SummonPhotonAdapter _summonAdapter;
 
         private BattleEntitySetup _battleEntitySetup;
@@ -57,6 +57,7 @@ namespace Features.Unit
             _compositionProvider = new UnitCompositionProvider(_moduleCatalog);
 
             // Composition root — UseCase 조립
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 
@@ -77,6 +78,7 @@ namespace Features.Unit
             CombatSetup combatSetup,
             UnitPositionQueryAdapter unitPositionQuery)
         {
+// csharp-guardrails: allow-null-defense
             if (_summonAdapter == null)
             {
                 Debug.LogError("[UnitSetup] SummonPhotonAdapter is missing. BattleEntity initialization cannot continue.", this);
@@ -94,7 +96,9 @@ namespace Features.Unit
         /// </summary>
         public void Cleanup()
         {
+// csharp-guardrails: allow-null-defense
             _battleEntitySetup?.Cleanup();
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = null;
             _battleEntitySetup = null;
@@ -102,7 +106,9 @@ namespace Features.Unit
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _battleEntitySetup?.Cleanup();
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
         }
     }

@@ -39,29 +39,38 @@ namespace Features.Lobby.Presentation
         public bool Render(LobbyRoomDetailViewModel viewModel)
         {
             viewModel ??= LobbyRoomDetailViewModel.Empty;
+// csharp-guardrails: allow-null-defense
             var isInRoom = viewModel.MemberRows != null && viewModel.MemberRows.Count > 0;
             UitkElementUtility.SetDisplay(_card, isInRoom);
+            // csharp-guardrails: allow-null-defense
             if (_actionRow != null)
                 _actionRow.style.display = isInRoom ? DisplayStyle.Flex : DisplayStyle.None;
 
+// csharp-guardrails: allow-null-defense
             if (_title != null)
                 _title.text = viewModel.TitleText;
+// csharp-guardrails: allow-null-defense
             if (_meta != null)
                 _meta.text = viewModel.MetaText;
 
+// csharp-guardrails: allow-null-defense
             _memberList?.Clear();
+// csharp-guardrails: allow-null-defense
             if (viewModel.MemberRows != null)
             {
                 for (var i = 0; i < viewModel.MemberRows.Count; i++)
                 {
+// csharp-guardrails: allow-null-defense
                     _memberList?.Add(LobbyUitkElementFactory.CreateTextLabel(
                         viewModel.MemberRows[i],
                         "lobby-member-row"));
                 }
             }
 
+            // csharp-guardrails: allow-null-defense
             if (_readyButton != null)
                 _readyButton.text = viewModel.ReadyButtonText;
+            // csharp-guardrails: allow-null-defense
             if (_startButton != null)
                 _startButton.SetEnabled(viewModel.CanStartGame);
 

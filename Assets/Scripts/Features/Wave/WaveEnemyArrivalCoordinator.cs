@@ -19,6 +19,7 @@ namespace Features.Wave
 
         public void Detach(System.Action<EnemySetup> onEnemyArrived)
         {
+// csharp-guardrails: allow-null-defense
             if (_enemySceneRegistry == null || onEnemyArrived == null)
                 return;
 

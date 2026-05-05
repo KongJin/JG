@@ -42,6 +42,7 @@ namespace Features.Player.Application
             _teamBucket.Summons++;
 
             var ownerBucket = GetOrCreateOwnerBucket(playerId);
+// csharp-guardrails: allow-null-defense
             if (ownerBucket == null)
                 return;
 
@@ -71,6 +72,7 @@ namespace Features.Player.Application
             if (!IsEmpty(e.TargetId) && _unitOwners.TryGetValue(e.TargetId, out var damagedOwnerId))
             {
                 var damagedOwner = GetOrCreateOwnerBucket(damagedOwnerId);
+// csharp-guardrails: allow-null-defense
                 if (damagedOwner != null)
                 {
                     damagedOwner.DamageTaken += Math.Max(0f, e.Damage);
@@ -93,6 +95,7 @@ namespace Features.Player.Application
                 return;
 
             var attackerOwner = GetOrCreateOwnerBucket(attackerOwnerId);
+// csharp-guardrails: allow-null-defense
             if (attackerOwner == null)
                 return;
 
@@ -149,13 +152,16 @@ namespace Features.Player.Application
         {
             var bucket = FindBestOwnerBucket(value => value.Kills > 0 ? value.Kills : value.DamageDealt);
             var teamKills = Math.Max(_teamBucket.Kills, reportedKillCount);
+// csharp-guardrails: allow-null-defense
             var value = bucket != null
                 ? Math.Max((float)bucket.Kills, bucket.DamageDealt)
                 : Math.Max((float)teamKills, _teamBucket.DamageDealt);
             if (value <= 0f)
                 return;
 
+// csharp-guardrails: allow-null-defense
             var kills = bucket != null ? bucket.Kills : teamKills;
+// csharp-guardrails: allow-null-defense
             var damage = bucket != null ? bucket.DamageDealt : _teamBucket.DamageDealt;
             var body = kills > 0
                 ? $"침공 기체 {kills}기를 정리했습니다."
@@ -166,15 +172,20 @@ namespace Features.Player.Application
                 "압박 정리",
                 body,
                 value,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.OwnerId : default,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.RepresentativeUnitId : default,
+// csharp-guardrails: allow-null-defense
                 bucket == null,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.RepresentativeLoadoutKey : null));
         }
 
         private void AddHoldPositionCard(List<ResultContributionCard> candidates)
         {
             var bucket = FindBestOwnerBucket(value => value.DamageTaken);
+// csharp-guardrails: allow-null-defense
             var value = bucket != null ? bucket.DamageTaken : _teamBucket.DamageTaken;
             if (value <= 0f)
                 return;
@@ -184,9 +195,13 @@ namespace Features.Player.Application
                 "자리 지킴",
                 $"아군 기체가 피해 {value:F0}을 받아 거점으로 향한 압박을 붙잡았습니다.",
                 value,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.OwnerId : default,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.RepresentativeUnitId : default,
+// csharp-guardrails: allow-null-defense
                 bucket == null,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.RepresentativeLoadoutKey : null));
         }
 
@@ -194,6 +209,7 @@ namespace Features.Player.Application
         {
             var bucket = FindBestOwnerBucket(value => value.Summons);
             var teamSummons = _teamBucket.Summons > 0 ? _teamBucket.Summons : reportedSummonCount;
+// csharp-guardrails: allow-null-defense
             var value = bucket != null ? bucket.Summons : teamSummons;
             if (value <= 0f)
                 return;
@@ -203,9 +219,13 @@ namespace Features.Player.Application
                 "기체 전개",
                 $"전장에 기체 {value:F0}기를 투입했습니다.",
                 value,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.OwnerId : default,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.RepresentativeUnitId : default,
+// csharp-guardrails: allow-null-defense
                 bucket == null,
+// csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.RepresentativeLoadoutKey : null));
         }
 

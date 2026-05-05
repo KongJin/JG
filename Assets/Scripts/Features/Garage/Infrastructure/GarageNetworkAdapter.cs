@@ -22,6 +22,7 @@ namespace Features.Garage.Infrastructure
 
         public void SyncRoster(GarageRoster roster)
         {
+            // csharp-guardrails: allow-null-defense
             if (PhotonNetwork.LocalPlayer == null) return;
 
             roster?.Normalize();
@@ -32,6 +33,7 @@ namespace Features.Garage.Infrastructure
 
         public void SyncReady(bool isReady)
         {
+            // csharp-guardrails: allow-null-defense
             if (PhotonNetwork.LocalPlayer == null) return;
 
             var props = new ExitGames.Client.Photon.Hashtable { { KeyGarageReady, isReady } };
@@ -74,6 +76,7 @@ namespace Features.Garage.Infrastructure
             var result = new Dictionary<object, GarageRoster>();
             foreach (var kvp in _cachedRosters)
             {
+                // csharp-guardrails: allow-null-defense
                 kvp.Value?.Normalize();
                 result[kvp.Key] = kvp.Value;
             }
@@ -82,6 +85,7 @@ namespace Features.Garage.Infrastructure
 
         public GarageRoster GetLocalPlayerRoster()
         {
+            // csharp-guardrails: allow-null-defense
             if (PhotonNetwork.LocalPlayer == null)
                 return new GarageRoster();
 
@@ -108,6 +112,7 @@ namespace Features.Garage.Infrastructure
 
         private void HydrateRoomCache()
         {
+            // csharp-guardrails: allow-null-defense
             if (!PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom?.Players == null)
                 return;
 
@@ -119,6 +124,7 @@ namespace Features.Garage.Infrastructure
 
         private void HydratePlayerCache(int actorNumber)
         {
+            // csharp-guardrails: allow-null-defense
             if (!PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom?.Players == null)
                 return;
 
@@ -135,6 +141,7 @@ namespace Features.Garage.Infrastructure
 
             int actorNumber = player.ActorNumber;
             var props = player.CustomProperties;
+            // csharp-guardrails: allow-null-defense
             if (props == null)
                 return;
 
@@ -159,6 +166,7 @@ namespace Features.Garage.Infrastructure
             try
             {
                 var wrapper = JsonUtility.FromJson<RosterWrapper>(json);
+                // csharp-guardrails: allow-null-defense
                 roster = wrapper?.roster ?? new GarageRoster();
                 roster.Normalize();
                 return true;

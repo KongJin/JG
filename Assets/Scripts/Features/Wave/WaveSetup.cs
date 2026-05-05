@@ -53,15 +53,16 @@ namespace Features.Wave
         [Required, SerializeField]
         private EnemySceneRegistry _enemySceneRegistry;
 
+        // csharp-guardrails: allow-serialized-field-without-required
+        [SerializeField]
         [Tooltip(
             "선택. 연결 시 스폰 배율을 이 컴포넌트에서만 조회한다. 비우면 Initialize 시 Room에서 직접 읽는다."
         )]
-        [SerializeField]
         private RoomDifficultySpawnScaleProvider _difficultySpawnScale;
 
         private EventBus _eventBus;
         private CombatSetup _combatSetup;
-        private DisposableScope _disposables;
+        private DisposableScope _disposables = new();
         private WaveLoopUseCase _waveLoop;
         private ICoreObjectiveQuery _coreObjectiveQuery;
         private HostilePositionQuery _hostilePositionQuery;
@@ -90,7 +91,7 @@ namespace Features.Wave
             _combatSetup = combatSetup;
             _coreObjectiveQuery = coreObjectiveQuery;
 
-            _disposables?.Dispose();
+            _disposables.Dispose();
             _disposables = new DisposableScope();
 
             // Phase 3: 통합 적대 대상 쿼리 (Player + BattleEntity)
@@ -139,7 +140,7 @@ namespace Features.Wave
                 eventBus,
                 eventBus,
                 () => UnityEngine.Time.realtimeSinceStartup - gameEndStartTime,
-                () => _waveLoop != null ? _waveLoop.CurrentWaveIndex + 1 : 0);
+                () => _waveLoop.CurrentWaveIndex + 1);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, gameEndBridge));
 
             var waveSoundHandler = new WaveSoundEventHandler(
@@ -206,9 +207,15 @@ namespace Features.Wave
 
         private float ResolveSpawnCountMultiplier()
         {
-            if (_difficultySpawnScale != null)
-                return _difficultySpawnScale.SpawnCountMultiplier;
-            return DifficultySpawnScale.MultiplierForPreset(RoomDifficultyReader.ReadPresetId());
+            return ResolveSpawnCountMultiplier(_difficultySpawnScale);
+        }
+
+        private float ResolveSpawnCountMultiplier(RoomDifficultySpawnScaleProvider difficultySpawnScale)
+        {
+            if (difficultySpawnScale is null)
+                return DifficultySpawnScale.MultiplierForPreset(RoomDifficultyReader.ReadPresetId());
+
+            return difficultySpawnScale.SpawnCountMultiplier;
         }
 
         private void TryStartGame()
@@ -223,6 +230,9 @@ namespace Features.Wave
 
         private void OnEnemyArrived(EnemySetup enemy)
         {
+            if (enemy is null)
+                return;
+
             if (enemy.IsInitialized)
                 return;
 
@@ -231,8 +241,7 @@ namespace Features.Wave
             if (PhotonNetwork.IsMasterClient)
                 return;
 
-            var enemyData = ResolveEnemyDataForArrival(enemy);
-            if (enemyData == null)
+            if (ResolveEnemyDataForArrival(enemy) is not { } enemyData)
             {
                 Debug.LogError("[WaveSetup] Could not resolve EnemyData for arriving enemy from WaveTableData.", enemy);
                 return;
@@ -249,7 +258,7 @@ namespace Features.Wave
 
         private EnemyData ResolveEnemyDataForArrival(EnemySetup enemy)
         {
-            if (_waveTable == null || enemy == null || string.IsNullOrWhiteSpace(enemy.EnemyNetworkKey))
+            if (enemy is null || string.IsNullOrWhiteSpace(enemy.EnemyNetworkKey))
             {
                 Debug.LogError("[WaveSetup] EnemyData network contract is missing for the arriving enemy.", enemy);
                 return null;
@@ -309,7 +318,7 @@ namespace Features.Wave
         private void OnDestroy()
         {
             _enemyArrivalCoordinator.Detach(OnEnemyArrived);
-            _disposables?.Dispose();
+            _disposables.Dispose();
         }
     }
 }

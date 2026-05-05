@@ -55,6 +55,7 @@ namespace Features.Player
             DomainEntityId coreId,
             float coreMaxHp)
         {
+// csharp-guardrails: allow-null-defense
             if (_endHandlersRegistered || _eventBus == null)
                 return;
 
@@ -82,6 +83,7 @@ namespace Features.Player
                 return;
 
             var playTime = Time.realtimeSinceStartup - _sceneStartTime;
+            // csharp-guardrails: allow-null-defense
             _analytics?.LogGameEnd(_matchId, playTime, RoundCounter.Current);
             _analytics = null;
             _eventBus = null;
@@ -106,6 +108,7 @@ namespace Features.Player
                 return;
 
             _dropOffLogged = true;
+// csharp-guardrails: allow-null-defense
             _analytics?.LogDropOff(context, Time.realtimeSinceStartup - _sceneStartTime);
         }
 
@@ -127,6 +130,7 @@ namespace Features.Player
             }
 
             Debug.Log("[GameEnd] =========================");
+// csharp-guardrails: allow-null-defense
             _analytics?.LogGameResult(e.IsVictory, e.ReachedWave, e.PlayTimeSeconds, e.SummonCount, e.UnitKillCount);
         }
     }

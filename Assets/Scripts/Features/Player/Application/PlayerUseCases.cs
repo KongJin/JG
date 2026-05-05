@@ -63,6 +63,7 @@ namespace Features.Player.Application
 
         public void Respawn()
         {
+// csharp-guardrails: allow-null-defense
             if (_localPlayer == null)
                 return;
 

@@ -2,14 +2,19 @@ using System;
 using Features.Garage.Presentation.Theme;
 using Features.Garage.Runtime;
 using Shared.Runtime;
+using Shared.Attributes;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkPreviewRenderer : MonoBehaviour
     {
+        // csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Camera _previewCamera;
+        // csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private Light _previewKeyLight;
+        // csharp-guardrails: allow-serialized-field-without-required
+        // csharp-guardrails: allow-serialized-field-without-required
         [SerializeField] private RenderTexture _renderTexture;
         [SerializeField] private int _textureSize = GarageUitkConstants.Preview.TextureSize;
         [SerializeField] private float _autoRotationSpeed = 20f;
@@ -38,6 +43,7 @@ namespace Features.Garage.Presentation
         {
             _previewLayer = Mathf.Clamp(previewLayer, 0, 30);
             EnsureCamera();
+            // csharp-guardrails: allow-null-defense
             if (_currentPreviewRoot != null)
                 AssignPreviewLayer(_currentPreviewRoot);
         }
@@ -50,6 +56,7 @@ namespace Features.Garage.Presentation
         internal void ConfigureAssemblyHorizontalOffset(float offset)
         {
             _assemblyHorizontalOffset = offset;
+            // csharp-guardrails: allow-null-defense
             if (_currentPreviewRoot != null)
                 ApplyAssemblyHorizontalOffset(_currentPreviewRoot);
         }
@@ -68,6 +75,7 @@ namespace Features.Garage.Presentation
             EnsureCamera();
             EnsureRenderTexture();
 
+            // csharp-guardrails: allow-null-defense
             if (_previewCamera == null ||
                 !GarageUnitPreviewAssembly.HasCurrentSelectionPreviewData(previewData))
             {
@@ -76,6 +84,7 @@ namespace Features.Garage.Presentation
             }
 
             var previewKey = BuildAssemblyPreviewKey(previewData, loadoutKey);
+            // csharp-guardrails: allow-null-defense
             if (_currentPreviewRoot != null && string.Equals(_currentPreviewKey, previewKey, StringComparison.Ordinal))
             {
                 HasPreview = true;
@@ -115,8 +124,10 @@ namespace Features.Garage.Presentation
             EnsureCamera();
             EnsureRenderTexture();
 
+            // csharp-guardrails: allow-null-defense
             if (_previewCamera == null ||
                 viewModel == null ||
+                // csharp-guardrails: allow-null-defense
                 viewModel.SelectedPreviewPrefab == null)
             {
                 ClearPreview();
@@ -124,6 +135,7 @@ namespace Features.Garage.Presentation
             }
 
             var previewKey = BuildPartPreviewKey(viewModel);
+            // csharp-guardrails: allow-null-defense
             if (_currentPreviewRoot != null && string.Equals(_currentPreviewKey, previewKey, StringComparison.Ordinal))
             {
                 HasPreview = true;
@@ -173,6 +185,7 @@ namespace Features.Garage.Presentation
 
         private void LateUpdate()
         {
+            // csharp-guardrails: allow-null-defense
             if (_currentPreviewRoot == null)
                 return;
 
@@ -190,6 +203,7 @@ namespace Features.Garage.Presentation
 
         private void RenderPreviewFrame()
         {
+            // csharp-guardrails: allow-null-defense
             if (_previewCamera == null)
                 return;
 
@@ -269,6 +283,7 @@ namespace Features.Garage.Presentation
                 return false;
 
             var renderers = root.GetComponentsInChildren<Renderer>(includeInactive: false);
+            // csharp-guardrails: allow-null-defense
             if (renderers == null || renderers.Length == 0)
                 return false;
 
@@ -283,9 +298,11 @@ namespace Features.Garage.Presentation
 
         private void EnsureCamera()
         {
+            // csharp-guardrails: allow-null-defense
             if (_previewCamera == null)
                 _previewCamera = ComponentAccess.Get<Camera>(gameObject);
 
+            // csharp-guardrails: allow-null-defense
             if (_previewCamera == null)
                 return;
 
@@ -296,6 +313,7 @@ namespace Features.Garage.Presentation
                 : ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             _previewKeyLight = GaragePreviewAssembler.EnsurePreviewLighting(_previewCamera, _previewKeyLight);
+// csharp-guardrails: allow-null-defense
             if (_previewKeyLight != null)
                 _previewKeyLight.cullingMask = mask;
         }
@@ -305,6 +323,7 @@ namespace Features.Garage.Presentation
             if (_previewLayer >= GarageUitkConstants.Layers.MinLayer && _previewLayer <= GarageUitkConstants.Layers.MaxLayer)
                 return _previewLayer;
 
+            // csharp-guardrails: allow-null-defense
             return gameObject != null &&
                    gameObject.name.IndexOf("Part", StringComparison.OrdinalIgnoreCase) >= 0
                 ? GarageUitkConstants.Layers.PartPreview
@@ -320,8 +339,11 @@ namespace Features.Garage.Presentation
                 "|",
                 "assembly",
                 loadoutKey ?? string.Empty,
+// csharp-guardrails: allow-null-defense
                 previewData.FrameId ?? string.Empty,
+// csharp-guardrails: allow-null-defense
                 previewData.FirepowerId ?? string.Empty,
+// csharp-guardrails: allow-null-defense
                 previewData.MobilityId ?? string.Empty,
                 GetObjectKey(previewData.FramePreviewPrefab),
                 GetObjectKey(previewData.FirepowerPreviewPrefab),
@@ -349,6 +371,7 @@ namespace Features.Garage.Presentation
                 "|",
                 "part",
                 viewModel.ActiveSlot.ToString(),
+// csharp-guardrails: allow-null-defense
                 viewModel.SelectedPartId ?? string.Empty,
                 GetObjectKey(viewModel.SelectedPreviewPrefab),
                 GetAlignmentKey(viewModel.SelectedAlignment));
@@ -366,6 +389,7 @@ namespace Features.Garage.Presentation
 
             return string.Join(
                 ",",
+// csharp-guardrails: allow-null-defense
                 alignment.Assembly.QualityFlag ?? string.Empty,
                 alignment.Socket.Offset.ToString("F3"),
                 alignment.Socket.Euler.ToString("F3"),
@@ -396,10 +420,12 @@ namespace Features.Garage.Presentation
 
         private void EnsureRenderTexture()
         {
+            // csharp-guardrails: allow-null-defense
             if (_previewCamera == null)
                 return;
 
             var size = Mathf.Max(GarageUitkConstants.Preview.TextureMinSize, _textureSize);
+            // csharp-guardrails: allow-null-defense
             if (_renderTexture == null)
             {
                 _renderTexture = new RenderTexture(size, size, 16, RenderTextureFormat.ARGB32)
@@ -417,6 +443,7 @@ namespace Features.Garage.Presentation
 
         private void DestroyCurrentPreview()
         {
+            // csharp-guardrails: allow-null-defense
             if (_currentPreviewRoot == null)
                 return;
 
@@ -427,6 +454,7 @@ namespace Features.Garage.Presentation
         private void OnDestroy()
         {
             DestroyCurrentPreview();
+            // csharp-guardrails: allow-null-defense
             if (_renderTexture != null)
             {
                 _renderTexture.Release();

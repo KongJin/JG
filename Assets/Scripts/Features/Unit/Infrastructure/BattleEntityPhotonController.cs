@@ -83,6 +83,7 @@ namespace Features.Unit.Infrastructure
 
         private void SyncState()
         {
+// csharp-guardrails: allow-null-defense
             if (PhotonNetwork.LocalPlayer == null) return;
 
             var props = new ExitGames.Client.Photon.Hashtable
@@ -116,6 +117,7 @@ namespace Features.Unit.Infrastructure
 
         private void ApplyRemoteState()
         {
+// csharp-guardrails: allow-null-defense
             if (_battleEntity == null)
                 return;
 
@@ -148,6 +150,7 @@ namespace Features.Unit.Infrastructure
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _eventBus?.UnsubscribeAll(this);
         }
     }

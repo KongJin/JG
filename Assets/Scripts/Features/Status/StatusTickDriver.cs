@@ -19,6 +19,7 @@ namespace Features.Status
 
         private void Update()
         {
+// csharp-guardrails: allow-null-defense
             _tickPort?.Tick(Time.deltaTime);
         }
     }

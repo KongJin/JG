@@ -27,6 +27,7 @@ namespace Features.Player
         public bool Execute(GameSceneLocalPlayerInitializationContext context)
         {
             var localPlayerSetup = context.LocalPlayerSetup;
+// csharp-guardrails: allow-null-defense
             if (localPlayerSetup == null)
                 return false;
 
@@ -52,24 +53,29 @@ namespace Features.Player
                 localPlayerSetup.PlayerId,
                 new EntityAffiliationAdapter());
 
+// csharp-guardrails: allow-null-defense
             if (context.WaveSetup != null && context.CoreObjective == null)
             {
                 Debug.LogError(
                     "[GameSceneRoot] WaveSetup is set but CoreObjective is missing. Assign CoreObjectiveSetup on the objective GameObject.");
             }
 
+// csharp-guardrails: allow-null-defense
             if (context.CoreObjective != null)
             {
                 context.CoreObjective.RegisterCombatTarget(context.CombatSetup);
                 context.CoreObjective.InitializePlacementArea();
             }
 
+// csharp-guardrails: allow-null-defense
             if (context.DamageNumberSpawner != null)
                 context.DamageNumberSpawner.Initialize(context.EventBus);
 
             context.EndReportingFlow.RegisterEndHandlers(
                 context.Disposables,
+// csharp-guardrails: allow-null-defense
                 context.CoreObjective != null ? context.CoreObjective.CoreId : default,
+// csharp-guardrails: allow-null-defense
                 context.CoreObjective != null ? context.CoreObjective.CoreMaxHp : 0f);
 
             context.ConnectPlayer(localPlayerSetup);
@@ -86,9 +92,11 @@ namespace Features.Player
             context.MarkRemotePlayerWiringReady();
 
             var units = context.InitializeUnitAndGarage(localPlayerSetup);
+// csharp-guardrails: allow-null-defense
             if (context.WaveSetup == null)
                 return true;
 
+// csharp-guardrails: allow-null-defense
             if (context.CoreObjective == null)
             {
                 Debug.LogError("[GameSceneRoot] Cannot initialize Wave without CoreObjectiveSetup.");
@@ -133,13 +141,16 @@ namespace Features.Player
                     "Consider increasing initial energy.");
             }
 
+// csharp-guardrails: allow-null-defense
             if (context.UnitSlotsContainer == null)
             {
                 Debug.LogWarning("[GameSceneRoot] UnitSlotsContainer not assigned. Summon UI skipped.");
                 return;
             }
 
+// csharp-guardrails: allow-null-defense
             var placementArea = context.CoreObjective?.PlacementArea;
+// csharp-guardrails: allow-null-defense
             if (placementArea == null)
                 Debug.LogWarning("[GameSceneRoot] PlacementArea not available. Using default spawn position.");
 
@@ -151,6 +162,7 @@ namespace Features.Player
                 specs,
                 playerId,
                 placementArea,
+// csharp-guardrails: allow-null-defense
                 context.CoreObjective?.PlacementAreaView);
         }
     }

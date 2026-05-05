@@ -1,4 +1,4 @@
-﻿using Features.Account.Domain;
+using Features.Account.Domain;
 using Features.Garage.Domain;
 
 namespace Features.Account.Application.Ports

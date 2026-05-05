@@ -61,6 +61,7 @@ namespace Features.Player.Domain
             coreHealthPercent = hasCoreHealthPercent
                 ? Clamp01(coreHealthPercent)
                 : UnknownCoreHealthPercent;
+// csharp-guardrails: allow-null-defense
             primaryRosterUnits ??= new List<string>();
             for (var i = primaryRosterUnits.Count - 1; i >= 0; i--)
             {

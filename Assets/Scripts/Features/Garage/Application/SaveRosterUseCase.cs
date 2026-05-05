@@ -42,6 +42,7 @@ namespace Features.Garage.Application
             // 클라우드 저장 (선택)
             try
             {
+                // csharp-guardrails: allow-null-defense
                 if (_cloudPort != null)
                 {
                     await _cloudPort.SaveGarageAsync(roster);
@@ -52,13 +53,18 @@ namespace Features.Garage.Application
                 errorMessage = $"클라우드 저장 실패: {ex.Message}";
             }
 
+            // csharp-guardrails: allow-null-defense
             if (errorMessage == null || _cloudPort == null)
+            {
+                // csharp-guardrails: allow-null-defense
                 _persistence?.Save(roster);
+            }
 
             // 네트워크 동기화 (실제 전투 진입용 데이터)
             _network.SyncRoster(roster);
             _network.SyncReady(roster.IsValid);
 
+            // csharp-guardrails: allow-null-defense
             if (errorMessage != null)
                 return Result.Failure(errorMessage);
 

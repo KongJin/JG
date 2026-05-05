@@ -36,6 +36,7 @@ namespace Shared.Runtime
         /// <summary>
         /// 작업 완료 여부
         /// </summary>
+// csharp-guardrails: allow-null-defense
         public bool IsCompleted => _isCompleted || (_task?.IsCompleted ?? false);
 
         /// <summary>

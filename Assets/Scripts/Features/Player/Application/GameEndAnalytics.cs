@@ -55,6 +55,7 @@ namespace Features.Player.Application
         {
             _summonCount++;
             var unitSpec = e.UnitSpec;
+// csharp-guardrails: allow-null-defense
             var loadoutKey = unitSpec == null
                 ? string.Empty
                 : LoadoutKey.Build(unitSpec.FrameId, unitSpec.FirepowerModuleId, unitSpec.MobilityModuleId);
@@ -102,6 +103,7 @@ namespace Features.Player.Application
 
         public void Dispose()
         {
+            // csharp-guardrails: allow-null-defense
             _playTimer?.Stop();
         }
     }

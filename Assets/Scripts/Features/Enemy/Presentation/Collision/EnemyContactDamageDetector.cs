@@ -31,6 +31,7 @@ namespace Features.Enemy.Presentation
             if (!ComponentAccess.TryGetEntityIdHolder(other, out var holder)) return;
 
             var targetId = holder.Id;
+            // csharp-guardrails: allow-null-defense
             if (targetId.Value != null && targetId.Value.StartsWith("enemy")) return;
 
             _contactDamagePort.ApplyContactDamage(targetId, _damage, _enemyId);

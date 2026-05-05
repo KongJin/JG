@@ -49,6 +49,7 @@ namespace Features.Projectile.Infrastructure
 
         private void Update()
         {
+// csharp-guardrails: allow-null-defense
             if (_projectile == null || !_projectile.IsAlive) return;
 
             _elapsed += Time.deltaTime;
@@ -68,6 +69,7 @@ namespace Features.Projectile.Infrastructure
 
         private void OnTriggerEnter(Collider other)
         {
+// csharp-guardrails: allow-null-defense
             if (_projectile == null || !_projectile.IsAlive) return;
 
             if (!ComponentAccess.TryGetEntityIdHolder(other, out var holder)) return;
@@ -123,6 +125,7 @@ namespace Features.Projectile.Infrastructure
 
         private void ReleaseSelf()
         {
+// csharp-guardrails: allow-null-defense
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

@@ -25,13 +25,13 @@ namespace Features.Garage
         [Required, SerializeField]
         private GarageNetworkAdapter _networkAdapter;
 
-        [SerializeField]
-        private GarageSetBUitkPageController _setBUitkPageController;
+        // csharp-guardrails: allow-serialized-field-without-required
+        [SerializeField] private GarageSetBUitkPageController _setBUitkPageController;
 
-        [SerializeField]
+        [Required, SerializeField]
         private NovaPartVisualCatalog _novaPartVisualCatalog;
 
-        [SerializeField]
+        [Required, SerializeField]
         private NovaPartAlignmentCatalog _novaPartAlignmentCatalog;
 
         private IAccountDataPort _accountDataPort;
@@ -93,6 +93,7 @@ namespace Features.Garage
 
         private void InitializeControllers(RecentOperationRecords recentOperations)
         {
+            // csharp-guardrails: allow-null-defense
             if (_setBUitkPageController != null)
             {
                 _setBUitkPageController.Initialize(

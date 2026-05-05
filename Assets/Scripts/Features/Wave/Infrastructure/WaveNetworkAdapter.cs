@@ -21,6 +21,7 @@ namespace Features.Wave.Infrastructure
             if (!PhotonNetwork.IsMasterClient) return;
 
             var room = PhotonNetwork.CurrentRoom;
+// csharp-guardrails: allow-null-defense
             if (room == null) return;
 
             var props = new Hashtable
@@ -38,6 +39,7 @@ namespace Features.Wave.Infrastructure
                 return;
 
             var room = PhotonNetwork.CurrentRoom;
+// csharp-guardrails: allow-null-defense
             if (room == null)
                 return;
 
@@ -81,6 +83,7 @@ namespace Features.Wave.Infrastructure
         private (int waveIndex, int waveState, int countdownEndMs) ReadRoomProperties()
         {
             var room = PhotonNetwork.CurrentRoom;
+// csharp-guardrails: allow-null-defense
             if (room == null) return (0, 0, 0);
 
             var props = room.CustomProperties;

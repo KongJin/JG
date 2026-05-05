@@ -53,6 +53,7 @@ namespace Features.Player.Application
 
         void OnGameEnd(GameEndEvent e)
         {
+// csharp-guardrails: allow-null-defense
             var playtime = _getTime != null ? _getTime() - _sessionStartTime : 0f;
             _analytics.LogAction("game_end",
                 new AnalyticsParams()

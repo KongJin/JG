@@ -99,6 +99,7 @@ namespace Features.Garage.Presentation
             ComposeUnitUseCase composeUnit,
             ValidateRosterUseCase validateRoster)
         {
+            bool hasState = state != null;
             bool hasCatalogData = catalog != null &&
                                   catalog.Frames.Count > 0 &&
                                   catalog.Firepower.Count > 0 &&
@@ -106,7 +107,7 @@ namespace Features.Garage.Presentation
 
             Result<ComposedUnit> composeResult = Result<ComposedUnit>.Failure("Draft composition was not evaluated.");
             Result<ComposedUnit> committedComposeResult = Result<ComposedUnit>.Failure("Committed composition was not evaluated.");
-            if (hasCatalogData && state != null && state.HasCompleteDraft())
+            if (hasCatalogData && hasState && state.HasCompleteDraft())
             {
                 composeResult = composeUnit.Execute(
                     DomainEntityId.New(),
@@ -115,18 +116,19 @@ namespace Features.Garage.Presentation
                     state.EditingMobilityId);
             }
 
-            var committed = state?.GetSelectedCommittedSlot();
-            if (hasCatalogData && committed != null && committed.IsComplete)
+            var committedSlot = hasState ? state.GetSelectedCommittedSlot() : null;
+            // csharp-guardrails: allow-null-defense
+            if (hasCatalogData && committedSlot != null && committedSlot.IsComplete)
             {
                 committedComposeResult = composeUnit.Execute(
                     DomainEntityId.New(),
-                    committed.frameId,
-                    committed.firepowerModuleId,
-                    committed.mobilityModuleId);
+                    committedSlot.frameId,
+                    committedSlot.firepowerModuleId,
+                    committedSlot.mobilityModuleId);
             }
 
             Result rosterValidation = Result.Success();
-            if (state != null && state.SelectedSlotHasDraftChanges())
+            if (hasState && state.SelectedSlotHasDraftChanges())
             {
                 rosterValidation = validateRoster.ExecuteDraftSave(state.BuildSelectedSlotCommitRoster(), out string validationError);
                 if (rosterValidation.IsFailure &&
@@ -147,14 +149,15 @@ namespace Features.Garage.Presentation
             Result<ComposedUnit> committedComposeResult,
             Result rosterValidationResult)
         {
-            bool hasCompleteDraft = state != null && state.HasCompleteDraft();
+            bool hasState = state != null;
+            bool hasCompleteDraft = hasState && state.HasCompleteDraft();
 
             return new GarageDraftEvaluation(
                 hasCatalogData,
                 hasCompleteDraft,
-                state != null && state.HasDraftChanges(),
-                state != null && state.SelectedSlotHasDraftChanges(),
-                state != null && state.DraftMatchesCommittedSelection(),
+                hasState && state.HasDraftChanges(),
+                hasState && state.SelectedSlotHasDraftChanges(),
+                hasState && state.DraftMatchesCommittedSelection(),
                 hasCatalogData && hasCompleteDraft,
                 composeResult,
                 committedComposeResult,

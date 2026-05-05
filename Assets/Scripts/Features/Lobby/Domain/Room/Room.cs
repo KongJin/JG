@@ -81,6 +81,7 @@ namespace Features.Lobby.Domain
         public Result RemoveMember(DomainEntityId memberId)
         {
             var member = FindMember(memberId);
+// csharp-guardrails: allow-null-defense
             if (member == null)
             {
                 return Result.Failure("Member was not found.");
@@ -98,6 +99,7 @@ namespace Features.Lobby.Domain
         public Result ChangeTeam(DomainEntityId memberId, TeamType team)
         {
             var member = FindMember(memberId);
+// csharp-guardrails: allow-null-defense
             if (member == null)
             {
                 return Result.Failure("Member was not found.");
@@ -110,6 +112,7 @@ namespace Features.Lobby.Domain
         public Result SetReady(DomainEntityId memberId, bool isReady)
         {
             var member = FindMember(memberId);
+// csharp-guardrails: allow-null-defense
             if (member == null)
             {
                 return Result.Failure("Member was not found.");

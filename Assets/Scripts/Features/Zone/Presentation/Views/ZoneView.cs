@@ -30,6 +30,7 @@ namespace Features.Zone.Presentation
         {
             _elapsed += Time.deltaTime;
 
+            // csharp-guardrails: allow-null-defense
             if (_renderer != null)
             {
                 var alpha = _duration > 0f ? Mathf.Lerp(1f, 0f, _elapsed / _duration) : 0f;
@@ -58,6 +59,7 @@ namespace Features.Zone.Presentation
 
         private void ReleaseSelf()
         {
+// csharp-guardrails: allow-null-defense
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

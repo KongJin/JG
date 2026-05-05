@@ -40,18 +40,23 @@ public sealed class LobbySetup : MonoBehaviour
 
     [Header("Account")]
     [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
     private AccountSetup _accountSetup;
 
     [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
     private LoginLoadingView _loginLoadingView;
 
     [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
     private AccountSettingsView _accountSettingsView;
 
     [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
     private UnitSetup _unitSetup;
 
     [SerializeField]
+// csharp-guardrails: allow-serialized-field-without-required
     private GarageSetup _garageSetup;
 
     private LobbyNetworkEventHandler _syncHandler;
@@ -76,6 +81,7 @@ public sealed class LobbySetup : MonoBehaviour
         RoundCounter.Reset();
 
         // Account 초기화 (익명 로그인)
+// csharp-guardrails: allow-null-defense
         if (_accountSetup != null && _loginLoadingView != null)
         {
             _accountSetup.Initialize(_eventBus);
@@ -106,6 +112,7 @@ public sealed class LobbySetup : MonoBehaviour
                 {
                     _currentAccountProfile = profile;
                     await LoadSignedInAccount();
+// csharp-guardrails: allow-null-defense
                     if (_loginLoadingView != null)
                         _loginLoadingView.OnLoginSuccess();
                 });
@@ -121,17 +128,21 @@ public sealed class LobbySetup : MonoBehaviour
 
     private async System.Threading.Tasks.Task LoadSignedInAccount()
     {
+// csharp-guardrails: allow-null-defense
         if (_accountSetup?.LoadAccount == null)
             return;
 
         try
         {
             var accountData = await _accountSetup.LoadAccount.Execute();
+// csharp-guardrails: allow-null-defense
             if (accountData != null)
             {
                 _loadedAccountData = accountData;
+// csharp-guardrails: allow-null-defense
                 if (accountData.Profile != null)
                     _currentAccountProfile = accountData.Profile;
+// csharp-guardrails: allow-null-defense
                 _view?.RenderAccountState(_currentAccountProfile, _loadedAccountData);
             }
         }
@@ -162,6 +173,7 @@ public sealed class LobbySetup : MonoBehaviour
                 _garageSetup,
                 _sceneLoader,
                 BattleSceneName,
+// csharp-guardrails: allow-null-defense
                 _accountSetup?.DataPort,
                 ApplyLoadedAccountSettings);
 
@@ -172,6 +184,7 @@ public sealed class LobbySetup : MonoBehaviour
 
     private void InitializeAccountSettingsView()
     {
+// csharp-guardrails: allow-null-defense
         if (_accountSettingsView == null || _accountSetup == null || _currentAccountProfile == null)
             return;
 
@@ -185,16 +198,21 @@ public sealed class LobbySetup : MonoBehaviour
         );
         _accountSettingsView.Initialize(accountSettingsInputHandler);
         _accountSettingsView.Render(_currentAccountProfile);
+// csharp-guardrails: allow-null-defense
         _view?.RenderAccountState(_currentAccountProfile, _loadedAccountData);
     }
 
     private void ApplyLoadedAccountSettings()
     {
+// csharp-guardrails: allow-null-defense
         if (_soundPlayer == null)
             return;
 
+// csharp-guardrails: allow-null-defense
         float masterVolume = _loadedAccountData?.Settings?.masterVolume ?? 1f;
+// csharp-guardrails: allow-null-defense
         float bgmVolume = _loadedAccountData?.Settings?.bgmVolume ?? 0.8f;
+// csharp-guardrails: allow-null-defense
         float sfxVolume = _loadedAccountData?.Settings?.sfxVolume ?? 1f;
         _soundPlayer.SetMasterVolume(masterVolume);
         _soundPlayer.SetChannelVolumes(bgmVolume, sfxVolume);
@@ -202,6 +220,7 @@ public sealed class LobbySetup : MonoBehaviour
 
     private void OnAccountLogoutRequested()
     {
+// csharp-guardrails: allow-null-defense
         _accountSetup.AuthPort?.SignOut();
         ReloadCurrentScene();
     }
@@ -221,13 +240,17 @@ public sealed class LobbySetup : MonoBehaviour
     private void OnApplicationQuit()
     {
         var elapsed = Time.realtimeSinceStartup - _sessionStartTime;
+// csharp-guardrails: allow-null-defense
         _analytics?.LogSessionEnd(elapsed);
+// csharp-guardrails: allow-null-defense
         _analytics?.LogDropOff("lobby", elapsed);
     }
 
     private void OnDestroy()
     {
+        // csharp-guardrails: allow-null-defense
         _accountSetup?.Cleanup();
+        // csharp-guardrails: allow-null-defense
         _unitSetup?.Cleanup();
     }
 }

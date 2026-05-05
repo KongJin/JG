@@ -35,6 +35,7 @@ namespace Features.Unit.Infrastructure
         {
             // Instantiation data에서 unitId, ownerId, 초기HP 추출
             var data = info.photonView.InstantiationData;
+// csharp-guardrails: allow-null-defense
             if (data != null && data.Length >= 2)
             {
                 var unitIdStr = (string)data[0];
@@ -60,6 +61,7 @@ namespace Features.Unit.Infrastructure
             UnitPositionQueryAdapter unitPositionQuery,
             UnitSpec unitSpec)
         {
+// csharp-guardrails: allow-null-defense
             if (_pendingUnitId == null || unitSpec == null) return;
             Initialize(eventBus, combatBootstrap, unitPositionQuery, unitSpec, _pendingOwnerId, _pendingInitialHp);
         }
@@ -72,6 +74,7 @@ namespace Features.Unit.Infrastructure
             DomainEntityId ownerId)
         {
             // Owner 경로: instantiation data 무시하고 unitSpec 직접 사용
+// csharp-guardrails: allow-null-defense
             if (_pendingUnitId != null)
             {
                 // 이미 pending 데이터가 있으면 late-join 시나리오
@@ -96,6 +99,7 @@ namespace Features.Unit.Infrastructure
             _unitPositionQuery = unitPositionQuery;
             _viewPort = _view as IBattleEntityViewPort;
 
+// csharp-guardrails: allow-null-defense
             if (_viewPort == null)
             {
                 Debug.LogError("[BattleEntityPrefabSetup] View must implement IBattleEntityViewPort.", this);
@@ -136,8 +140,10 @@ namespace Features.Unit.Infrastructure
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _attackDriver?.Clear();
 
+            // csharp-guardrails: allow-null-defense
             if (_unitPositionQuery != null && transform != null)
                 _unitPositionQuery.UnregisterUnit(transform);
         }

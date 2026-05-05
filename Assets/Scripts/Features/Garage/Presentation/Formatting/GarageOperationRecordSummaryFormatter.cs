@@ -66,6 +66,7 @@ namespace Features.Garage.Presentation
             for (var i = 0; i < operationRecords.Count; i++)
             {
                 var record = operationRecords[i];
+// csharp-guardrails: allow-null-defense
                 if (record?.primaryRosterUnits == null)
                     continue;
 

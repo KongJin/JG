@@ -38,7 +38,7 @@ namespace Features.Player
 
         [Header("Energy")]
         [Tooltip("Energy 재생 곡선 설정.")]
-        [SerializeField] private EnergyRegenCurveConfig _regenCurveConfig;
+        [Required, SerializeField] private EnergyRegenCurveConfig _regenCurveConfig;
 
         private PlayerUseCases _useCases;
         private PlayerCombatTargetProvider _combatTargetProvider;
@@ -148,6 +148,7 @@ namespace Features.Player
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
         }
     }

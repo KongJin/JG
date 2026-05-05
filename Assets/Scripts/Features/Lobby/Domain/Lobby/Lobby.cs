@@ -37,6 +37,7 @@ namespace Features.Lobby.Domain
         public Result RemoveRoom(DomainEntityId roomId)
         {
             var room = FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
             {
                 return Result.Failure("Room was not found.");

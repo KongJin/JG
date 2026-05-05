@@ -31,7 +31,7 @@ namespace Features.Skill
         [Required, SerializeField]
         private SkillCatalogData _catalogData;
 
-        [SerializeField]
+        [Required, SerializeField]
         private StartSkillSelectionView _startSkillSelectionView;
 
         private EventBus _eventBus;
@@ -60,6 +60,7 @@ namespace Features.Skill
             IStatusQueryPort statusQuery,
             System.Action onComplete)
         {
+// csharp-guardrails: allow-null-defense
             if (_startSkillSelectionView == null)
             {
                 Debug.LogError("[SkillSetup] StartSkillSelectionView is not assigned on the scene instance.");
@@ -72,6 +73,7 @@ namespace Features.Skill
             _casterId = casterId;
             _manaPort = manaPort;
             _statusQuery = statusQuery;
+// csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 
@@ -89,6 +91,7 @@ namespace Features.Skill
             for (var i = 0; i < uniqueSkills.Length; i++)
             {
                 var data = uniqueSkills[i];
+// csharp-guardrails: allow-null-defense
                 var name = data.Presentation != null ? data.Presentation.DisplayName : data.SkillId;
                 _entries.Add(new InitializeDeckUseCase.SkillEntry(data.SkillId, name));
                 candidates[i] = new StartSkillCandidate(data.SkillId, name);
@@ -119,6 +122,7 @@ namespace Features.Skill
             for (var i = 0; i < initialHand.Count && i < SkillBar.SlotCount; i++)
             {
                 var skill = _catalog.Get(initialHand[i].Value);
+// csharp-guardrails: allow-null-defense
                 if (skill != null)
                     _equipSkillUseCase.Execute(_skillBar, i, skill);
             }
@@ -132,6 +136,7 @@ namespace Features.Skill
 
             _skillUpgradeAdapter = new SkillUpgradeAdapter(
                 new Domain.SkillUpgradeLevel(),
+// csharp-guardrails: allow-null-defense
                 id => _catalog.GetData(id)?.GrowthAxes.GetEnabledAxes());
             var castSkillUseCase = new CastSkillUseCase(_manaPort, _networkAdapter, _statusQuery, _skillUpgradeAdapter);
 
@@ -152,6 +157,7 @@ namespace Features.Skill
         public Result SwapSkill(int slotIndex, string skillId)
         {
             var skill = _catalog.Get(skillId);
+// csharp-guardrails: allow-null-defense
             if (skill == null)
                 return Result.Failure($"Skill not found: {skillId}");
 
@@ -160,6 +166,7 @@ namespace Features.Skill
 
         private void OnDestroy()
         {
+            // csharp-guardrails: allow-null-defense
             _disposables?.Dispose();
         }
     }

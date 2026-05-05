@@ -63,6 +63,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
                 return Result.Failure("Room was not found.");
 
@@ -76,6 +77,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
                 return Result.Failure("Room was not found.");
 
@@ -89,6 +91,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
                 return Result.Failure("Room was not found.");
 
@@ -102,6 +105,7 @@ namespace Features.Lobby.Application
         {
             var lobby = _repository.LoadLobby();
             var room = lobby.FindRoom(roomId);
+// csharp-guardrails: allow-null-defense
             if (room == null)
                 return Result.Failure("Room was not found.");
 

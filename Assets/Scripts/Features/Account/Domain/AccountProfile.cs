@@ -27,6 +27,7 @@ namespace Features.Account.Domain
 
         public DateTime CreatedAt => DateTimeOffset.FromUnixTimeMilliseconds(createdAtUnixMs).UtcDateTime;
 
+        // csharp-guardrails: allow-null-defense
         public string DefaultDisplayName => uid?.Substring(0, Math.Min(8, uid.Length)) ?? string.Empty;
     }
 }

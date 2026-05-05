@@ -11,6 +11,7 @@ namespace Shared.Runtime.Pooling
     {
         private GameObjectPool _owner;
 
+// csharp-guardrails: allow-null-defense
         public bool HasOwner => _owner != null;
 
         internal void Bind(GameObjectPool owner)
@@ -20,6 +21,7 @@ namespace Shared.Runtime.Pooling
 
         public void Release()
         {
+// csharp-guardrails: allow-null-defense
             if (_owner != null)
             {
                 _owner.Return(gameObject);

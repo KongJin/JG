@@ -98,9 +98,13 @@ namespace Features.Garage.Presentation
             string mobilityNameWhenCatalogMissing = null)
         {
             var role = BuildRoleLabel(firepower, mobility);
+// csharp-guardrails: allow-null-defense
+            var firepowerDisplayName = firepower?.DisplayName ?? firepowerNameWhenCatalogMissing;
+// csharp-guardrails: allow-null-defense
+            var mobilityDisplayName = mobility?.DisplayName ?? mobilityNameWhenCatalogMissing;
             var modules = BuildModuleShorthand(
-                firepower?.DisplayName ?? firepowerNameWhenCatalogMissing,
-                mobility?.DisplayName ?? mobilityNameWhenCatalogMissing);
+                firepowerDisplayName,
+                mobilityDisplayName);
             return $"{role} | {modules}";
         }
 

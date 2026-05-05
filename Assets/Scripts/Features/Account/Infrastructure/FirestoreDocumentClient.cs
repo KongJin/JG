@@ -28,6 +28,7 @@ namespace Features.Account.Infrastructure
             request.downloadHandler = new DownloadHandlerBuffer();
 
             var result = await FirestoreRequestDispatcher.SendRequestSafeAsync(request);
+            // csharp-guardrails: allow-null-defense
             result.body = request.downloadHandler?.text;
             return result;
         }

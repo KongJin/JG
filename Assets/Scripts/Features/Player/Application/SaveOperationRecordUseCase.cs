@@ -21,9 +21,11 @@ namespace Features.Player.Application
             if (record == null)
                 return Result.Failure("Operation record is required.");
 
+// csharp-guardrails: allow-null-defense
             if (_store == null)
                 return Result.Failure("Operation record store is not configured.");
 
+// csharp-guardrails: allow-null-defense
             var records = _store.Load() ?? new RecentOperationRecords();
             records.AddOrReplace(record);
             return _store.Save(records);
@@ -48,9 +50,11 @@ namespace Features.Player.Application
 
         public async Task<Result<RecentOperationRecords>> Execute()
         {
+// csharp-guardrails: allow-null-defense
             var localRecords = _localStore?.Load() ?? new RecentOperationRecords();
             localRecords.Normalize();
 
+// csharp-guardrails: allow-null-defense
             if (_cloudPort == null)
                 return Result<RecentOperationRecords>.Success(localRecords);
 
@@ -58,6 +62,7 @@ namespace Features.Player.Application
             {
                 var cloudRecords = await _cloudPort.LoadOperationRecordsAsync();
                 var mergedRecords = Merge(localRecords, cloudRecords);
+// csharp-guardrails: allow-null-defense
                 var localSave = _localStore?.Save(mergedRecords) ?? Result.Success();
                 if (localSave.IsFailure)
                     _logWarning?.Invoke($"[OperationRecord] Local sync save failed: {localSave.Error}");
@@ -97,6 +102,7 @@ namespace Features.Player.Application
 
             foreach (var record in source.Records)
             {
+// csharp-guardrails: allow-null-defense
                 if (record == null)
                     continue;
 

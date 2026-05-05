@@ -15,6 +15,7 @@ namespace Features.Lobby.Infrastructure.Photon
         {
             if (props == null ||
                 !props.TryGetValue(DifficultyPreset.RoomPropertyKey, out var raw) ||
+// csharp-guardrails: allow-null-defense
                 raw == null)
                 return 0;
 
@@ -45,6 +46,7 @@ namespace Features.Lobby.Infrastructure.Photon
                     out var dnRaw
                 ) && dnRaw is string dnStr
                     ? dnStr
+// csharp-guardrails: allow-null-defense
                     : player.NickName ?? "Player";
             var team =
                 player.CustomProperties.TryGetValue(LobbyPhotonConstants.TeamKey, out var tRaw)
@@ -65,6 +67,7 @@ namespace Features.Lobby.Infrastructure.Photon
             foreach (var player in photonRoom.Players.Values)
             {
                 var member = BuildMemberFromPlayer(player);
+// csharp-guardrails: allow-null-defense
                 if (member != null)
                     members.Add(member);
             }

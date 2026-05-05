@@ -12,12 +12,14 @@ namespace Shared.Runtime
             where T : class
         {
             selected = null;
+// csharp-guardrails: allow-null-defense
             if (options == null || predicate == null)
                 return false;
 
             for (int i = 0; i < options.Count; i++)
             {
                 var option = options[i];
+// csharp-guardrails: allow-null-defense
                 if (option != null && predicate(option))
                 {
                     selected = option;

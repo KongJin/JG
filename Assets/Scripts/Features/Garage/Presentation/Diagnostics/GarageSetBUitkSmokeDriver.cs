@@ -1,11 +1,12 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+using Shared.Attributes;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkSmokeDriver : MonoBehaviour
     {
-        [SerializeField] private GarageSetBUitkPageController _controller;
+        [Required, SerializeField] private GarageSetBUitkPageController _controller;
 
         [Header("Smoke State")]
         [SerializeField] private string _lastRenderStatus;
@@ -122,6 +123,7 @@ namespace Features.Garage.Presentation
 
         private void Subscribe()
         {
+// csharp-guardrails: allow-null-defense
             if (_isSubscribed || _controller == null)
                 return;
 
@@ -132,6 +134,7 @@ namespace Features.Garage.Presentation
 
         private void Unsubscribe()
         {
+// csharp-guardrails: allow-null-defense
             if (!_isSubscribed || _controller == null)
                 return;
 
@@ -142,6 +145,7 @@ namespace Features.Garage.Presentation
 
         private bool CanDrive()
         {
+// csharp-guardrails: allow-null-defense
             if (_controller != null)
                 return true;
 
@@ -163,6 +167,7 @@ namespace Features.Garage.Presentation
 
         private void SyncSnapshot()
         {
+// csharp-guardrails: allow-null-defense
             if (_controller == null)
                 return;
 
@@ -171,13 +176,16 @@ namespace Features.Garage.Presentation
 
         private void ApplySnapshot(GarageSetBUitkPageSnapshot snapshot)
         {
+// csharp-guardrails: allow-null-defense
             _lastRenderStatus = snapshot.RenderStatus ?? string.Empty;
             _selectedSlotIndex = snapshot.SelectedSlotIndex;
             _focusedPart = snapshot.FocusedPart;
+// csharp-guardrails: allow-null-defense
             _partSearchText = snapshot.PartSearchText ?? string.Empty;
             _isSettingsOpen = snapshot.IsSettingsOpen;
             _hasDraftChanges = snapshot.HasDraftChanges;
             _canSave = snapshot.CanSave;
+// csharp-guardrails: allow-null-defense
             _validationText = snapshot.ValidationText ?? string.Empty;
         }
     }

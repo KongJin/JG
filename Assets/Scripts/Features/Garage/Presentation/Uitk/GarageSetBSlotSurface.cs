@@ -71,11 +71,16 @@ namespace Features.Garage.Presentation
             for (int i = 0; i < _slots.Length; i++)
             {
                 int slotIndex = i;
+// csharp-guardrails: allow-null-defense
                 _slotClicked[i] ??= () => SelectSlotFromClick(slotIndex);
                 _slotClearClicked[i] ??= () => SlotClearRequested?.Invoke(slotIndex);
+// csharp-guardrails: allow-null-defense
                 _slotPointerDown[i] ??= evt => BeginSlotDrag(slotIndex, evt);
+// csharp-guardrails: allow-null-defense
                 _slotPointerMove[i] ??= evt => UpdateSlotDrag(slotIndex, evt);
+// csharp-guardrails: allow-null-defense
                 _slotPointerUp[i] ??= evt => EndSlotDrag(slotIndex, evt);
+// csharp-guardrails: allow-null-defense
                 _slotPointerCancel[i] ??= evt => CancelSlotDrag(slotIndex, evt);
                 _slots[i].Card.clicked += _slotClicked[i];
                 _slots[i].ClearButton.clicked += _slotClearClicked[i];
@@ -277,6 +282,7 @@ namespace Features.Garage.Presentation
             bool isSelected = slot != null && slot.IsSelected;
             bool hasPreview = !isEmpty && previewTexture != null;
 
+// csharp-guardrails: allow-null-defense
             binding.CodeLabel.text = slot?.SlotLabel ?? $"UNIT_{slotIndex + 1:00}";
             binding.CodeLabel.style.display = DisplayStyle.None;
             UitkIconRegistry.Apply(binding.IconGlyph, BuildSlotIconId(slot));
@@ -309,8 +315,11 @@ namespace Features.Garage.Presentation
             if (slot == null || slot.IsEmpty)
                 return GarageUitkConstants.Icons.Add;
 
+            // csharp-guardrails: allow-null-defense
             var role = (slot.RoleLabel ?? string.Empty).ToLowerInvariant();
+// csharp-guardrails: allow-null-defense
             var status = (slot.StatusBadgeText ?? string.Empty).ToLowerInvariant();
+// csharp-guardrails: allow-null-defense
             var display = (slot.Title ?? string.Empty).ToLowerInvariant();
             var combined = string.Concat(role, " ", status, " ", display);
 
@@ -326,8 +335,10 @@ namespace Features.Garage.Presentation
         private static string BuildSlotName(GarageSlotViewModel slot, int slotIndex)
         {
             if (slot == null || slot.IsEmpty || string.IsNullOrWhiteSpace(slot.FirepowerId))
+// csharp-guardrails: allow-null-defense
                 return slot?.SlotLabel ?? $"A-{slotIndex + 1:00}";
 
+// csharp-guardrails: allow-null-defense
             string summary = slot.Summary ?? string.Empty;
             int roleSeparatorIndex = summary.LastIndexOf('|');
             if (roleSeparatorIndex >= 0 && roleSeparatorIndex + 1 < summary.Length)

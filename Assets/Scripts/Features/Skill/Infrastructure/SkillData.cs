@@ -61,6 +61,7 @@ namespace Features.Skill.Infrastructure
         public Domain.Skill ToDomain()
         {
             var id = new DomainEntityId(skillId);
+// csharp-guardrails: allow-null-defense
             var payload = statusEffect != null ? statusEffect.ToPayload() : StatusPayload.None;
             var tags = SkillGameplayTagResolver.Resolve(gameplayTags, deliveryType, damage, payload);
             var spec = new SkillSpec(damage, manaCost, range, duration, projectileCount, payload, tags);

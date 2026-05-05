@@ -17,12 +17,15 @@ namespace Features.Garage.Presentation
 
         public bool BindToHost(VisualElement host)
         {
+// csharp-guardrails: allow-null-defense
             if (host == null || _adapter == null)
                 return false;
 
             if (host.Q<VisualElement>(ScreenName) == null)
             {
+// csharp-guardrails: allow-null-defense
                 var source = _document?.visualTreeAsset;
+// csharp-guardrails: allow-null-defense
                 if (source == null)
                     return false;
 
@@ -35,6 +38,7 @@ namespace Features.Garage.Presentation
 
         public bool SetDocumentRootVisible(bool isVisible)
         {
+// csharp-guardrails: allow-null-defense
             if (_document == null)
                 return false;
 
@@ -43,6 +47,7 @@ namespace Features.Garage.Presentation
 
             _document.sortingOrder = 10;
             var root = _document.rootVisualElement;
+            // csharp-guardrails: allow-null-defense
             if (root != null)
                 root.style.display = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
 

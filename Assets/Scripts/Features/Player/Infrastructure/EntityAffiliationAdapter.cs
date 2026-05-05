@@ -44,15 +44,19 @@ namespace Features.Player.Infrastructure
         }
 
         private static bool IsPlayer(DomainEntityId id) =>
+// csharp-guardrails: allow-null-defense
             id.Value != null && id.Value.StartsWith(PlayerPrefix);
 
         private static bool IsBattleEntity(DomainEntityId id) =>
+// csharp-guardrails: allow-null-defense
             id.Value != null && id.Value.StartsWith(BattleEntityPrefix);
 
         private static bool IsEnemy(DomainEntityId id) =>
+// csharp-guardrails: allow-null-defense
             id.Value != null && id.Value.StartsWith(EnemyPrefix);
 
         private static bool IsCore(DomainEntityId id) =>
+// csharp-guardrails: allow-null-defense
             id.Value != null && id.Value.Contains("objective-core");
     }
 }

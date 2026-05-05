@@ -1,4 +1,4 @@
-﻿namespace Features.Skill.Domain
+namespace Features.Skill.Domain
 {
     public sealed class SkillBar
     {

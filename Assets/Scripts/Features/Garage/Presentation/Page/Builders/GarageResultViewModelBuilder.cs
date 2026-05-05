@@ -1,3 +1,4 @@
+using System;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
 namespace Features.Garage.Presentation
@@ -8,6 +9,11 @@ namespace Features.Garage.Presentation
 
         public GarageResultViewModelBuilder(GaragePanelCatalog catalog)
         {
+            if (catalog == null)
+            {
+                throw new ArgumentNullException(nameof(catalog));
+            }
+
             _catalog = catalog;
         }
 
@@ -35,7 +41,7 @@ namespace Features.Garage.Presentation
                 isDirty: evaluation.HasDraftChanges,
                 canSave: evaluation.CanSave,
                 primaryActionLabel: GarageUnitIdentityFormatter.BuildPrimaryActionLabel(evaluation),
-                radar: BuildStatRadarViewModel(evaluation, _catalog?.RadarScale));
+                radar: BuildStatRadarViewModel(evaluation, _catalog.RadarScale));
         }
 
         private static string BuildValidationText(GaragePageState state, GarageDraftEvaluation evaluation)

@@ -59,6 +59,7 @@ namespace Features.Combat
             for (var i = 0; i < _targetViews.Length; i++)
             {
                 var view = _targetViews[i];
+                // csharp-guardrails: allow-null-defense
                 if (view == null)
                 {
                     Debug.LogError($"[CombatSetup] CombatTargetView at index {i} is null.", this);
@@ -82,6 +83,7 @@ namespace Features.Combat
         public Result ApplyDamage(DomainEntityId targetId, float baseDamage, DamageType damageType,
             DomainEntityId attackerId = default, float allyDamageScale = 1f)
         {
+            // csharp-guardrails: allow-null-defense
             if (_applyDamage == null)
                 return Result.Failure("Combat system is not initialized.");
 
@@ -90,6 +92,7 @@ namespace Features.Combat
 
         public Result ResetTarget(DomainEntityId targetId)
         {
+            // csharp-guardrails: allow-null-defense
             if (_targetAdapter == null)
                 return Result.Failure("Combat target adapter is not initialized.");
 

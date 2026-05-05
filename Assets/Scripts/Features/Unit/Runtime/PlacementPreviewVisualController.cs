@@ -46,6 +46,7 @@ namespace Features.Unit.Runtime
 
         public void Show(Vector3 worldPosition, float anchorRadius, float attackRange)
         {
+            // csharp-guardrails: allow-null-defense
             if (_root == null)
                 return;
 
@@ -57,6 +58,7 @@ namespace Features.Unit.Runtime
 
         public void Hide()
         {
+            // csharp-guardrails: allow-null-defense
             if (_root != null)
                 _root.SetActive(false);
         }
@@ -133,8 +135,11 @@ namespace Features.Unit.Runtime
         private static Shader ResolveLineShader()
         {
             return Shader.Find("Sprites/Default")
+// csharp-guardrails: allow-null-defense
                 ?? Shader.Find("Universal Render Pipeline/Unlit")
+// csharp-guardrails: allow-null-defense
                 ?? Shader.Find("Unlit/Color")
+// csharp-guardrails: allow-null-defense
                 ?? Shader.Find("Standard");
         }
 

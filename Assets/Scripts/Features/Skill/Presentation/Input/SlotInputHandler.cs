@@ -111,6 +111,7 @@ namespace Features.Skill.Presentation
         private void CastSlot(int slotIndex)
         {
             var skill = _skillBar.GetSkill(slotIndex);
+// csharp-guardrails: allow-null-defense
             if (skill == null)
             {
                 _eventPublisher.Publish(

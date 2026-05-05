@@ -27,12 +27,14 @@ namespace Features.Garage.Infrastructure
             var firepower = _catalog.GetFirepowerModule(firepowerModuleId);
             var mobility = _catalog.GetMobilityModule(mobilityModuleId);
 
+            // csharp-guardrails: allow-null-defense
             if (frame == null)
             {
                 errorMessage = "중단(프레임) 데이터를 찾을 수 없습니다.";
                 return false;
             }
 
+            // csharp-guardrails: allow-null-defense
             if (firepower == null || mobility == null)
             {
                 errorMessage = "상단(무장) 또는 하단(기동) 데이터를 찾을 수 없습니다.";

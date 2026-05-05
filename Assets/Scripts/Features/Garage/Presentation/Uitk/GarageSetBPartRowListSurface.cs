@@ -50,15 +50,20 @@ namespace Features.Garage.Presentation
         {
             ResetScrollIfListChanged(partList);
             _lastPartList = partList;
+// csharp-guardrails: allow-null-defense
             _partListTitleLabel.text = BuildPartListTitle(partList?.ActiveSlot ?? GarageNovaPartPanelSlot.Frame);
+// csharp-guardrails: allow-null-defense
             _partListCountLabel.text = partList?.CountText ?? "부품 0개";
+// csharp-guardrails: allow-null-defense
             _partSearchField.SetValueWithoutNotify(partList?.SearchText ?? string.Empty);
+// csharp-guardrails: allow-null-defense
             EnsurePartRowCapacity(partList?.Options?.Count ?? 0);
             RenderVisiblePartRows(partList);
         }
 
         public bool ScrollVisibleOptions(int deltaRows)
         {
+// csharp-guardrails: allow-null-defense
             if (_lastPartList?.Options == null || _lastPartList.Options.Count <= _partRows.Count)
                 return false;
 
@@ -95,6 +100,7 @@ namespace Features.Garage.Presentation
             for (int i = 0; i < _partRows.Count; i++)
             {
                 var optionIndex = _visibleStartIndex + i;
+// csharp-guardrails: allow-null-defense
                 var option = partList != null && partList.Options != null && optionIndex < partList.Options.Count
                     ? partList.Options[optionIndex]
                     : null;
@@ -104,7 +110,9 @@ namespace Features.Garage.Presentation
 
         private void ResetScrollIfListChanged(GarageNovaPartsPanelViewModel partList)
         {
+// csharp-guardrails: allow-null-defense
             var nextSlot = partList?.ActiveSlot ?? GarageNovaPartPanelSlot.Frame;
+// csharp-guardrails: allow-null-defense
             var nextSearch = partList?.SearchText ?? string.Empty;
             if (nextSlot == _lastSlot && string.Equals(nextSearch, _lastSearchText, StringComparison.Ordinal))
                 return;
@@ -149,6 +157,7 @@ namespace Features.Garage.Presentation
         private void BindPartRow(PartRowBinding binding)
         {
             binding.Row.focusable = false;
+// csharp-guardrails: allow-null-defense
             binding.Clicked ??= () => SelectPartRow(binding);
             binding.Row.clicked += binding.Clicked;
         }
@@ -162,6 +171,7 @@ namespace Features.Garage.Presentation
             }
 
             var option = binding.Option;
+// csharp-guardrails: allow-null-defense
             if (option != null)
                 OptionSelected?.Invoke(new GarageNovaPartSelection(option.Slot, option.Id));
         }
@@ -174,6 +184,7 @@ namespace Features.Garage.Presentation
                 return;
 
             binding.NameLabel.text = string.IsNullOrWhiteSpace(option.DisplayName) ? option.Id : option.DisplayName;
+// csharp-guardrails: allow-null-defense
             binding.MetaLabel.text = option.MetaText ?? string.Empty;
             binding.BadgeLabel.text = BuildPartBadgeText(option);
             binding.BadgeLabel.style.display = string.IsNullOrWhiteSpace(binding.BadgeLabel.text)
@@ -207,6 +218,7 @@ namespace Features.Garage.Presentation
 
         protected override void DisposeSurface()
         {
+            // csharp-guardrails: allow-null-defense
             if (_partSearchField != null && _searchCallback != null)
                 _partSearchField.UnregisterValueChangedCallback(_searchCallback);
 
@@ -218,6 +230,7 @@ namespace Features.Garage.Presentation
 
         private void UnbindPartRow(PartRowBinding binding)
         {
+// csharp-guardrails: allow-null-defense
             if (binding.Row != null && binding.Clicked != null)
                 binding.Row.clicked -= binding.Clicked;
         }

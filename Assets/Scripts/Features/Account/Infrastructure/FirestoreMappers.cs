@@ -99,7 +99,9 @@ namespace Features.Account.Infrastructure
             try
             {
                 var wrapper = JsonUtility.FromJson<RosterWrapper>(jsonStr);
+                // csharp-guardrails: allow-null-defense
                 wrapper?.roster?.Normalize();
+                // csharp-guardrails: allow-null-defense
                 return wrapper?.roster;
             }
             catch (Exception ex)
@@ -134,6 +136,7 @@ namespace Features.Account.Infrastructure
             try
             {
                 var wrapper = JsonUtility.FromJson<OperationRecordWrapper>(jsonStr);
+                // csharp-guardrails: allow-null-defense
                 var records = wrapper?.records ?? new RecentOperationRecords();
                 records.Normalize();
                 return records;

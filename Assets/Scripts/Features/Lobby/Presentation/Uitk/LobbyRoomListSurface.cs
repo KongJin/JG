@@ -48,12 +48,16 @@ namespace Features.Lobby.Presentation
         public void Render(LobbyRoomListViewModel viewModel)
         {
             viewModel ??= LobbyRoomListViewModel.Empty;
+            // csharp-guardrails: allow-null-defense
             if (_countLabel != null)
                 _countLabel.text = viewModel.CountText;
+// csharp-guardrails: allow-null-defense
             if (_emptyBody != null)
                 _emptyBody.text = viewModel.EmptyText;
 
+// csharp-guardrails: allow-null-defense
             _roomList?.Clear();
+// csharp-guardrails: allow-null-defense
             var hasRooms = viewModel.Rows != null && viewModel.Rows.Count > 0;
             UitkElementUtility.SetDisplay(_roomListViewport, hasRooms);
             UitkElementUtility.SetDisplay(_roomList, hasRooms);
@@ -64,6 +68,7 @@ namespace Features.Lobby.Presentation
                 return;
 
             for (var i = 0; i < viewModel.Rows.Count; i++)
+// csharp-guardrails: allow-null-defense
                 _roomList?.Add(CreateRoomRow(viewModel.Rows[i]));
         }
 
