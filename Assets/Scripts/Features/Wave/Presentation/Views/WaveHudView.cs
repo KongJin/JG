@@ -2,6 +2,7 @@ using System;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Shared.EventBus;
+using Shared.Localization;
 using UnityEngine;
 
 namespace Features.Wave.Presentation
@@ -51,7 +52,7 @@ namespace Features.Wave.Presentation
 
         private void OnCountdownStarted(WaveCountdownStartedEvent e)
         {
-            WaveText = $"Wave {e.WaveIndex + 1}/{e.TotalWaves}";
+            WaveText = $"{GameText.Get("battle.wave")} {e.WaveIndex + 1}/{e.TotalWaves}";
             _countdownRemaining = e.Duration;
             _isCountingDown = true;
             IsCountdownVisible = true;
@@ -63,19 +64,19 @@ namespace Features.Wave.Presentation
         private void OnWaveStarted(WaveStartedEvent e)
         {
             _isCountingDown = false;
-            WaveText = $"Wave {e.WaveIndex + 1}/{e.TotalWaves}";
+            WaveText = $"{GameText.Get("battle.wave")} {e.WaveIndex + 1}/{e.TotalWaves}";
             IsCountdownVisible = false;
             SetFirstWaveDeckHintVisible(false);
         }
 
         private void OnWaveCleared(WaveClearedEvent e)
         {
-            ShowStatus("Wave Cleared!");
+            ShowStatus("웨이브 완료!");
         }
 
         private void OnWaveHydrated(WaveHydratedEvent e)
         {
-            WaveText = $"Wave {e.WaveIndex + 1}/{e.TotalWaves}";
+            WaveText = $"{GameText.Get("battle.wave")} {e.WaveIndex + 1}/{e.TotalWaves}";
             if (e.State == WaveState.Countdown && e.CountdownRemaining > 0f)
             {
                 _countdownRemaining = e.CountdownRemaining;
@@ -101,7 +102,7 @@ namespace Features.Wave.Presentation
         private void SetFirstWaveDeckHintVisible(bool visible)
         {
             IsFirstWaveDeckHintVisible = visible;
-            FirstWaveDeckHintText = visible ? "슬롯 선택 후 전장을 탭해 배치하세요." : string.Empty;
+            FirstWaveDeckHintText = visible ? GameText.Get("battle.tap_field_to_place") : string.Empty;
         }
     }
 }

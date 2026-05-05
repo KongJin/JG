@@ -4,6 +4,7 @@ using Features.Player.Application.Events;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Shared.EventBus;
+using Shared.Localization;
 using UnityEngine;
 
 namespace Features.Wave.Presentation
@@ -34,7 +35,7 @@ namespace Features.Wave.Presentation
                 return;
 
             _gameEnded = true;
-            Show("버텨냈다", isVictory: true);
+            Show(GameText.Get("records.held"), isVictory: true);
         }
 
         private void OnDefeat(WaveDefeatEvent e)
@@ -43,7 +44,7 @@ namespace Features.Wave.Presentation
                 return;
 
             _gameEnded = true;
-            Show("거점 붕괴", isVictory: false);
+            Show(GameText.Get("records.core_destroyed"), isVictory: false);
         }
 
         private void OnWaveHydrated(WaveHydratedEvent e)
@@ -54,14 +55,14 @@ namespace Features.Wave.Presentation
                     if (!_gameEnded)
                     {
                         _gameEnded = true;
-                        Show("버텨냈다", isVictory: true);
+                        Show(GameText.Get("records.held"), isVictory: true);
                     }
                     break;
                 case WaveState.Defeat:
                     if (!_gameEnded)
                     {
                         _gameEnded = true;
-                        Show("거점 붕괴", isVictory: false);
+                        Show(GameText.Get("records.core_destroyed"), isVictory: false);
                     }
                     break;
             }
@@ -71,16 +72,16 @@ namespace Features.Wave.Presentation
         {
             var playTimeMin = e.PlayTimeSeconds / 60f;
             var playTimeSec = e.PlayTimeSeconds % 60f;
-            var resultLabel = e.IsVictory ? "버텨냈다" : "거점 붕괴";
+            var resultLabel = e.IsVictory ? GameText.Get("records.held") : GameText.Get("records.core_destroyed");
             var builder = new StringBuilder();
             builder.AppendLine($"결과: {resultLabel}");
-            builder.AppendLine($"도달 공세: {e.ReachedWave}");
-            builder.AppendLine($"작전 시간: {playTimeMin:F0}분 {playTimeSec:F0}초");
+            builder.AppendLine($"도달 웨이브: {e.ReachedWave}");
+            builder.AppendLine(GameText.Format("records.play_time", playTimeMin, playTimeSec));
 
             if (e.CoreMaxHealth > 0f)
             {
                 var corePercent = Math.Max(0f, Math.Min(100f, e.CoreRemainingHealth / e.CoreMaxHealth * 100f));
-                builder.AppendLine($"거점 내구도: {corePercent:F0}%");
+                builder.AppendLine($"코어 내구도: {corePercent:F0}%");
             }
 
             if (e.ContributionCards.Length > 0)
@@ -96,7 +97,7 @@ namespace Features.Wave.Presentation
             else
             {
                 builder.AppendLine();
-                builder.AppendLine($"기체 전개: {e.SummonCount}");
+                builder.AppendLine(GameText.Format("records.unit_deployed", e.SummonCount));
                 builder.AppendLine($"압박 정리: {e.UnitKillCount}");
             }
 
@@ -108,7 +109,7 @@ namespace Features.Wave.Presentation
             IsPanelVisible = true;
             IsVictory = isVictory;
             ResultText = message;
-            StatsText = $"결과: {(isVictory ? "버텨냈다" : "거점 붕괴")}";
+            StatsText = $"결과: {(isVictory ? GameText.Get("records.held") : GameText.Get("records.core_destroyed"))}";
         }
 
         public void ReturnToLobby()

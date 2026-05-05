@@ -10,7 +10,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="top-title-stack">
                     <ui:Label text="격납고 관리" class="screen-title" />
-                    <ui:Label name="CommandStatusLabel" text="편성 상태 대기 | 기체 3/4" class="command-status" />
+                    <ui:Label name="CommandStatusLabel" text="덱 저장 상태 | 유닛 3/4" class="command-status" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:Button name="SettingsButton" class="icon-button settings-button" tooltip="Settings">
@@ -131,7 +131,7 @@
                     <ui:VisualElement class="preview-head">
                         <ui:Label name="PreviewTitleLabel" text="설계도 확인" class="preview-title" />
                         <ui:VisualElement name="PreviewTagRow" class="tag-row">
-                            <ui:Label name="PreviewTag01Label" text="대장갑" class="mini-tag" />
+                            <ui:Label name="PreviewTag01Label" text="방어 특화" class="mini-tag" />
                             <ui:Label name="PreviewTag02Label" text="장거리" class="mini-tag" />
                         </ui:VisualElement>
                     </ui:VisualElement>
@@ -140,7 +140,7 @@
                         <ui:VisualElement class="reticle-corner reticle-corner--tr" />
                         <ui:VisualElement class="reticle-corner reticle-corner--bl" />
                         <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                        <ui:Label name="UnitPreviewLabel" text="기체 A-01" class="unit-core-label" />
+                        <ui:Label name="UnitPreviewLabel" text="유닛 A-01" class="unit-core-label" />
                     </ui:VisualElement>
                     <ui:VisualElement name="PreviewPowerBar" class="power-bar">
                         <ui:VisualElement class="power-track">
@@ -154,7 +154,7 @@
             <ui:VisualElement name="PartFocusBar" class="part-focus-bar">
                 <ui:Button name="MobilityTabButton" class="focus-tab focus-tab--active">
                     <ui:VisualElement name="MobilityTabIcon" class="uitk-icon uitk-icon--speed uitk-icon--small uitk-icon--blue focus-tab-icon focus-tab-icon--active" />
-                    <ui:Label text="기동" class="focus-tab-label" />
+                    <ui:Label text="이동" class="focus-tab-label" />
                 </ui:Button>
                 <ui:Button name="FrameTabButton" class="focus-tab">
                     <ui:VisualElement name="FrameTabIcon" class="uitk-icon uitk-icon--security uitk-icon--small focus-tab-icon" />
@@ -175,11 +175,11 @@
                         <ui:VisualElement class="reticle-corner reticle-corner--tr" />
                         <ui:VisualElement class="reticle-corner reticle-corner--bl" />
                         <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                        <ui:Label name="SelectedPartPreviewLabel" text="기동" class="selected-part-preview-label" />
+                        <ui:Label name="SelectedPartPreviewLabel" text="이동" class="selected-part-preview-label" />
                     </ui:VisualElement>
                     <ui:VisualElement name="SelectedPartStatsPanel" class="selected-part-stats-panel">
                         <ui:Label name="SelectedPartPreviewKickerLabel" class="part-preview-kicker" text="선택 부품" />
-                        <ui:Label name="SelectedPartPreviewTitleLabel" text="기동 선택" class="part-preview-title" />
+                        <ui:Label name="SelectedPartPreviewTitleLabel" text="이동 선택" class="part-preview-title" />
                         <ui:Label name="SelectedPartEnergyLabel" text="EN 0" class="part-preview-energy" />
                         <ui:Label name="SelectedPartPreviewMetaLabel" text="HP+ 0 | MOV 0.0" class="part-preview-meta" />
                         <ui:VisualElement name="SelectedPartStatBars" class="selected-part-stat-bars">
@@ -210,7 +210,7 @@
 
                 <ui:VisualElement name="PartListCard" class="part-list-card">
                     <ui:VisualElement class="part-list-head">
-                        <ui:Label name="PartListTitleLabel" text="기동 선택" class="part-list-title" />
+                        <ui:Label name="PartListTitleLabel" text="이동 선택" class="part-list-title" />
                         <ui:Label name="PartListCountLabel" text="부품 32개" class="part-list-count" />
                     </ui:VisualElement>
                     <ui:TextField name="PartSearchField" label="부품 검색" class="part-search-field" value="" />
@@ -277,7 +277,7 @@
 
             <ui:VisualElement name="SaveDock" class="save-dock">
                 <ui:Label name="SaveValidationLabel" class="save-validation" text="" />
-                <ui:Button name="SaveButton" text="저장 및 배치" class="save-button" />
+                <ui:Button name="SaveButton" text="저장 및 시작 준비" class="save-button" />
             </ui:VisualElement>
         </ui:ScrollView>
     </ui:VisualElement>

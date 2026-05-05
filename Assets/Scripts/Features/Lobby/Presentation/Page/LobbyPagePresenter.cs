@@ -7,6 +7,7 @@ using Features.Lobby.Application.Ports;
 using Features.Player.Domain;
 using Shared.Gameplay;
 using Shared.Kernel;
+using Shared.Localization;
 using UnityEngine;
 
 namespace Features.Lobby.Presentation
@@ -92,8 +93,8 @@ namespace Features.Lobby.Presentation
                     BuildRoomMeta(memberCount, room.Capacity, room.DifficultyPresetId),
                     BuildRoomStatus(canJoin),
                     canJoin
-                        ? "작전 세부를 확인한 뒤 참여할 수 있습니다."
-                        : "현재 분대 정원이 가득 차 대기 중입니다.",
+                        ? GameText.Get("lobby.room_join_hint")
+                        : GameText.Get("lobby.full_room_body"),
                     memberCount,
                     room.Capacity,
                     canJoin);
@@ -122,8 +123,8 @@ namespace Features.Lobby.Presentation
                     BuildRoomMeta(room.PlayerCount, room.MaxPlayers, room.DifficultyPresetId),
                     BuildRoomStatus(canJoin),
                     canJoin
-                        ? "현재 열린 작전입니다. 참여 전에 분대 현황을 확인하세요."
-                        : "현재 참여할 수 없는 작전입니다. 다른 열린 방을 선택하세요.",
+                        ? GameText.Get("lobby.open_room_body")
+                        : GameText.Get("lobby.closed_room_body"),
                     room.PlayerCount,
                     room.MaxPlayers,
                     canJoin);
@@ -144,7 +145,7 @@ namespace Features.Lobby.Presentation
                 if (member.Id.Equals(localMemberId))
                     localIsReady = member.IsReady;
 
-                var state = member.IsReady ? "READY" : "WAIT";
+                var state = member.IsReady ? GameText.Get("common.ready") : GameText.Get("common.waiting");
                 memberRows.Add($"{member.DisplayName} | {member.Team} | {state}");
             }
 
@@ -153,7 +154,7 @@ namespace Features.Lobby.Presentation
                 $"{members.Count}/{room.Capacity} | {DifficultyPreset.ToShortLabel(room.DifficultyPresetId)}",
                 memberRows,
                 localIsReady,
-                localIsReady ? "Cancel" : "Ready",
+                localIsReady ? "취소" : GameText.Get("common.ready"),
                 room.OwnerId.Equals(localMemberId));
         }
 
@@ -169,28 +170,28 @@ namespace Features.Lobby.Presentation
                 ? "LOCAL"
                 : profile.authType.Trim().ToUpperInvariant();
             var uidText = string.IsNullOrWhiteSpace(profile?.uid)
-                ? "UID WAIT"
-                : $"UID {Shorten(profile.uid)}";
+                ? "계정 연결 대기 중"
+                : $"계정 {Shorten(profile.uid)}";
 // csharp-guardrails: allow-null-defense
             var garageCount = accountData?.GarageRoster?.Count ?? 0;
             var settings = accountData?.Settings;
 
             return new LobbyAccountViewModel(
                 displayName,
-                authType == "GOOGLE" ? "G-LINK OK" : "G-LINK WAIT",
+                authType == "GOOGLE" ? "Google 연결됨" : "Google 연결 대기 중",
                 uidText,
                 garageCount > 0 ? $"{garageCount}/4" : "로컬",
                 $"{operationCount}/5",
                 authType == "GOOGLE" ? "준비" : "대기",
-                authType == "GOOGLE" ? "동기화 가능" : "Google 연결 필요",
-                garageCount > 0 ? $"편성 {garageCount}기" : "편성 대기",
+                authType == "GOOGLE" ? "저장 가능" : "Google 연결 필요",
+                garageCount > 0 ? $"유닛 {garageCount}개" : GameText.Get("lobby.deck_waiting"),
                 $"{operationCount}/5",
                 "정상",
-                "READY",
+                GameText.Get("common.ready"),
                 $"{Mathf.RoundToInt((settings?.bgmVolume ?? 0.8f) * 100f)}%",
                 $"{Mathf.RoundToInt((settings?.sfxVolume ?? 1f) * 100f)}%",
-                "LOCAL FIRST",
-                authType == "GOOGLE" ? "READY" : "WAIT");
+                "로컬 우선",
+                authType == "GOOGLE" ? GameText.Get("common.ready") : GameText.Get("common.waiting"));
         }
 
         public LobbyGarageSummaryViewModel BuildGarageSummary(AccountData accountData)
@@ -203,9 +204,9 @@ namespace Features.Lobby.Presentation
             if (isReady)
             {
                 return new LobbyGarageSummaryViewModel(
-                    "출격 가능",
-                    $"현역 {activeCount}/{Features.Garage.Domain.GarageRoster.MaxSlots}",
-                    "저장된 편성이 최소 출격 기준을 충족합니다.",
+                    GameText.Get("lobby.deck_ready"),
+                    $"저장된 유닛 {activeCount}/{Features.Garage.Domain.GarageRoster.MaxSlots}",
+                    GameText.Get("lobby.deck_saved_ready"),
                     activeCount,
                     Features.Garage.Domain.GarageRoster.MaxSlots,
                     isReady: true);
@@ -213,11 +214,11 @@ namespace Features.Lobby.Presentation
 
             var missingCount = Mathf.Max(0, Features.Garage.Domain.GarageRoster.MinReadySlots - activeCount);
             return new LobbyGarageSummaryViewModel(
-                activeCount > 0 ? "편성 보강 필요" : "편성 대기",
-                $"현역 {activeCount}/{Features.Garage.Domain.GarageRoster.MaxSlots}",
+                activeCount > 0 ? GameText.Get("lobby.deck_need_more") : GameText.Get("lobby.deck_waiting"),
+                $"저장된 유닛 {activeCount}/{Features.Garage.Domain.GarageRoster.MaxSlots}",
                 missingCount > 0
                     ? $"최소 {Features.Garage.Domain.GarageRoster.MinReadySlots}기까지 {missingCount}기 부족합니다."
-                    : "저장된 편성을 확인하세요.",
+                    : "저장된 덱을 확인하세요.",
                 activeCount,
                 Features.Garage.Domain.GarageRoster.MaxSlots,
                 isReady: false);
@@ -234,8 +235,8 @@ namespace Features.Lobby.Presentation
                 latest,
                 BuildRecentOperations(list),
                 new LobbyOperationTraceViewModel(
-                    $"{list.Count}/5 RECORDS STORED",
-                    list.Count > 0 ? "RECENT DATA LOADED" : "NO OPERATIONS"));
+                    $"기록 {list.Count}/5 저장됨",
+                    list.Count > 0 ? "최근 기록 불러옴" : GameText.Get("common.records_empty")));
         }
 
         private static IReadOnlyList<LobbyOperationRowViewModel> BuildRecentOperations(
@@ -254,7 +255,7 @@ namespace Features.Lobby.Presentation
                     held ? "operation-row-line" : "operation-row-line operation-row-line--danger",
                     ResultText(record),
                     held ? "operation-title operation-title--held" : "operation-title operation-title--danger",
-                    $"{FormatClock(record.endedAtUnixMs)} / 공세 {record.reachedWave:00} / {BuildRosterSummary(record)}",
+                    $"{FormatClock(record.endedAtUnixMs)} / {GameText.Get("battle.wave")} {record.reachedWave:00} / {BuildRosterSummary(record)}",
                     $"CORE {FormatCore(record)}",
                     held ? "operation-core" : "operation-core operation-core--danger"));
             }
@@ -296,7 +297,7 @@ namespace Features.Lobby.Presentation
         private static string Shorten(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                return "WAIT";
+                return GameText.Get("common.waiting");
 
             value = value.Trim();
             return value.Length <= 8 ? value : value.Substring(0, 8);
@@ -304,7 +305,7 @@ namespace Features.Lobby.Presentation
 
         private static string ResultText(OperationRecord record)
         {
-            return record?.result == OperationRecordResult.BaseCollapsed ? "거점 붕괴" : "버텨냄";
+            return record?.result == OperationRecordResult.BaseCollapsed ? GameText.Get("records.core_destroyed") : GameText.Get("records.held");
         }
 
         private static string FormatClock(long unixMs)
@@ -332,21 +333,21 @@ namespace Features.Lobby.Presentation
         private static string PressureText(OperationRecord record)
         {
             if (record == null)
-                return "작전 기록 대기 중";
+                return GameText.Get("common.records_empty");
 
             if (record.result == OperationRecordResult.BaseCollapsed)
-                return "코어 방어선이 붕괴되었습니다. 다음 편성에서 방어/회복 축을 보강하세요.";
+                return GameText.Get("records.core_pressure_lost");
 
             return record.pressureSummaryKey == "pressure.core-collapsed"
                 ? "거점 압박이 치명 단계까지 상승했습니다."
-                : "방어선 유지. 최근 편성의 성과가 작전 기록에 반영되었습니다.";
+                : GameText.Get("records.core_pressure_held");
         }
 
         private static string BuildRosterSummary(OperationRecord record)
         {
 // csharp-guardrails: allow-null-defense
             if (record?.primaryRosterUnits == null || record.primaryRosterUnits.Count == 0)
-                return "NO ROSTER";
+                return "덱 없음";
 
             var units = new List<string>(record.primaryRosterUnits.Count);
             for (var i = 0; i < record.primaryRosterUnits.Count; i++)

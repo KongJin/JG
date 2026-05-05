@@ -6,6 +6,7 @@ using Features.Player.Domain;
 using Features.Unit.Application;
 using Shared.EventBus;
 using Shared.Attributes;
+using Shared.Localization;
 using Shared.Math;
 using Shared.Runtime;
 using Shared.Runtime.Sound;
@@ -229,7 +230,7 @@ namespace Features.Garage.Presentation
 
 // csharp-guardrails: allow-null-defense
             _initializeOperation?.Dispose();
-            _initializeOperation = new AsyncOperationHandle("로스터 초기화 중...");
+            _initializeOperation = new AsyncOperationHandle(GameText.Get("garage.roster_initializing"));
             Render();
 
             try
@@ -342,7 +343,7 @@ namespace Features.Garage.Presentation
 
 // csharp-guardrails: allow-null-defense
             _saveOperation?.Dispose();
-            _saveOperation = new AsyncOperationHandle("저장 중...");
+            _saveOperation = new AsyncOperationHandle(GameText.Get("garage.save_in_progress"));
             Render(); // 로딩 상태 표시
 
             try

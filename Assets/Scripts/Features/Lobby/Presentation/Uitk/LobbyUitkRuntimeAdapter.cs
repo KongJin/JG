@@ -3,6 +3,7 @@ using Features.Garage.Presentation;
 using Features.Lobby.Domain;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Localization;
 using Shared.Math;
 using Shared.Runtime.Sound;
 using Shared.Sound;
@@ -321,20 +322,20 @@ namespace Features.Lobby.Presentation
                         _lobbyPage,
                         _lobbyNav,
                         "로비",
-                        "동기화 대기"),
+                        GameText.Get("common.save_waiting")),
                     new LobbyShellPageRoute(
                         LobbyShellPageId.Garage,
                         _garagePage,
                         _garageNav,
                         "차고",
-                        "출격 편성 동기화",
+                        "덱 저장 상태",
                         EnsureGarageSurface),
                     new LobbyShellPageRoute(
                         LobbyShellPageId.Records,
                         _recordsPage,
                         _recordsNav,
-                        "기록",
-                        "LOCAL LOG / SYNC PENDING",
+                        GameText.Get("records.title"),
+                        "로컬 저장 / 저장 대기 중",
 // csharp-guardrails: allow-null-defense
                         () => _auxiliarySurfaces?.EnsureRecords()),
                     new LobbyShellPageRoute(
@@ -342,7 +343,7 @@ namespace Features.Lobby.Presentation
                         _accountPage,
                         null,
                         "계정",
-                        "NOVA_SYS / CFG.17",
+                        "저장 설정",
 // csharp-guardrails: allow-null-defense
                         () => _auxiliarySurfaces?.EnsureAccount()),
                     new LobbyShellPageRoute(
@@ -350,7 +351,7 @@ namespace Features.Lobby.Presentation
                         _connectionPage,
                         null,
                         "연결",
-                        "SESSION CHECK",
+                        GameText.Get("common.connection_checking"),
 // csharp-guardrails: allow-null-defense
                         () => _auxiliarySurfaces?.EnsureConnection())
                 },

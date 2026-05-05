@@ -1,3 +1,4 @@
+using Shared.Localization;
 using UnityEngine;
 
 namespace Features.Unit.Presentation
@@ -13,9 +14,9 @@ namespace Features.Unit.Presentation
         public bool IsVisible { get; private set; }
         public bool IsError { get; private set; }
 
-        public void Show(string message = "배치 영역 밖입니다!")
+        public void Show(string message = null)
         {
-            ShowError(message);
+            ShowError(string.IsNullOrWhiteSpace(message) ? GameText.Get("battle.outside_place_area") : message);
         }
 
         public void ShowError(string message)

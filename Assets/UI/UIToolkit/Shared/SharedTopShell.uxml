@@ -9,7 +9,7 @@
         </ui:Button>
         <ui:VisualElement class="shared-title-stack">
             <ui:Label name="ShellTitleLabel" text="격납고 관리" class="shared-title" />
-            <ui:Label name="ShellStateLabel" text="동기화 완료" class="shared-state" />
+            <ui:Label name="ShellStateLabel" text="저장 완료" class="shared-state" />
         </ui:VisualElement>
         <ui:Button name="ShellSettingsButton" class="shared-icon-button" tooltip="Settings">
             <ui:VisualElement class="uitk-icon uitk-icon--settings uitk-icon--muted" />

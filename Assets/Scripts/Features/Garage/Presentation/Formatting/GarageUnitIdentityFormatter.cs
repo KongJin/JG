@@ -1,3 +1,5 @@
+using Shared.Localization;
+
 namespace Features.Garage.Presentation
 {
     public enum GarageUnitServiceTagKind
@@ -35,8 +37,8 @@ namespace Features.Garage.Presentation
         private const float LongRangeFirepowerMinRange = 6f;
         private const float InfiltrationMoveRangeMin = 6f;
 
-        public const string EmptyCallsign = "기체 대기";
-        public const string PendingServiceTag = "전적 기록 대기중";
+        public const string EmptyCallsign = "유닛 대기";
+        public const string PendingServiceTag = "최근 기록 없음";
 
         public static string BuildCallsign(int slotIndex)
         {
@@ -46,16 +48,16 @@ namespace Features.Garage.Presentation
 
         public static string BuildSlotLabel(int slotIndex, bool hasLoadout)
         {
-            return hasLoadout ? BuildCallsign(slotIndex) : $"기체 {slotIndex + 1:00}";
+            return hasLoadout ? BuildCallsign(slotIndex) : $"유닛 {slotIndex + 1:00}";
         }
 
-        public static string BuildEmptySlotTitle() => "기체 대기";
+        public static string BuildEmptySlotTitle() => GameText.Get("garage.unit_waiting");
 
-        public static string BuildEmptyStatusBadge() => "대기";
+        public static string BuildEmptyStatusBadge() => GameText.Get("garage.status_waiting");
 
-        public static string BuildDraftStatusBadge(bool hasLoadout) => hasLoadout ? "임시" : "조립중";
+        public static string BuildDraftStatusBadge(bool hasLoadout) => hasLoadout ? GameText.Get("garage.status_draft") : "조립 중";
 
-        public static string BuildActiveStatusBadge() => "현역";
+        public static string BuildActiveStatusBadge() => GameText.Get("garage.status_saved");
 
         public static string BuildTitle(int slotIndex, string frameName, bool hasLoadout)
         {
@@ -75,13 +77,13 @@ namespace Features.Garage.Presentation
             if (mobility.MoveRange <= FrontlineHoldMoveRangeMax)
             {
                 if (firepower != null && firepower.Range >= LongRangeFirepowerMinRange)
-                    return "고정 화력";
+                    return GameText.Get("garage.fixed_firepower");
 
-                return "전선 고정";
+                return "안정형";
             }
 
             if (mobility.MoveRange >= InfiltrationMoveRangeMin)
-                return "침투 추적";
+                return "빠른 추적";
 
             return "균형 지원";
         }
@@ -112,11 +114,11 @@ namespace Features.Garage.Presentation
         {
             return tag.Kind switch
             {
-                GarageUnitServiceTagKind.LongestFrontlineHold => $"최장 전선 유지 {ClampNonNegative(tag.Value)}초",
+                GarageUnitServiceTagKind.LongestFrontlineHold => $"가장 오래 버틴 유닛 {ClampNonNegative(tag.Value)}초",
                 GarageUnitServiceTagKind.CoreNearBlocks => $"코어 근접 차단 {ClampNonNegative(tag.Value)}회",
-                GarageUnitServiceTagKind.MostRedeployed => "최다 재출격 기체",
+                GarageUnitServiceTagKind.MostRedeployed => GameText.Get("garage.most_reused_unit"),
                 GarageUnitServiceTagKind.CrisisSurvivor => "위기 순간 생존",
-                GarageUnitServiceTagKind.RecentOperationContributor => "최근 주요 기여 기체",
+                GarageUnitServiceTagKind.RecentOperationContributor => GameText.Get("garage.recent_contributor_unit"),
                 GarageUnitServiceTagKind.Pending => PendingServiceTag,
                 _ => PendingServiceTag,
             };
@@ -125,27 +127,27 @@ namespace Features.Garage.Presentation
         public static string BuildRosterStatusText(int activeCount, int missingCount, bool readyEligible, bool hasDraftChanges, bool canSave)
         {
             if (readyEligible)
-                return $"출격 편성 동기화 | 현역 {activeCount}/{Domain.GarageRoster.MaxSlots}";
+                return GameText.Format("garage.deck_sync_status", activeCount, Domain.GarageRoster.MaxSlots);
 
             if (hasDraftChanges)
             {
                 return canSave
-                    ? "기체 편성 갱신 대기 | 저장 가능"
-                    : "기체 편성 임시안 | 저장 보류";
+                    ? GameText.Get("garage.deck_update_ready")
+                    : GameText.Get("garage.deck_update_pending");
             }
 
-            return $"현역 {activeCount}/{Domain.GarageRoster.MinReadySlots} | 기체 +{missingCount} 필요";
+            return GameText.Format("garage.deck_missing_units", activeCount, Domain.GarageRoster.MinReadySlots, missingCount);
         }
 
         public static string BuildPrimaryActionLabel(GarageDraftEvaluation evaluation)
         {
             if (evaluation.CanSave)
-                return "출격 편성 저장";
+                return GameText.Get("garage.deck_save");
 
             if (!evaluation.HasDraftChanges)
-                return "현역 편성";
+                return GameText.Get("garage.deck_saved");
 
-            return "임시 편성";
+            return GameText.Get("garage.deck_draft");
         }
 
         public static string CompactPartName(string value)

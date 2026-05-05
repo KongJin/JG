@@ -11,7 +11,7 @@
             </ui:Button>
             <ui:VisualElement class="shared-title-stack">
                 <ui:Label name="ShellTitleLabel" text="로비" class="shared-title" />
-                <ui:Label name="ShellStateLabel" text="동기화 대기" class="shared-state" />
+                <ui:Label name="ShellStateLabel" text="저장 대기 중" class="shared-state" />
             </ui:VisualElement>
             <ui:Button name="ShellSettingsButton" class="shared-icon-button" tooltip="Settings">
                 <ui:VisualElement class="uitk-icon uitk-icon--settings uitk-icon--text" />
@@ -24,7 +24,7 @@
                     <ui:VisualElement class="lobby-section-head">
                         <ui:VisualElement class="lobby-section-title-stack">
                             <ui:Label text="열린 방" class="uitk-section-title" />
-                            <ui:Label text="진행 가능한 작전을 선택하고 상세 패널에서 참여하세요." class="lobby-section-body" />
+                            <ui:Label text="참가할 방을 선택하고 정보를 확인하세요." class="lobby-section-body" />
                         </ui:VisualElement>
                         <ui:Label name="RoomCountLabel" text="열린 방 0개" class="lobby-section-count" />
                     </ui:VisualElement>
@@ -34,10 +34,10 @@
                             <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--large uitk-icon--blue" />
                         </ui:VisualElement>
                         <ui:Label text="열린 방이 없습니다." class="lobby-empty-title" />
-                        <ui:Label name="RoomListEmptyStateBodyLabel" text="새 작전을 개설하면 분대원을 받을 수 있습니다." class="lobby-empty-body" />
+                        <ui:Label name="RoomListEmptyStateBodyLabel" text="새 방을 만들면 다른 플레이어가 참가할 수 있습니다." class="lobby-empty-body" />
                         <ui:Button name="EmptyStateCreateButton" class="lobby-command-button lobby-command-button--primary">
                             <ui:VisualElement class="uitk-icon uitk-icon--add uitk-icon--text" />
-                            <ui:Label text="작전 개설" class="lobby-button-label" />
+                            <ui:Label text="방 만들기" class="lobby-button-label" />
                         </ui:Button>
                     </ui:VisualElement>
 
@@ -49,23 +49,23 @@
                 <ui:VisualElement name="CreateRoomCard" class="uitk-card lobby-card lobby-card--secondary">
                     <ui:VisualElement class="lobby-card-title-row">
                         <ui:VisualElement class="uitk-icon uitk-icon--add uitk-icon--orange" />
-                        <ui:Label text="작전 개설" class="uitk-section-title" />
+                        <ui:Label text="방 만들기" class="uitk-section-title" />
                     </ui:VisualElement>
-                    <ui:Label text="인원과 난이도를 지정한 뒤 분대 참여를 받을 수 있습니다." class="lobby-card-body" />
+                    <ui:Label text="인원과 난이도를 정하고 친구를 기다릴 수 있습니다." class="lobby-card-body" />
                     <ui:Button name="CreateRoomOpenButton" class="lobby-command-button lobby-command-button--primary">
                         <ui:VisualElement class="uitk-icon uitk-icon--add uitk-icon--text" />
-                        <ui:Label text="작전 개설" class="lobby-button-label" />
+                        <ui:Label text="방 만들기" class="lobby-button-label" />
                     </ui:Button>
                 </ui:VisualElement>
 
                 <ui:VisualElement name="GarageSummaryCard" class="uitk-card lobby-card lobby-card--tertiary">
                     <ui:VisualElement class="lobby-card-title-row">
                         <ui:VisualElement class="uitk-icon uitk-icon--garage uitk-icon--blue" />
-                        <ui:Label text="편성 점검" class="uitk-section-title" />
+                        <ui:Label text="덱 확인" class="uitk-section-title" />
                     </ui:VisualElement>
-                    <ui:Label name="GarageSummaryStatusLabel" text="편성 대기" class="lobby-status-chip lobby-status-chip--closed" />
-                    <ui:Label name="GarageSummaryTitleLabel" text="현역 0/8" class="lobby-summary-title" />
-                    <ui:Label name="GarageSummaryBodyLabel" text="최소 3기 이상 저장하면 출격 가능합니다." class="lobby-card-body" />
+                    <ui:Label name="GarageSummaryStatusLabel" text="덱 준비 필요" class="lobby-status-chip lobby-status-chip--closed" />
+                    <ui:Label name="GarageSummaryTitleLabel" text="저장된 유닛 0/8" class="lobby-summary-title" />
+                    <ui:Label name="GarageSummaryBodyLabel" text="유닛 3개 이상 저장하면 게임을 시작할 수 있습니다." class="lobby-card-body" />
                     <ui:VisualElement name="GarageSummarySlotRow" class="lobby-slot-row" />
                 </ui:VisualElement>
 
@@ -96,8 +96,8 @@
                 <ui:VisualElement class="lobby-modal-card">
                     <ui:VisualElement class="lobby-modal-header">
                         <ui:VisualElement>
-                            <ui:Label text="작전 개설" class="uitk-kicker" />
-                            <ui:Label text="새 분대 노드 설정" class="uitk-section-title" />
+                            <ui:Label text="방 만들기" class="uitk-kicker" />
+                            <ui:Label text="새 방 설정" class="uitk-section-title" />
                         </ui:VisualElement>
                         <ui:Button name="CreateRoomCancelButton" class="shared-icon-button lobby-modal-close" tooltip="Back">
                             <ui:VisualElement class="uitk-icon uitk-icon--back uitk-icon--text" />
@@ -107,7 +107,7 @@
                     <ui:TextField name="RoomNameInput" label="방 이름" value="Room" />
                     <ui:IntegerField name="CapacityInput" label="인원" value="4" />
                     <ui:IntegerField name="DifficultyInput" label="난이도" value="0" />
-                    <ui:Button name="CreateRoomButton" text="작전 개시" class="uitk-primary-button" />
+                    <ui:Button name="CreateRoomButton" text="게임 시작" class="uitk-primary-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
@@ -115,7 +115,7 @@
                 <ui:VisualElement class="lobby-modal-card lobby-modal-card--selection">
                     <ui:VisualElement class="lobby-modal-header">
                         <ui:VisualElement>
-                            <ui:Label text="작전 상세" class="uitk-kicker" />
+                            <ui:Label text="방 정보" class="uitk-kicker" />
                             <ui:Label name="RoomSelectionTitleLabel" text="" class="uitk-section-title" />
                         </ui:VisualElement>
                         <ui:Button name="RoomSelectionDismissButton" class="shared-icon-button lobby-modal-close" tooltip="Back">
@@ -126,10 +126,10 @@
                     <ui:Label name="RoomSelectionStatusLabel" text="" class="lobby-status-chip" />
                     <ui:Label name="RoomSelectionBodyLabel" text="" class="lobby-selection-body" />
                     <ui:VisualElement class="lobby-selection-section">
-                        <ui:Label text="분대 현황" class="lobby-field-label" />
+                        <ui:Label text="참가자 목록" class="lobby-field-label" />
                         <ui:VisualElement name="RoomSelectionSlotRow" class="lobby-slot-row" />
                     </ui:VisualElement>
-                    <ui:Button name="JoinSelectedRoomButton" text="작전 참여" class="uitk-primary-button" />
+                    <ui:Button name="JoinSelectedRoomButton" text="방 참가" class="uitk-primary-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

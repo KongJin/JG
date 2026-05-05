@@ -1,4 +1,5 @@
 using System;
+using Shared.Localization;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
 namespace Features.Garage.Presentation
@@ -53,7 +54,7 @@ namespace Features.Garage.Presentation
             {
                 return state.CommittedRoster.IsValid
                     ? "저장본이 최신입니다. 룸 패널에서 바로 준비할 수 있습니다."
-                    : $"최소 {Domain.GarageRoster.MinReadySlots}기 이상 저장하면 준비 가능합니다.";
+                    : $"유닛 {Domain.GarageRoster.MinReadySlots}개 이상 저장하면 준비 가능합니다.";
             }
 
             if (!evaluation.HasSelectedDraftChanges)
@@ -71,7 +72,7 @@ namespace Features.Garage.Presentation
             if (evaluation.MatchesCommittedSelection)
                 return "현재 저장본과 동일합니다.";
 
-            return "저장 시 선택 슬롯과 전체 편성이 동시에 갱신됩니다.";
+            return "저장 시 선택 슬롯과 전체 덱이 함께 갱신됩니다.";
         }
 
         private static string BuildStatsText(
@@ -79,7 +80,7 @@ namespace Features.Garage.Presentation
             string operationSummary)
         {
             operationSummary = string.IsNullOrWhiteSpace(operationSummary)
-                ? "최근 작전 기록 없음"
+                ? GameText.Get("common.records_empty")
                 : operationSummary;
             if (!evaluation.TryGetComposedUnitForStatsBlock(out var unit, out var composeErr))
             {

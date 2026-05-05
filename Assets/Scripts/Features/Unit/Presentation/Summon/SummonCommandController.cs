@@ -5,6 +5,7 @@ using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Localization;
 using Shared.Math;
 using UnityEngine;
 using UnitSpec = Features.Unit.Domain.Unit;
@@ -108,7 +109,7 @@ namespace Features.Unit.Presentation
 
             ActivateSelection(unitSpec, slotIndex);
             _selectionActivatedFrame = Time.frameCount;
-            CurrentFeedbackMessage = "배치 구역을 탭하세요";
+            CurrentFeedbackMessage = GameText.Get("battle.tap_place_area");
 
             ShowPlacementPreview(ResolveDefaultPlacementPoint());
 // csharp-guardrails: allow-null-defense
@@ -147,7 +148,7 @@ namespace Features.Unit.Presentation
                 ShowPlacementPreview(worldPosition);
 // csharp-guardrails: allow-null-defense
                 _placementAreaView?.ShowInvalidPlacementFeedback();
-                ShowError("배치 영역 밖");
+                ShowError(GameText.Get("battle.outside_place_area"));
                 return false;
             }
 
@@ -314,12 +315,12 @@ namespace Features.Unit.Presentation
         private static string TranslateFailureReason(string reason)
         {
             if (string.IsNullOrWhiteSpace(reason))
-                return "배치 실패";
+                return GameText.Get("battle.place_failed");
 
             if (reason.Contains("Not enough energy", System.StringComparison.OrdinalIgnoreCase))
                 return "Need Energy";
 
-            return "배치 실패";
+            return GameText.Get("battle.place_failed");
         }
 
         private Vector3 ResolveDefaultPlacementPoint()

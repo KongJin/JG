@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Shared.Ui;
 using UnityEngine.UIElements;
+using Shared.Localization;
 
 namespace Features.Lobby.Presentation
 {
@@ -26,7 +27,7 @@ namespace Features.Lobby.Presentation
             card.Clear();
             if (!viewModel.HasRecord)
             {
-                card.Add(CreateLabel("LATEST_OP", "memory-kicker"));
+                card.Add(CreateLabel("최근 플레이", "memory-kicker"));
                 card.Add(CreateLabel(viewModel.ResultText, viewModel.ResultClass));
                 card.Add(CreateLabel(viewModel.PressureText, "memory-sitrep-text"));
                 return;
@@ -35,7 +36,7 @@ namespace Features.Lobby.Presentation
             var header = new VisualElement();
             header.AddToClassList("memory-card-header");
             var titleStack = new VisualElement();
-            titleStack.Add(CreateLabel("LATEST_OP", "memory-kicker"));
+            titleStack.Add(CreateLabel("최근 플레이", "memory-kicker"));
             titleStack.Add(CreateLabel(viewModel.ResultText, viewModel.ResultClass));
             header.Add(titleStack);
             header.Add(CreateLabel(viewModel.TimeText, "memory-time"));
@@ -44,14 +45,14 @@ namespace Features.Lobby.Presentation
             var stats = new VisualElement();
             stats.AddToClassList("memory-stat-grid");
             AddStat(stats, "생존", viewModel.SurvivalText, "memory-stat-value memory-stat-value--blue");
-            AddStat(stats, "공세", viewModel.WaveText, "memory-stat-value");
+            AddStat(stats, "웨이브", viewModel.WaveText, "memory-stat-value");
             AddStat(stats, "코어", viewModel.CoreText, viewModel.CoreClass);
             AddStat(stats, "제거", viewModel.KillText, "memory-stat-value");
             card.Add(stats);
 
             var sitrep = new VisualElement();
             sitrep.AddToClassList("memory-sitrep");
-            sitrep.Add(CreateLabel("SITREP", "memory-sitrep-label"));
+            sitrep.Add(CreateLabel("요약", "memory-sitrep-label"));
             sitrep.Add(CreateLabel(viewModel.PressureText, "memory-sitrep-text"));
             card.Add(sitrep);
         }
@@ -64,12 +65,12 @@ namespace Features.Lobby.Presentation
                 return;
 
             section.Clear();
-            section.Add(CreateLabel("RECENT OPERATIONS", "memory-section-title"));
+            section.Add(CreateLabel(GameText.Get("records.recent"), "memory-section-title"));
             if (rows == null || rows.Count == 0)
             {
                 var empty = new VisualElement();
                 UitkElementUtility.AddClasses(empty, "operation-row operation-row--empty");
-                empty.Add(CreateLabel("전적 기록 대기중", "operation-empty-text"));
+                empty.Add(CreateLabel(GameText.Get("common.records_empty"), "operation-empty-text"));
                 section.Add(empty);
                 return;
             }
@@ -102,7 +103,7 @@ namespace Features.Lobby.Presentation
 
             viewModel ??= LobbyOperationMemoryViewModel.Empty.Trace;
             section.Clear();
-            section.Add(CreateLabel("기체 전적", "memory-section-title"));
+            section.Add(CreateLabel(GameText.Get("records.unit_records"), "memory-section-title"));
             var chips = new VisualElement();
             chips.AddToClassList("memory-chip-row");
             chips.Add(CreateLabel(viewModel.CountChipText, "memory-chip"));

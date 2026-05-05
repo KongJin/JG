@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Shared.Kernel;
+using Shared.Localization;
 
 namespace Features.Lobby.Presentation
 {
@@ -81,7 +82,7 @@ namespace Features.Lobby.Presentation
             int filledSlots,
             int totalSlots,
             bool canJoin,
-            string joinButtonText = "작전 참여")
+            string joinButtonText = null)
         {
             RoomId = roomId;
             TitleText = titleText ?? string.Empty;
@@ -91,7 +92,7 @@ namespace Features.Lobby.Presentation
             FilledSlots = filledSlots < 0 ? 0 : filledSlots;
             TotalSlots = totalSlots < 0 ? 0 : totalSlots;
             CanJoin = canJoin;
-            JoinButtonText = string.IsNullOrWhiteSpace(joinButtonText) ? "작전 참여" : joinButtonText;
+            JoinButtonText = string.IsNullOrWhiteSpace(joinButtonText) ? GameText.Get("lobby.join_room") : joinButtonText;
         }
 
         public DomainEntityId RoomId { get; }
@@ -113,7 +114,7 @@ namespace Features.Lobby.Presentation
             string.Empty,
             Array.Empty<string>(),
             localIsReady: false,
-            readyButtonText: "Ready",
+            readyButtonText: null,
             canStartGame: false);
 
         public LobbyRoomDetailViewModel(
@@ -128,7 +129,7 @@ namespace Features.Lobby.Presentation
             MetaText = metaText ?? string.Empty;
             MemberRows = memberRows ?? Array.Empty<string>();
             LocalIsReady = localIsReady;
-            ReadyButtonText = string.IsNullOrWhiteSpace(readyButtonText) ? "Ready" : readyButtonText;
+            ReadyButtonText = string.IsNullOrWhiteSpace(readyButtonText) ? GameText.Get("common.ready") : readyButtonText;
             CanStartGame = canStartGame;
         }
 
@@ -143,9 +144,9 @@ namespace Features.Lobby.Presentation
     internal sealed class LobbyGarageSummaryViewModel
     {
         public static readonly LobbyGarageSummaryViewModel Empty = new(
-            "편성 대기",
-            "현역 0/8",
-            $"최소 {Features.Garage.Domain.GarageRoster.MinReadySlots}기 이상 저장하면 출격 가능합니다.",
+            GameText.Get("lobby.deck_waiting"),
+            "저장된 유닛 0/8",
+            $"유닛 {Features.Garage.Domain.GarageRoster.MinReadySlots}개 이상 저장하면 게임을 시작할 수 있습니다.",
             filledSlots: 0,
             totalSlots: Features.Garage.Domain.GarageRoster.MaxSlots,
             isReady: false);
@@ -178,20 +179,20 @@ namespace Features.Lobby.Presentation
     {
         public static readonly LobbyAccountViewModel Empty = new(
             "LOCAL PILOT",
-            "G-LINK WAIT",
-            "UID WAIT",
+            "Google 연결 대기 중",
+            "계정 연결 대기 중",
             "로컬",
             "0/5",
             "대기",
             "Google 연결 필요",
-            "편성 대기",
+            GameText.Get("lobby.deck_waiting"),
             "0/5",
             "정상",
-            "READY",
+            GameText.Get("common.ready"),
             "80%",
             "100%",
-            "LOCAL FIRST",
-            "WAIT");
+            "로컬 우선",
+            GameText.Get("common.waiting"));
 
         public LobbyAccountViewModel(
             string pilotIdText,
@@ -249,7 +250,7 @@ namespace Features.Lobby.Presentation
         public static readonly LobbyOperationMemoryViewModel Empty = new(
             LobbyOperationLatestViewModel.Empty,
             Array.Empty<LobbyOperationRowViewModel>(),
-            new LobbyOperationTraceViewModel("0/5 RECORDS STORED", "NO OPERATIONS"));
+            new LobbyOperationTraceViewModel("기록 0/5 저장됨", GameText.Get("common.records_empty")));
 
         public LobbyOperationMemoryViewModel(
             LobbyOperationLatestViewModel latest,
@@ -258,7 +259,7 @@ namespace Features.Lobby.Presentation
         {
             Latest = latest ?? LobbyOperationLatestViewModel.Empty;
             RecentRows = recentRows ?? Array.Empty<LobbyOperationRowViewModel>();
-            Trace = trace ?? new LobbyOperationTraceViewModel("0/5 RECORDS STORED", "NO OPERATIONS");
+            Trace = trace ?? new LobbyOperationTraceViewModel("기록 0/5 저장됨", GameText.Get("common.records_empty"));
         }
 
         public LobbyOperationLatestViewModel Latest { get; }
@@ -270,7 +271,7 @@ namespace Features.Lobby.Presentation
     {
         public static readonly LobbyOperationLatestViewModel Empty = new(
             hasRecord: false,
-            resultText: "작전 기록 없음",
+            resultText: GameText.Get("common.records_empty"),
             resultClass: "memory-result",
             timeText: string.Empty,
             survivalText: string.Empty,
@@ -278,7 +279,7 @@ namespace Features.Lobby.Presentation
             coreText: string.Empty,
             coreClass: "memory-stat-value memory-stat-value--orange",
             killText: string.Empty,
-            pressureText: "전투 종료 후 최근 작전 데이터가 여기에 표시됩니다.");
+            pressureText: "게임 종료 후 최근 기록이 여기에 표시됩니다.");
 
         public LobbyOperationLatestViewModel(
             bool hasRecord,

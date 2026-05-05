@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Shared.Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -55,7 +56,7 @@ namespace Features.Garage.Presentation
             // csharp-guardrails: allow-null-defense
             if (_bindings.CommandStatusLabel != null)
 // csharp-guardrails: allow-null-defense
-                _bindings.CommandStatusLabel.text = result?.RosterStatusText ?? "편성 상태 대기";
+                _bindings.CommandStatusLabel.text = result?.RosterStatusText ?? "덱 저장 상태 대기";
 
 // csharp-guardrails: allow-null-defense
             string validationText = result?.ValidationText ?? string.Empty;
@@ -71,9 +72,9 @@ namespace Features.Garage.Presentation
             if (_bindings.SaveButton != null)
             {
                 _bindings.SaveButton.text = isSaving
-                    ? "저장 중..."
+                    ? GameText.Get("garage.save_in_progress")
 // csharp-guardrails: allow-null-defense
-                    : result?.PrimaryActionLabel ?? "저장 및 배치";
+                    : result?.PrimaryActionLabel ?? GameText.Get("garage.save_and_place");
                 _bindings.SaveButton.SetEnabled(!isSaving && result?.CanSave == true);
             }
 

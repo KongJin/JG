@@ -5,32 +5,32 @@
         <ui:VisualElement name="FieldStatusBar" class="field-status">
             <ui:VisualElement class="field-status__left">
                 <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--small field-status__mark" />
-                <ui:Label text="SECTOR-04" class="field-status__text" />
-                <ui:Label text="STATUS: ACTIVE" class="field-status__text field-status__text--accent" />
+                <ui:Label text="필드 04" class="field-status__text" />
+                <ui:Label text="진행 중" class="field-status__text field-status__text--accent" />
             </ui:VisualElement>
             <ui:Label text="12:00:41" class="field-status__clock" />
         </ui:VisualElement>
 
         <ui:VisualElement name="ObjectiveStrip" class="objective-strip">
             <ui:VisualElement name="WaveObjectiveCard" class="objective-card objective-card--wave">
-                <ui:Label text="CURRENT_OBJECTIVE" class="objective-card__eyebrow" />
-                <ui:Label name="WaveLabel" class="battle-hud__wave" text="WAVE 04/12" />
+                <ui:Label text="현재 목표" class="objective-card__eyebrow" />
+                <ui:Label name="WaveLabel" class="battle-hud__wave" text="웨이브 04/12" />
                 <ui:VisualElement class="countdown-row">
                     <ui:VisualElement class="uitk-icon uitk-icon--timer uitk-icon--small countdown-row__icon" />
                     <ui:Label name="CountdownLabel" class="battle-hud__countdown" text="0:45" />
                 </ui:VisualElement>
-                <ui:Label name="StatusLabel" class="battle-hud__status" text="LINK_STABLE" />
+                <ui:Label name="StatusLabel" class="battle-hud__status" text="연결 안정" />
             </ui:VisualElement>
 
             <ui:VisualElement name="CoreObjectiveCard" class="objective-card objective-card--core">
                 <ui:VisualElement class="core-head">
-                    <ui:Label text="CORE_INTEGRITY" class="objective-card__eyebrow objective-card__eyebrow--danger" />
+                    <ui:Label text="코어 상태" class="objective-card__eyebrow objective-card__eyebrow--danger" />
                     <ui:Label name="CoreHpLabel" class="battle-hud__core" text="82%" />
                 </ui:VisualElement>
                 <ui:VisualElement class="core-meter">
                     <ui:VisualElement class="core-meter__fill" />
                 </ui:VisualElement>
-                <ui:Label text="SYNC_HEALTH  OK     PASS  02:36.41" class="core-telemetry" />
+                <ui:Label text="코어 상태 안정  02:36.41" class="core-telemetry" />
             </ui:VisualElement>
         </ui:VisualElement>
 
@@ -38,12 +38,12 @@
 
         <ui:VisualElement name="DeployMarker" class="deploy-marker">
             <ui:VisualElement class="uitk-icon uitk-icon--target uitk-icon--large deploy-marker__icon" />
-            <ui:Label text="DEPLOY_01" class="deploy-marker__label" />
+            <ui:Label text="소환 01" class="deploy-marker__label" />
         </ui:VisualElement>
 
         <ui:VisualElement name="BottomDock" class="battle-hud__dock">
             <ui:VisualElement class="command-head">
-                <ui:Label text="SUMMON_COMMAND" class="command-head__label" />
+                <ui:Label text="유닛 소환" class="command-head__label" />
                 <ui:Label name="EnergyLabel" class="battle-hud__energy" text="ENERGY 0 / 0" />
             </ui:VisualElement>
             <ui:VisualElement name="SummonSlots" class="battle-hud__slots">
@@ -59,7 +59,7 @@
                 </ui:Button>
                 <ui:Button class="battle-hud__slot battle-hud__slot--blocked">
                     <ui:VisualElement class="uitk-icon uitk-icon--warning battle-hud__slot-icon battle-hud__slot-icon--blocked" />
-                    <ui:Label class="battle-hud__slot-label" text="INSUFFICIENT_ENERGY" />
+                    <ui:Label class="battle-hud__slot-label" text="에너지 부족" />
                     <ui:Label class="battle-hud__slot-cost" text="40EC" />
                 </ui:Button>
             </ui:VisualElement>

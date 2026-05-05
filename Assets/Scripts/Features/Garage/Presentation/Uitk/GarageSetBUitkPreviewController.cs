@@ -138,7 +138,7 @@ namespace Features.Garage.Presentation
             _unitPreviewImage.style.display = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
             _unitPreviewLabel.style.display = isVisible ? DisplayStyle.None : DisplayStyle.Flex;
             _unitPreviewLabel.text = BuildPreviewPlaceholderText();
-            _previewTitleLabel.text = isVisible ? "기체 미리보기" : "설계도 확인";
+                _previewTitleLabel.text = isVisible ? "유닛 미리보기" : "설계도 확인";
             HidePreviewChrome();
         }
 

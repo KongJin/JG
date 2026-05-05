@@ -9,8 +9,8 @@
                 <ui:VisualElement class="uitk-icon uitk-icon--back uitk-icon--muted" />
             </ui:Button>
             <ui:VisualElement class="memory-title-stack">
-                <ui:Label text="작전 기록" class="memory-title" />
-                <ui:Label text="OPERATION MEMORY / LOCAL LOG / SYNC PENDING" class="memory-status" />
+                <ui:Label text="플레이 기록" class="memory-title" />
+                <ui:Label text="최근 기록 / 로컬 저장 / 저장 대기 중" class="memory-status" />
             </ui:VisualElement>
             <ui:Button name="GarageButton" class="memory-icon-button memory-icon-button--blue" tooltip="Garage">
                 <ui:VisualElement class="uitk-icon uitk-icon--garage uitk-icon--blue" />
@@ -21,8 +21,8 @@
             <ui:VisualElement name="LatestOperationCard" class="memory-card memory-card--latest">
                 <ui:VisualElement class="memory-card-header">
                     <ui:VisualElement>
-                        <ui:Label text="LATEST_OP" class="memory-kicker" />
-                        <ui:Label text="버텨냄" class="memory-result memory-result--held" />
+                        <ui:Label text="최근 플레이" class="memory-kicker" />
+                        <ui:Label text="방어 성공" class="memory-result memory-result--held" />
                     </ui:VisualElement>
                     <ui:Label text="22:45:01" class="memory-time" />
                 </ui:VisualElement>
@@ -32,7 +32,7 @@
                         <ui:Label text="22:45" class="memory-stat-value memory-stat-value--blue" />
                     </ui:VisualElement>
                     <ui:VisualElement class="memory-stat-cell">
-                        <ui:Label text="공세" class="memory-stat-label" />
+                        <ui:Label text="웨이브" class="memory-stat-label" />
                         <ui:Label text="14" class="memory-stat-value" />
                     </ui:VisualElement>
                     <ui:VisualElement class="memory-stat-cell">
@@ -45,70 +45,70 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="memory-sitrep">
-                    <ui:Label text="SITREP" class="memory-sitrep-label" />
-                    <ui:Label text="동쪽 라인 집중 압박. 방어선 유지됨." class="memory-sitrep-text" />
+                    <ui:Label text="요약" class="memory-sitrep-label" />
+                    <ui:Label text="코어를 지켜냈습니다. 최근 덱의 결과가 반영되었습니다." class="memory-sitrep-text" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement name="RecentOperations" class="memory-section">
-                <ui:Label text="RECENT OPERATIONS" class="memory-section-title" />
+                <ui:Label text="최근 기록" class="memory-section-title" />
                 <ui:VisualElement class="operation-row operation-row--held">
                     <ui:VisualElement class="operation-row-line" />
                     <ui:VisualElement class="operation-row-main">
-                        <ui:Label text="버텨냄" class="operation-title operation-title--held" />
-                        <ui:Label text="22:45 / 공세 14 / HVY-ASSAULT + LIGHT-RECON" class="operation-meta" />
+                        <ui:Label text="방어 성공" class="operation-title operation-title--held" />
+                        <ui:Label text="22:45 / 웨이브 14 / 무거운 덱 + 빠른 덱" class="operation-meta" />
                     </ui:VisualElement>
                     <ui:Label text="CORE 42%" class="operation-core" />
                 </ui:VisualElement>
                 <ui:VisualElement class="operation-row operation-row--danger">
                     <ui:VisualElement class="operation-row-line operation-row-line--danger" />
                     <ui:VisualElement class="operation-row-main">
-                        <ui:Label text="거점 붕괴" class="operation-title operation-title--danger" />
-                        <ui:Label text="21:10 / 공세 08 / RAIL-GUARD" class="operation-meta" />
+                        <ui:Label text="코어 파괴" class="operation-title operation-title--danger" />
+                        <ui:Label text="21:10 / 웨이브 08 / 레일 덱" class="operation-meta" />
                     </ui:VisualElement>
                     <ui:Label text="CORE 0%" class="operation-core operation-core--danger" />
                 </ui:VisualElement>
                 <ui:VisualElement class="operation-row operation-row--held">
                     <ui:VisualElement class="operation-row-line" />
                     <ui:VisualElement class="operation-row-main">
-                        <ui:Label text="버텨냄" class="operation-title operation-title--held" />
-                        <ui:Label text="19:42 / 공세 12 / HVY-ASSAULT" class="operation-meta" />
+                        <ui:Label text="방어 성공" class="operation-title operation-title--held" />
+                        <ui:Label text="19:42 / 웨이브 12 / 무거운 덱" class="operation-meta" />
                     </ui:VisualElement>
                     <ui:Label text="CORE 15%" class="operation-core operation-core--orange" />
                 </ui:VisualElement>
                 <ui:VisualElement class="operation-row operation-row--held">
                     <ui:VisualElement class="operation-row-line" />
                     <ui:VisualElement class="operation-row-main">
-                        <ui:Label text="버텨냄" class="operation-title operation-title--held" />
-                        <ui:Label text="18:05 / 공세 15 / LIGHT-RECON" class="operation-meta" />
+                        <ui:Label text="방어 성공" class="operation-title operation-title--held" />
+                        <ui:Label text="18:05 / 웨이브 15 / 빠른 덱" class="operation-meta" />
                     </ui:VisualElement>
                     <ui:Label text="CORE 88%" class="operation-core" />
                 </ui:VisualElement>
                 <ui:VisualElement class="operation-row operation-row--empty">
-                    <ui:Label text="전적 기록 대기중" class="operation-empty-text" />
+                    <ui:Label text="최근 기록 없음" class="operation-empty-text" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement name="UnitTrace" class="memory-section">
-                <ui:Label text="기체 전적" class="memory-section-title" />
+                <ui:Label text="유닛 기록" class="memory-section-title" />
                 <ui:VisualElement class="trace-grid">
                     <ui:VisualElement class="trace-card">
-                        <ui:Label text="SLOT 02" class="trace-slot" />
-                        <ui:Label text="HVY-ASSAULT" class="trace-name" />
+                        <ui:Label text="슬롯 02" class="trace-slot" />
+                        <ui:Label text="무거운 덱" class="trace-name" />
                         <ui:Label text="FRM-HV / WPN-GAT" class="trace-meta" />
-                        <ui:Label text="Contribution: HIGH" class="trace-contribution trace-contribution--high" />
+                        <ui:Label text="기여도 높음" class="trace-contribution trace-contribution--high" />
                     </ui:VisualElement>
                     <ui:VisualElement class="trace-card">
-                        <ui:Label text="SLOT 04" class="trace-slot" />
-                        <ui:Label text="LIGHT-RECON" class="trace-name" />
+                        <ui:Label text="슬롯 04" class="trace-slot" />
+                        <ui:Label text="빠른 덱" class="trace-name" />
                         <ui:Label text="FRM-LT / WPN-SCT" class="trace-meta" />
-                        <ui:Label text="Contribution: MED" class="trace-contribution" />
+                        <ui:Label text="기여도 보통" class="trace-contribution" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="memory-chip-row">
-                    <ui:Label text="3/5 RECORDS STORED" class="memory-chip" />
-                    <ui:Label text="LOCAL FIRST" class="memory-chip memory-chip--blue" />
-                    <ui:Label text="CLOUD SYNC WAITING" class="memory-chip memory-chip--orange" />
+                    <ui:Label text="기록 3/5 저장됨" class="memory-chip" />
+                    <ui:Label text="로컬 우선" class="memory-chip memory-chip--blue" />
+                    <ui:Label text="클라우드 저장 대기 중" class="memory-chip memory-chip--orange" />
                 </ui:VisualElement>
             </ui:VisualElement>
 

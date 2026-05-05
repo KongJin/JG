@@ -158,7 +158,7 @@ namespace Features.Garage.Presentation
             {
                 GarageNovaPartPanelSlot.Firepower => "무장",
                 GarageNovaPartPanelSlot.Frame => "프레임",
-                _ => "기동",
+                _ => "이동",
             };
         }
 
@@ -167,7 +167,7 @@ namespace Features.Garage.Presentation
             return slot switch
             {
                 GarageNovaPartPanelSlot.Firepower => "무장 선택",
-                GarageNovaPartPanelSlot.Mobility => "기동 선택",
+                GarageNovaPartPanelSlot.Mobility => "이동 선택",
                 _ => "프레임 선택",
             };
         }

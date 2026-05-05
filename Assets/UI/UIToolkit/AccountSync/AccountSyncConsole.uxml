@@ -7,27 +7,27 @@
         <ui:VisualElement name="AccountTopShell" class="account-top-shell">
             <ui:VisualElement class="account-brand">
                 <ui:VisualElement class="uitk-icon uitk-icon--terminal uitk-icon--blue account-brand-mark" />
-                <ui:Label text="NOVA_SYS" class="account-brand-label" />
+                <ui:Label text="계정" class="account-brand-label" />
             </ui:VisualElement>
-            <ui:Label name="ConfigBadge" text="CFG.17" class="account-config-badge" />
+            <ui:Label name="ConfigBadge" text="저장 설정" class="account-config-badge" />
         </ui:VisualElement>
 
         <ui:ScrollView name="AccountSyncScroll" class="account-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
             <ui:VisualElement name="AccountTitleStrip" class="account-title-strip">
-                <ui:Label text="계정 / 동기화" class="account-screen-title" />
+                <ui:Label text="계정 / 저장 상태" class="account-screen-title" />
             </ui:VisualElement>
 
             <ui:VisualElement name="PilotIdentityPanel" class="account-panel identity-panel">
                 <ui:VisualElement class="panel-bolt panel-bolt--tl" />
                 <ui:VisualElement class="panel-bolt panel-bolt--br" />
                 <ui:VisualElement class="identity-main">
-                    <ui:Label text="PILOT ID" class="account-kicker" />
+                    <ui:Label text="플레이어" class="account-kicker" />
                     <ui:Label name="PilotIdLabel" text="LOCAL A-17" class="identity-name" />
                 </ui:VisualElement>
                 <ui:VisualElement class="identity-status">
-                    <ui:Label name="GoogleLinkStatusLabel" text="G-LINK WAIT" class="status-warn" />
-                    <ui:Label name="UidStatusLabel" text="UID OK" class="status-muted" />
-                    <ui:Button name="LinkAccountButton" text="LINK" class="small-action-button" />
+                    <ui:Label name="GoogleLinkStatusLabel" text="Google 연결 대기 중" class="status-warn" />
+                    <ui:Label name="UidStatusLabel" text="계정 연결됨" class="status-muted" />
+                    <ui:Button name="LinkAccountButton" text="연결" class="small-action-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
@@ -35,7 +35,7 @@
                 <ui:VisualElement class="panel-bolt panel-bolt--tr" />
                 <ui:VisualElement class="panel-bolt panel-bolt--bl" />
                 <ui:VisualElement class="section-header">
-                    <ui:Label text="MAIN SYNC CONSOLE" class="section-title section-title--blue" />
+                    <ui:Label text="저장 상태" class="section-title section-title--blue" />
                 </ui:VisualElement>
                 <ui:VisualElement name="SyncChipGrid" class="sync-chip-grid">
                     <ui:VisualElement name="GarageSyncChip" class="sync-chip sync-chip--blue">
@@ -43,7 +43,7 @@
                         <ui:Label name="GarageSyncStateLabel" text="로컬" class="sync-chip-value sync-chip-value--blue" />
                     </ui:VisualElement>
                     <ui:VisualElement name="OperationSyncChip" class="sync-chip sync-chip--orange">
-                        <ui:Label text="작전" class="sync-chip-title" />
+                        <ui:Label text="기록" class="sync-chip-title" />
                         <ui:Label name="OperationSyncStateLabel" text="3/5" class="sync-chip-value sync-chip-value--orange" />
                     </ui:VisualElement>
                     <ui:VisualElement name="CloudSyncChip" class="sync-chip sync-chip--dim">
@@ -53,7 +53,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="SyncBlockedReason" class="blocked-reason">
                     <ui:VisualElement>
-                        <ui:Label name="BlockedReasonTitleLabel" text="CLOUD WRITE BLOCKED" class="blocked-title" />
+                        <ui:Label name="BlockedReasonTitleLabel" text="클라우드 저장 대기" class="blocked-title" />
                         <ui:Label name="BlockedReasonBodyLabel" text="로그인 필요" class="blocked-body" />
                     </ui:VisualElement>
                     <ui:Button name="ManualSyncRetryButton" text="수동 재시도" class="retry-button" />
@@ -62,27 +62,27 @@
 
             <ui:VisualElement name="DataStateGrid" class="data-state-grid">
                 <ui:VisualElement name="GarageStateCard" class="state-card state-card--wide">
-                    <ui:Label text="STORAGE" class="account-kicker" />
-                    <ui:Label text="Garage" class="state-card-title" />
-                    <ui:Label name="GarageSummaryLabel" text="편성6기" class="state-pill" />
+                    <ui:Label text="저장소" class="account-kicker" />
+                    <ui:Label text="차고" class="state-card-title" />
+                    <ui:Label name="GarageSummaryLabel" text="유닛 6개" class="state-pill" />
                 </ui:VisualElement>
                 <ui:VisualElement name="OperationBufferCard" class="state-card state-card--wide">
-                    <ui:Label text="BUFFER" class="account-kicker" />
-                    <ui:Label text="Op Mem" class="state-card-title" />
+                    <ui:Label text="기록" class="account-kicker" />
+                    <ui:Label text="최근 기록" class="state-card-title" />
                     <ui:Label name="OperationBufferLabel" text="3/5" class="state-pill" />
                 </ui:VisualElement>
                 <ui:VisualElement name="ConflictStateCard" class="state-card state-card--warning">
-                    <ui:Label text="CONFLICT" class="warning-label" />
+                    <ui:Label text="확인 필요" class="warning-label" />
                     <ui:Label name="ConflictStateLabel" text="확인 필요" class="warning-copy" />
                 </ui:VisualElement>
                 <ui:VisualElement name="LoadingStateCard" class="state-card state-card--dashed">
-                    <ui:Label name="LoadingStateLabel" text="LOADING" class="loading-copy" />
+                    <ui:Label name="LoadingStateLabel" text="불러오는 중" class="loading-copy" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement name="SystemParamsPanel" class="account-panel params-panel">
                 <ui:VisualElement class="section-header">
-                    <ui:Label text="SYS PARAMS" class="section-title" />
+                    <ui:Label text="설정" class="section-title" />
                 </ui:VisualElement>
                 <ui:VisualElement class="param-grid">
                     <ui:VisualElement class="param-row">
@@ -94,12 +94,12 @@
                         <ui:Label name="SfxValueLabel" text="100%" class="param-value" />
                     </ui:VisualElement>
                     <ui:VisualElement class="param-row">
-                        <ui:Label text="SAVE" class="param-label" />
-                        <ui:Label name="SaveModeLabel" text="LOCAL FIRST" class="param-value param-value--blue" />
+                        <ui:Label text="저장" class="param-label" />
+                        <ui:Label name="SaveModeLabel" text="로컬 우선" class="param-value param-value--blue" />
                     </ui:VisualElement>
                     <ui:VisualElement class="param-row">
-                        <ui:Label text="CLOUD" class="param-label" />
-                        <ui:Label name="CloudModeLabel" text="WAIT" class="param-value param-value--orange" />
+                        <ui:Label text="클라우드" class="param-label" />
+                        <ui:Label name="CloudModeLabel" text="대기 중" class="param-value param-value--orange" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

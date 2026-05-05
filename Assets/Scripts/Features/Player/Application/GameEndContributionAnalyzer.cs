@@ -124,8 +124,8 @@ namespace Features.Player.Application
             {
                 cards.Add(new ResultContributionCard(
                     ResultContributionKind.DeployUnits,
-                    "작전 참여",
-                    "마지막까지 작전에 남아 결과를 만들었습니다.",
+                    "게임 참여",
+                    "마지막까지 플레이에 남아 결과를 만들었습니다.",
                     1f));
             }
 
@@ -143,8 +143,8 @@ namespace Features.Player.Application
 
             cards.Add(new ResultContributionCard(
                 ResultContributionKind.KeepCoreAlive,
-                "거점 보존",
-                $"거점 내구도 {percent * 100f:F0}%로 마지막 공세를 넘겼습니다.",
+                "코어 보호",
+                $"코어 내구도 {percent * 100f:F0}%로 마지막 웨이브를 넘겼습니다.",
                 percent));
         }
 
@@ -164,7 +164,7 @@ namespace Features.Player.Application
 // csharp-guardrails: allow-null-defense
             var damage = bucket != null ? bucket.DamageDealt : _teamBucket.DamageDealt;
             var body = kills > 0
-                ? $"침공 기체 {kills}기를 정리했습니다."
+                ? $"상대 유닛 {kills}개를 정리했습니다."
                 : $"누적 피해 {damage:F0}을 넣어 압박을 줄였습니다.";
 
             candidates.Add(new ResultContributionCard(
@@ -193,7 +193,7 @@ namespace Features.Player.Application
             candidates.Add(new ResultContributionCard(
                 ResultContributionKind.HoldPosition,
                 "자리 지킴",
-                $"아군 기체가 피해 {value:F0}을 받아 거점으로 향한 압박을 붙잡았습니다.",
+                $"아군 유닛이 피해 {value:F0}을 받아 코어로 향한 압박을 붙잡았습니다.",
                 value,
 // csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.OwnerId : default,
@@ -216,8 +216,8 @@ namespace Features.Player.Application
 
             candidates.Add(new ResultContributionCard(
                 ResultContributionKind.DeployUnits,
-                "기체 전개",
-                $"전장에 기체 {value:F0}기를 투입했습니다.",
+                "유닛 사용",
+                $"필드에 유닛 {value:F0}개를 소환했습니다.",
                 value,
 // csharp-guardrails: allow-null-defense
                 bucket != null ? bucket.OwnerId : default,

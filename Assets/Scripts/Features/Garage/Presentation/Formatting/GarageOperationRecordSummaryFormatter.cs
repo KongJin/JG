@@ -1,6 +1,7 @@
 using Features.Player.Domain;
 using System.Collections.Generic;
 using System.Text;
+using Shared.Localization;
 
 namespace Features.Garage.Presentation
 {
@@ -9,15 +10,15 @@ namespace Features.Garage.Presentation
         public static string BuildSummary(RecentOperationRecords records)
         {
             if (records == null || records.Count <= 0)
-                return "최근 작전 기록 없음";
+                return GameText.Get("common.records_empty");
 
             var latest = records.Records[0];
             var builder = new StringBuilder();
-            builder.Append("작전 ");
+            builder.Append("기록 ");
             builder.Append(records.Count);
             builder.Append("/5: ");
-            builder.Append(latest.result == OperationRecordResult.Held ? "버텨냄" : "거점붕괴");
-            builder.Append(" | 공세");
+            builder.Append(latest.result == OperationRecordResult.Held ? GameText.Get("records.held") : GameText.Get("records.core_destroyed"));
+            builder.Append(" | 웨이브 ");
             builder.Append(latest.reachedWave);
 
             if (latest.hasCoreHealthPercent)
@@ -32,12 +33,12 @@ namespace Features.Garage.Presentation
 
             if (latest.unitKillCount > 0)
             {
-                builder.Append(" | 제거");
+                builder.Append(" | 정리 ");
                 builder.Append(latest.unitKillCount);
             }
             else if (latest.summonCount > 0)
             {
-                builder.Append(" | 출격");
+                builder.Append(" | 유닛 ");
                 builder.Append(latest.summonCount);
             }
 

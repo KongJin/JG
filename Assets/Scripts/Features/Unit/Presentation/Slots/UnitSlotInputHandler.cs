@@ -1,4 +1,5 @@
 using Features.Unit.Domain;
+using Shared.Localization;
 using Shared.Math;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -102,7 +103,7 @@ namespace Features.Unit.Presentation
             }
 
 // csharp-guardrails: allow-null-defense
-            _errorView?.ShowError("배치 영역 밖");
+            _errorView?.ShowError(GameText.Get("battle.outside_place_area"));
 // csharp-guardrails: allow-null-defense
             _placementAreaView?.HideUnitPreview();
 // csharp-guardrails: allow-null-defense

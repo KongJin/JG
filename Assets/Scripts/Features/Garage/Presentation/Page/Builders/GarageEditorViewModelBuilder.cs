@@ -31,7 +31,7 @@ namespace Features.Garage.Presentation
                 subtitle = hasCommittedUnit && !hasDraftChanges
                     ? GarageUnitIdentityFormatter.BuildServiceTagText(GarageUnitServiceTag.Pending())
                     : hasCommittedUnit
-                        ? "저장 가능 | 전적 유지"
+                        ? "저장 가능 | 기록 유지"
                         : "프레임부터 조립 시작";
             }
             else if (!hasCommittedUnit && !hasAnyDraftSelection)
@@ -47,7 +47,7 @@ namespace Features.Garage.Presentation
             else if (hasCommittedUnit)
             {
                 title = GarageUnitIdentityFormatter.BuildCallsign(state.SelectedSlotIndex);
-                subtitle = "저장 가능 | 전적 유지";
+                subtitle = "저장 가능 | 기록 유지";
             }
             else
             {
@@ -71,11 +71,11 @@ namespace Features.Garage.Presentation
                     ? $"EN {firepower.EnergyCost}  |  ATK {firepower.AttackDamage:0}  |  RNG {firepower.Range:0.0}"
                     : "주 무장을 선택하세요",
 // csharp-guardrails: allow-null-defense
-                mobility != null ? mobility.DisplayName : "< 기동 >",
+                mobility != null ? mobility.DisplayName : "< 이동 >",
 // csharp-guardrails: allow-null-defense
                 mobility != null
                     ? $"EN {mobility.EnergyCost}  |  SPD {mobility.MoveSpeed:0.0}  |  MOV {mobility.MoveRange:0.0}"
-                    : "기동 키트를 선택하세요",
+                    : "이동 키트를 선택하세요",
                 hasCommittedUnit || hasAnyDraftSelection);
         }
     }
