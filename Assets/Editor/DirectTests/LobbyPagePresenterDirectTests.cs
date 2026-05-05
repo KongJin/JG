@@ -97,6 +97,44 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void BuildRoomWaiting_BlocksReadyOnWhenLocalDeckIsNotEligible()
+        {
+            var presenter = new LobbyPagePresenter();
+            var room = CreateRoom("room-1", "Alpha", capacity: 4, ownerId: "pilot-1");
+
+            var viewModel = presenter.BuildRoomWaiting(
+                new RoomSnapshot(room),
+                new DomainEntityId("pilot-1"),
+                LobbyGarageSummaryViewModel.Empty,
+                localReadyEligible: false,
+                localReadyBlockReason: "Need 3 saved units");
+
+            Assert.IsFalse(viewModel.LocalIsReady);
+            Assert.IsFalse(viewModel.ReadyToggleEnabled);
+            Assert.AreEqual("Need 3 saved units", viewModel.ReadyButtonText);
+            Assert.AreEqual("Need 3 saved units", viewModel.ReadyBlockReason);
+        }
+
+        [Test]
+        public void BuildRoomWaiting_AllowsReadyOffWhenLocalDeckBecomesIneligible()
+        {
+            var presenter = new LobbyPagePresenter();
+            var room = CreateRoom("room-1", "Alpha", capacity: 4, ownerId: "pilot-1");
+            room.SetReady(new DomainEntityId("pilot-1"), true);
+
+            var viewModel = presenter.BuildRoomWaiting(
+                new RoomSnapshot(room),
+                new DomainEntityId("pilot-1"),
+                LobbyGarageSummaryViewModel.Empty,
+                localReadyEligible: false,
+                localReadyBlockReason: "Unsaved Garage changes");
+
+            Assert.IsTrue(viewModel.LocalIsReady);
+            Assert.IsTrue(viewModel.ReadyToggleEnabled);
+            Assert.AreEqual("준비 취소", viewModel.ReadyButtonText);
+        }
+
+        [Test]
         public void BuildAccount_MapsProfileSettingsAndOperationCount()
         {
             var presenter = new LobbyPagePresenter();

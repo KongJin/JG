@@ -124,7 +124,9 @@ namespace Features.Lobby.Presentation
             IReadOnlyList<string> memberRows,
             bool localIsReady,
             string readyButtonText,
-            bool canStartGame)
+            bool canStartGame,
+            bool readyToggleEnabled = true,
+            string readyBlockReason = null)
         {
             TitleText = titleText ?? string.Empty;
             MetaText = metaText ?? string.Empty;
@@ -132,6 +134,8 @@ namespace Features.Lobby.Presentation
             LocalIsReady = localIsReady;
             ReadyButtonText = string.IsNullOrWhiteSpace(readyButtonText) ? GameText.Get("common.ready") : readyButtonText;
             CanStartGame = canStartGame;
+            ReadyToggleEnabled = readyToggleEnabled || localIsReady;
+            ReadyBlockReason = readyBlockReason ?? string.Empty;
         }
 
         public string TitleText { get; }
@@ -140,6 +144,8 @@ namespace Features.Lobby.Presentation
         public bool LocalIsReady { get; }
         public string ReadyButtonText { get; }
         public bool CanStartGame { get; }
+        public bool ReadyToggleEnabled { get; }
+        public string ReadyBlockReason { get; }
     }
 
     internal sealed class LobbyRoomWaitingViewModel
@@ -170,7 +176,9 @@ namespace Features.Lobby.Presentation
             bool localIsOwner,
             bool localIsReady,
             bool canStartGame,
-            bool isVisible)
+            bool isVisible,
+            bool readyToggleEnabled = true,
+            string readyBlockReason = null)
         {
             TitleText = titleText ?? string.Empty;
             MetaText = metaText ?? string.Empty;
@@ -184,6 +192,8 @@ namespace Features.Lobby.Presentation
             LocalIsReady = localIsReady;
             CanStartGame = canStartGame;
             IsVisible = isVisible;
+            ReadyToggleEnabled = readyToggleEnabled || localIsReady;
+            ReadyBlockReason = readyBlockReason ?? string.Empty;
         }
 
         public string TitleText { get; }
@@ -198,7 +208,15 @@ namespace Features.Lobby.Presentation
         public bool LocalIsReady { get; }
         public bool CanStartGame { get; }
         public bool IsVisible { get; }
-        public string ReadyButtonText => LocalIsReady ? "준비 취소" : GameText.Get("common.ready");
+        public bool ReadyToggleEnabled { get; }
+        public string ReadyBlockReason { get; }
+        public string ReadyButtonText => LocalIsReady
+            ? "준비 취소"
+            : ReadyToggleEnabled
+                ? GameText.Get("common.ready")
+                : string.IsNullOrWhiteSpace(ReadyBlockReason)
+                    ? GameText.Get("common.ready")
+                    : ReadyBlockReason;
         public string PrimaryButtonText => ReadyButtonText;
     }
 
@@ -212,8 +230,11 @@ namespace Features.Lobby.Presentation
             bool isLocal,
             bool isEmpty)
         {
+// csharp-guardrails: allow-null-defense
             DisplayNameText = displayNameText ?? string.Empty;
+// csharp-guardrails: allow-null-defense
             TeamText = teamText ?? string.Empty;
+// csharp-guardrails: allow-null-defense
             StatusText = statusText ?? string.Empty;
             IsReady = isReady;
             IsLocal = isLocal;

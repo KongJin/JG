@@ -620,6 +620,244 @@ test("reports stale active documents as warnings only", async () => {
   }
 });
 
+test("reports circular entry upstream metadata dependencies", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-entry-cycle-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: docs.index
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "circular-entry-upstream-dependency"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("warns on reciprocal entry routes without failing the entry handshake", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-entry-route-advisory-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+Start at [Docs Index](docs/index.md).
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
+    assert.ok(
+      result.warnings.some((warning) => warning.code === "entry-reciprocal-route-advisory"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("warns on stale active plans that look like reference compression candidates", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-reference-compression-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [demo.md](./plans/active/demo.md) - demo plan
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/plans/active/demo.md",
+      `# Demo Plan
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: plans.demo
+> role: plan
+> owner_scope: fixture plan
+> upstream: docs.index
+> artifacts: none
+
+## Residual
+
+- residual: migrate the blocker to progress.md or compress this closeout.
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      now: "2026-06-10T00:00:00Z",
+    });
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
+    assert.ok(
+      result.warnings.some((warning) => warning.code === "reference-compression-candidate"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("does not warn reference compression when another owner still references the active plan", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-reference-compression-referenced-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [demo.md](./plans/active/demo.md) - demo plan
+- \`active\`: [owner.md](./owners/operations/owner.md) - owner
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/plans/active/demo.md",
+      `# Demo Plan
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: plans.demo
+> role: plan
+> owner_scope: fixture plan
+> upstream: docs.index
+> artifacts: none
+
+- residual: keep this active while the owner doc references it.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/owner.md",
+      `# Owner
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: ops.owner
+> role: ssot
+> owner_scope: fixture owner
+> upstream: docs.index
+> artifacts: none
+
+See [demo](../../plans/active/demo.md).
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      now: "2026-06-10T00:00:00Z",
+    });
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
+    assert.ok(
+      !result.warnings.some((warning) => warning.code === "reference-compression-candidate"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
 test("reports oversized managed documents as warnings only", async () => {
   const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-size-warning-"));
   const agentsPadding = Array.from({ length: 82 }, (_, index) => `- route reminder ${index + 1}`).join("\n");
@@ -1803,6 +2041,390 @@ description: Fixture demo skill.
   }
 });
 
+test("reports repo-local skills missing from the skill routing registry", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-repo-local-skill-registry-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [skill_trigger_matrix.md](./owners/operations/skill_trigger_matrix.md) - skill trigger matrix
+`,
+    );
+    await writeFile(
+      repoRoot,
+      ".codex/skills/jg-demo/SKILL.md",
+      `---
+name: jg-demo
+description: Fixture demo skill.
+---
+
+# Demo Skill
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: skill.jg-demo
+> role: skill-entry
+> owner_scope: fixture skill
+> upstream: docs.index
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_routing_registry.md",
+      `# Skill Routing Registry
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-routing-registry
+> role: reference
+> owner_scope: fixture skill route registry
+> upstream: docs.index
+> artifacts: none
+
+| Skill | Scope |
+|---|---|
+| \`rule-operations\` | operations |
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_trigger_matrix.md",
+      `# Skill Trigger Matrix
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-trigger-matrix
+> role: reference
+> owner_scope: fixture skill trigger matrix
+> upstream: docs.index, ops.skill-routing-registry
+> artifacts: none
+
+| ID | Prompt signal | Expected skills |
+|---|---|---|
+| T01 | fixture | \`jg-demo\`, \`rule-operations\` |
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "missing-repo-local-skill-registry-entry"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("accepts registered imported Unity skill routes in the skill trigger matrix", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-unity-skill-trigger-valid-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [skill_trigger_matrix.md](./owners/operations/skill_trigger_matrix.md) - skill trigger matrix
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_routing_registry.md",
+      `# Skill Routing Registry
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-routing-registry
+> role: reference
+> owner_scope: fixture skill route registry
+> upstream: docs.index
+> artifacts: none
+
+| Skill | Scope |
+|---|---|
+| \`rule-operations\` | operations |
+| \`unity-uitoolkit\` | UI Toolkit |
+`,
+    );
+    await writeFile(
+      repoRoot,
+      ".codex/skills/unity-uitoolkit/SKILL.md",
+      `---
+name: unity-uitoolkit
+description: Use for Unity UI Toolkit work.
+---
+
+# Unity UI Toolkit
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_trigger_matrix.md",
+      `# Skill Trigger Matrix
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-trigger-matrix
+> role: reference
+> owner_scope: fixture skill trigger matrix
+> upstream: docs.index, ops.skill-routing-registry
+> artifacts: none
+
+| ID | Prompt signal | Expected skills |
+|---|---|---|
+| T01 | fixture | \`rule-operations\` |
+| T02 | UXML/USS | \`unity-uitoolkit\` |
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports registered imported Unity skills missing from the skill trigger matrix", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-unity-skill-trigger-missing-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [skill_trigger_matrix.md](./owners/operations/skill_trigger_matrix.md) - skill trigger matrix
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_routing_registry.md",
+      `# Skill Routing Registry
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-routing-registry
+> role: reference
+> owner_scope: fixture skill route registry
+> upstream: docs.index
+> artifacts: none
+
+| Skill | Scope |
+|---|---|
+| \`rule-operations\` | operations |
+| \`unity-uitoolkit\` | UI Toolkit |
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_trigger_matrix.md",
+      `# Skill Trigger Matrix
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-trigger-matrix
+> role: reference
+> owner_scope: fixture skill trigger matrix
+> upstream: docs.index, ops.skill-routing-registry
+> artifacts: none
+
+| ID | Prompt signal | Expected skills |
+|---|---|---|
+| T01 | fixture | \`rule-operations\` |
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "missing-skill-trigger-fixture"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports long SKILL.md descriptions as trigger index advisories", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-skill-description-advisory-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [skill_trigger_matrix.md](./owners/operations/skill_trigger_matrix.md) - skill trigger matrix
+`,
+    );
+    await writeFile(
+      repoRoot,
+      ".codex/skills/jg-demo/SKILL.md",
+      `---
+name: jg-demo
+description: "Use this fixture for a very long trigger description that keeps adding policy context, routing notes, examples, exceptions, and extra operational wording beyond the compact trigger index budget."
+---
+
+# Demo Skill
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: skill.jg-demo
+> role: skill-entry
+> owner_scope: fixture skill
+> upstream: docs.index
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_routing_registry.md",
+      `# Skill Routing Registry
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-routing-registry
+> role: reference
+> owner_scope: fixture skill route registry
+> upstream: docs.index
+> artifacts: none
+
+| Skill | Scope |
+|---|---|
+| \`jg-demo\` | demo |
+| \`rule-operations\` | operations |
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/operations/skill_trigger_matrix.md",
+      `# Skill Trigger Matrix
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.skill-trigger-matrix
+> role: reference
+> owner_scope: fixture skill trigger matrix
+> upstream: docs.index, ops.skill-routing-registry
+> artifacts: none
+
+| ID | Prompt signal | Expected skills |
+|---|---|---|
+| T01 | fixture | \`jg-demo\`, \`rule-operations\` |
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
+    assert.ok(
+      result.warnings.some((warning) => warning.code === "skill-description-length-advisory"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
 test("ignores valid search-pattern inline code", async () => {
   const result = await lintRepository(getFixturePath("valid-search-pattern-ignored"), {
     includeGeneralChecks: true,
@@ -2266,6 +2888,302 @@ test("accepts sharded recurrence closeout artifact for rules-only changes", asyn
       ],
     });
     assert.equal(result.errors.length, 0);
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports circular entry policy body dependency as error", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-circular-entry-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: docs.index
+> artifacts: none
+
+## 상위 원칙
+
+Fixture policy body in entry document.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+## Fresh Evidence Discipline
+
+Fixture policy body in entry document.
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "circular-entry-policy-body"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("warns on reciprocal entry routes without policy body", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-reciprocal-entry-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+Entry route reference only: [Docs Index](docs/index.md).
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- Entry route reference only.
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.equal(result.errors.length, 0);
+    assert.ok(
+      result.warnings.some((warning) => warning.code === "entry-reciprocal-route-advisory"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports enhanced stale active plan advisory for 60+ days", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-stale-advisory-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+Entry document.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [stale_plan.md](./plans/active/stale_plan.md) - stale plan
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/plans/active/stale_plan.md",
+      `# Stale Plan
+
+> 마지막 업데이트: 2026-03-01
+> 상태: active
+> doc_id: plans.stale
+> role: plan
+> owner_scope: fixture plan
+> upstream: docs.index
+> artifacts: none
+
+- blocked: residual pending
+- blocked: fresh evidence pending
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      now: "2026-06-01T00:00:00Z",
+    });
+    assert.equal(result.errors.length, 0);
+    const advisoryWarning = result.warnings.find((w) => w.code === "reference-compression-candidate");
+    assert.ok(advisoryWarning);
+    assert.match(advisoryWarning.message, /Recommended action: choose one of/);
+    assert.match(advisoryWarning.message, /\(1\) keep active/);
+    assert.match(advisoryWarning.message, /\(2\) move blocked residuals/);
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports stale deleted path references as errors", async () => {
+  const previousChangedFilesEnv = process.env.RULES_LINT_CHANGED_FILES;
+  delete process.env.RULES_LINT_CHANGED_FILES;
+
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-deleted-path-"));
+  try {
+    await execFileAsync("git", ["init"], { cwd: repoRoot });
+    await execFileAsync("git", ["config", "user.email", "fixture@example.test"], { cwd: repoRoot });
+    await execFileAsync("git", ["config", "user.name", "Fixture"], { cwd: repoRoot });
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+Entry document.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- Active: [deleted_owner.md](./owners/deleted_owner.md) - deleted owner
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/owners/deleted_owner.md",
+      `# Deleted Owner
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.deleted-owner
+> role: ssot
+> owner_scope: fixture owner
+> upstream: docs.index
+> artifacts: none
+
+Deleted owner document.
+`,
+    );
+    await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+    await execFileAsync("git", ["commit", "-m", "baseline"], { cwd: repoRoot });
+    await fs.rm(path.join(repoRoot, "docs/owners/deleted_owner.md"));
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "stale-deleted-path-reference"),
+    );
+  } finally {
+    if (previousChangedFilesEnv === undefined) {
+      delete process.env.RULES_LINT_CHANGED_FILES;
+    } else {
+      process.env.RULES_LINT_CHANGED_FILES = previousChangedFilesEnv;
+    }
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("ignores deleted path references when no deleted files", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-no-deleted-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+Entry document.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+Active index.
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      !result.errors.some((error) => error.code === "stale-deleted-path-reference"),
+    );
   } finally {
     await fs.rm(repoRoot, { recursive: true, force: true });
   }

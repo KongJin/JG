@@ -84,7 +84,8 @@ namespace Features.Lobby.Presentation
             _deckTitle.text = viewModel.DeckSummary.SummaryText;
             _deckBody.text = viewModel.DeckSummary.DetailText;
             _readyButton.text = viewModel.PrimaryButtonText;
-            _readyButton.SetEnabled(viewModel.IsVisible);
+            _readyButton.tooltip = viewModel.ReadyToggleEnabled ? string.Empty : viewModel.ReadyBlockReason;
+            _readyButton.SetEnabled(viewModel.IsVisible && viewModel.ReadyToggleEnabled);
 
             UitkElementUtility.SetDisplay(_startButton, false);
             UitkElementUtility.SetClass(_redTeamButton, SelectedTeamClass, viewModel.LocalTeam == TeamType.Red);

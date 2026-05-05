@@ -162,7 +162,9 @@ namespace Features.Lobby.Presentation
         public LobbyRoomWaitingViewModel BuildRoomWaiting(
             RoomSnapshot room,
             DomainEntityId localMemberId,
-            LobbyGarageSummaryViewModel deckSummary)
+            LobbyGarageSummaryViewModel deckSummary,
+            bool localReadyEligible = true,
+            string localReadyBlockReason = null)
         {
             deckSummary ??= LobbyGarageSummaryViewModel.Empty;
 // csharp-guardrails: allow-null-defense
@@ -223,7 +225,9 @@ namespace Features.Lobby.Presentation
                 localIsOwner,
                 localIsReady,
                 canStartGame: localIsOwner && allReady,
-                isVisible: true);
+                isVisible: true,
+                readyToggleEnabled: localIsReady || localReadyEligible,
+                readyBlockReason: localReadyBlockReason);
         }
 
         public LobbyAccountViewModel BuildAccount(

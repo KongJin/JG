@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import { accessSync } from "node:fs";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import path from "node:path";
 
 import {
@@ -97,6 +99,8 @@ const REPO_IMPORTED_RULE_SKILL_NAMES = new Set([
   "rule-unity",
   "rule-validation",
 ]);
+const SKILL_ROUTE_TOKEN_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)+$/u;
+const SKILL_DESCRIPTION_WORD_BUDGET = 25;
 const ROOT_CAUSE_INVESTIGATION_REQUIREMENTS = [
   { patterns: [/## Root Cause Investigation/u], label: "`Root Cause Investigation` section" },
   { patterns: [/확인된 사실/u], label: "`확인된 사실` wording" },
@@ -140,6 +144,7 @@ const MUTATING_REPO_SKILL_ENTRIES = new Set([
 const ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS = 5;
 const PROGRESS_EVIDENCE_ARTIFACT_BUDGET = 2;
 const ACTIVE_PLAN_STALE_DAYS = 14;
+const ACTIVE_PLAN_REFERENCE_COMPRESSION_DAYS = 30;
 const ACTIVE_DOC_STALE_DAYS = 45;
 const PROGRESS_NONBLANK_LINE_WARNING_BUDGET = 80;
 const ACTIVE_PLAN_NONBLANK_LINE_WARNING_BUDGET = 120;
@@ -284,6 +289,7 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateUniqueDocIds(documents));
     errors.push(...validateKnownDocIdReferences(documents));
     errors.push(...validateRepoImportedSkillRegistry(documents));
+    errors.push(...validateRepoLocalSkillRegistry(documents));
     const skillTriggerMatrixResult = validateSkillTriggerMatrix(documents);
     if (Array.isArray(skillTriggerMatrixResult)) {
       errors.push(...skillTriggerMatrixResult);
@@ -299,9 +305,15 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateActivePlanArtifactShapes(documents));
     errors.push(...validateActivePlanArtifactOwnerCollisions(documents));
     errors.push(...validateProgressEvidenceOverload(documents));
+    errors.push(...validateEntryUpstreamDependencyGraph(documents));
+    const reciprocalRouteResult = validateEntryReciprocalRouteWarnings(documents, repoRoot);
+    errors.push(...(reciprocalRouteResult.errors ?? []));
+    warnings.push(...(reciprocalRouteResult.warnings ?? []));
+    warnings.push(...validateReferenceCompressionWarnings(documents, repoRoot, now));
     errors.push(...(await validateRuleHarnessAdvisoryMemory(repoRoot, documents)));
     errors.push(...(await validateRulesArtifactMarkdownReferences(repoRoot)));
     errors.push(...(await validateDocsMetaArtifacts(repoRoot)));
+    errors.push(...(await validateStaleDeletedPathReferences(repoRoot, documents)));
     errors.push(...(await validateGlobalRuleSkillMarkdownLinks(options)));
   }
 
@@ -566,6 +578,42 @@ function parseMetadata(content) {
   }
 
   return metadata;
+}
+
+function extractSkillFrontmatterField(content, fieldName) {
+  const lines = content.split(/\r?\n/u);
+  if (lines[0]?.trim() !== "---") {
+    return "";
+  }
+
+  const fieldPattern = new RegExp(`^${escapeRegExp(fieldName)}:\\s*(.*)$`, "u");
+  for (let index = 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line.trim() === "---") {
+      break;
+    }
+
+    const match = line.match(fieldPattern);
+    if (!match) {
+      continue;
+    }
+
+    return match[1].trim().replace(/^["']|["']$/gu, "");
+  }
+
+  return "";
+}
+
+function countWords(value) {
+  return value
+    .split(/[\s,.;:!?()[\]{}"'`]+/u)
+    .map((word) => word.trim())
+    .filter(Boolean)
+    .length;
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function validateMetadata(document) {
@@ -1336,6 +1384,51 @@ function validateRepoImportedSkillRegistry(documents) {
   return errors;
 }
 
+function validateRepoLocalSkillRegistry(documents) {
+  const registryDocument = documents.find(
+    (document) => document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH,
+  );
+  if (!registryDocument) {
+    return [];
+  }
+
+  const repoLocalSkillNames = new Set(getRepoLocalSkillNames(documents));
+  const registeredSkillNames = new Set(
+    extractRegisteredSkillNames(registryDocument.content),
+  );
+  const errors = [];
+
+  for (const skillName of [...repoLocalSkillNames].sort((left, right) => left.localeCompare(right))) {
+    if (registeredSkillNames.has(skillName)) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "missing-repo-local-skill-registry-entry",
+        SKILL_ROUTING_REGISTRY_PATH,
+        `Repo-local skill \`${skillName}\` must be registered in the JG Repo Skills table before repo docs or trigger fixtures route to it.`,
+      ),
+    );
+  }
+
+  for (const skillName of [...registeredSkillNames].filter((name) => name.startsWith("jg-")).sort((left, right) => left.localeCompare(right))) {
+    if (repoLocalSkillNames.has(skillName)) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "stale-repo-local-skill-registry-entry",
+        SKILL_ROUTING_REGISTRY_PATH,
+        `Skill routing registry references repo-local skill \`${skillName}\`, but \`.codex/skills/${skillName}/SKILL.md\` is not managed in this repo.`,
+      ),
+    );
+  }
+
+  return errors;
+}
+
 function validateSkillTriggerMatrix(documents) {
   const matrixDocument = documents.find(
     (document) => document.repoRelativePath === SKILL_TRIGGER_MATRIX_PATH,
@@ -1348,8 +1441,8 @@ function validateSkillTriggerMatrix(documents) {
   const registryDocument = documents.find(
     (document) => document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH,
   );
-  const registeredRepoImportedSkillNames = new Set(
-    registryDocument ? extractRepoImportedRuleSkillNames(registryDocument.content) : [],
+  const registeredSkillNames = new Set(
+    registryDocument ? extractRegisteredSkillNames(registryDocument.content) : [],
   );
   const matrixSkillNames = new Set(extractSkillRouteNames(matrixDocument.content));
   const errors = [];
@@ -1364,8 +1457,8 @@ function validateSkillTriggerMatrix(documents) {
       }
 
       const knownRepoLocalSkill = token.startsWith("jg-") && repoLocalSkillNames.has(token);
-      const knownRepoImportedSkill = token.startsWith("rule-") && registeredRepoImportedSkillNames.has(token);
-      if (knownRepoLocalSkill || knownRepoImportedSkill) {
+      const knownRegisteredSkill = registeredSkillNames.has(token);
+      if (knownRepoLocalSkill || knownRegisteredSkill) {
         continue;
       }
 
@@ -1394,7 +1487,7 @@ function validateSkillTriggerMatrix(documents) {
     );
   }
 
-  for (const skillName of [...registeredRepoImportedSkillNames].sort((left, right) => left.localeCompare(right))) {
+  for (const skillName of [...registeredSkillNames].filter((name) => !name.startsWith("jg-")).sort((left, right) => left.localeCompare(right))) {
     if (matrixSkillNames.has(skillName)) {
       continue;
     }
@@ -1408,28 +1501,24 @@ function validateSkillTriggerMatrix(documents) {
     );
   }
 
-  // Advisory: skill description length check (target ~25 words)
-  const descriptionLines = stripFencedCodeBlocks(matrixDocument.content).split(/\r?\n/);
-  for (let index = 0; index < descriptionLines.length; index += 1) {
-    const line = descriptionLines[index];
-    if (!line.match(/^\|.*\|/)) {
-      continue; // skip non-table lines
-    }
-    const cells = line.split('|').map((cell) => cell.trim());
-    if (cells.length < 4) {
+  for (const skillDocument of getTopLevelSkillDocuments(documents)) {
+    const skillName = getSkillNameFromPath(skillDocument.repoRelativePath);
+    if (!repoLocalSkillNames.has(skillName) && !registeredSkillNames.has(skillName)) {
       continue;
     }
-    // Expected skill trigger matrix table format: | ID | User prompt signal | Expected skill routes | ... |
-    // Extract description from expected skill routes column if it contains skill name + description
-    const routeCell = cells[2]; // Expected skill routes column
-    const words = routeCell.split(/\s+/).filter((w) => w.length > 0);
-    if (words.length > 25) {
+
+    const description = extractSkillFrontmatterField(skillDocument.content, "description");
+    if (!description) {
+      continue;
+    }
+
+    const words = countWords(description);
+    if (words > SKILL_DESCRIPTION_WORD_BUDGET) {
       warnings.push(
         createWarning(
           "skill-description-length-advisory",
-          matrixDocument.repoRelativePath,
-          `Skill trigger description exceeds target ~25 words (found ${words.length}). Consider shortening to keep descriptions as concise trigger indexes.`,
-          index + 1,
+          skillDocument.repoRelativePath,
+          `Skill description for \`${skillName}\` exceeds target ~${SKILL_DESCRIPTION_WORD_BUDGET} words (found ${words}). Keep descriptions as concise trigger indexes and move policy body to owner docs.`,
         ),
       );
     }
@@ -1578,6 +1667,166 @@ function validateProgressEvidenceOverload(documents) {
   ];
 }
 
+function validateEntryUpstreamDependencyGraph(documents) {
+  const entryDocuments = getEntryDocuments(documents);
+  const entryDocIdToPath = new Map(
+    entryDocuments.map((document) => [document.metadata.get("doc_id"), document.repoRelativePath]),
+  );
+  const graph = new Map(entryDocuments.map((document) => [document.repoRelativePath, new Set()]));
+
+  for (const document of entryDocuments) {
+    for (const token of splitMetadataList(document.metadata.get("upstream") || "")) {
+      const target = entryDocIdToPath.get(token);
+      if (target && target !== document.repoRelativePath) {
+        graph.get(document.repoRelativePath).add(target);
+      }
+    }
+  }
+
+  return findDirectedCycles(graph).map((cycle) =>
+    createError(
+      "circular-entry-upstream-dependency",
+      cycle[0],
+      `Entry document metadata upstream references must form a DAG. Cycle detected: ${cycle.join(" -> ")}.`,
+    ),
+  );
+}
+
+function validateEntryReciprocalRouteWarnings(documents, repoRoot) {
+  const entryDocuments = getEntryDocuments(documents);
+  const entryPaths = new Set(entryDocuments.map((document) => document.repoRelativePath));
+  const entryDocIdToPath = new Map(
+    entryDocuments.map((document) => [document.metadata.get("doc_id"), document.repoRelativePath]),
+  );
+  const referencesByPath = new Map(entryDocuments.map((document) => [document.repoRelativePath, new Set()]));
+  const policyBodyHeadingsByPath = new Map(
+    entryDocuments.map((document) => [
+      document.repoRelativePath,
+      hasPolicyBodyHeading(document.content),
+    ]),
+  );
+
+  for (const document of entryDocuments) {
+    const references = referencesByPath.get(document.repoRelativePath);
+
+    for (const target of getDocumentMarkdownTargets(document, repoRoot)) {
+      if (entryPaths.has(target) && target !== document.repoRelativePath) {
+        references.add(target);
+      }
+    }
+
+    for (const token of splitMetadataList(document.metadata.get("upstream") || "")) {
+      const target = entryDocIdToPath.get(token);
+      if (target && target !== document.repoRelativePath) {
+        references.add(target);
+      }
+    }
+  }
+
+  const warnings = [];
+  const errors = [];
+  const seenPairs = new Set();
+  for (const [source, references] of referencesByPath.entries()) {
+    for (const target of references) {
+      if (!(referencesByPath.get(target) || new Set()).has(source)) {
+        continue;
+      }
+
+      const pairKey = [source, target].sort().join("\n");
+      if (seenPairs.has(pairKey)) {
+        continue;
+      }
+      seenPairs.add(pairKey);
+
+      const sourceHasPolicyBody = policyBodyHeadingsByPath.get(source) || false;
+      const targetHasPolicyBody = policyBodyHeadingsByPath.get(target) || false;
+      const hasPolicyBodyOnEitherSide = sourceHasPolicyBody || targetHasPolicyBody;
+
+      if (hasPolicyBodyOnEitherSide) {
+        errors.push(
+          createError(
+            "circular-entry-policy-body",
+            source,
+            `Entry documents with policy body routing to each other form a circular dependency: \`${source}\` <-> \`${target}\`. Move policy body from entry documents to owner docs and break the cycle.`,
+          ),
+        );
+      } else {
+        warnings.push(
+          createWarning(
+            "entry-reciprocal-route-advisory",
+            source,
+            `Entry documents route to each other: \`${source}\` <-> \`${target}\`. This is allowed as a short entry/registry handshake, but keep policy body in owner docs and avoid adding another back-edge.`,
+          ),
+        );
+      }
+    }
+  }
+
+  return { errors, warnings };
+}
+
+function hasPolicyBodyHeading(content) {
+  const stripped = stripFencedCodeBlocks(content);
+  const lines = stripped.split(/\r?\n/);
+
+  for (const line of lines) {
+    const match = line.match(/^##\s+(.+?)\s*$/u);
+    if (!match) {
+      continue;
+    }
+
+    if (ENTRY_POLICY_BODY_HEADINGS.has(match[1].trim())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function validateReferenceCompressionWarnings(documents, repoRoot, now) {
+  const activePlans = getActiveNonProgressPlans(documents);
+  const inboundReferences = countInboundPlanReferences(documents, repoRoot, activePlans);
+  const warnings = [];
+
+  for (const document of activePlans) {
+    const lastUpdated = parseMetadataDate(document.metadata.get("마지막 업데이트"));
+    if (!lastUpdated) {
+      continue;
+    }
+
+    const ageDays = getWholeUtcAgeDays(lastUpdated, now);
+    if (ageDays <= ACTIVE_PLAN_REFERENCE_COMPRESSION_DAYS) {
+      continue;
+    }
+
+    const internalResidualCount = countInternalResidualSignals(document.content);
+    const externalReferenceCount = inboundReferences.get(document.repoRelativePath) || 0;
+    if (externalReferenceCount !== 0 || internalResidualCount === 0) {
+      continue;
+    }
+
+    if (ageDays >= ACTIVE_PLAN_REFERENCE_COMPRESSION_DAYS * 2) {
+      warnings.push(
+        createWarning(
+          "reference-compression-candidate",
+          document.repoRelativePath,
+          `Active plan is ${ageDays} day(s) old with ${internalResidualCount} residual/blocker signal(s). Recommended action: choose one of (1) keep active with fresh closeout, (2) move blocked residuals to \`progress.md\` or owner docs, (3) compress to \`docs/plans/reference/\`, or (4) delete after evidence migration.`,
+        ),
+      );
+    } else {
+      warnings.push(
+        createWarning(
+          "reference-compression-candidate",
+          document.repoRelativePath,
+          `Active plan is ${ageDays} day(s) old, has no non-index inbound references, and still contains ${internalResidualCount} residual/blocker signal(s). Consider reference compression, residual handoff to progress.md/owner docs, or deletion after migration.`,
+        ),
+      );
+    }
+  }
+
+  return warnings;
+}
+
 async function validateDocsMetaArtifacts(repoRoot) {
   const docsRoot = path.join(repoRoot, "docs");
   const metaFiles = await walkFiles(docsRoot, repoRoot, (entry) => entry.name.endsWith(".meta"));
@@ -1588,6 +1837,148 @@ async function validateDocsMetaArtifacts(repoRoot) {
       "Unity `.meta` artifacts must not live under `docs/`. Remove the artifact or move Unity-owned files under Unity asset roots.",
     ),
   );
+}
+
+async function validateStaleDeletedPathReferences(repoRoot, documents) {
+  const deletedPaths = await getDeletedGitPaths(repoRoot);
+  if (deletedPaths.length === 0) {
+    return [];
+  }
+
+  const managedDocPaths = new Set(
+    documents
+      .filter((document) => document.metadata.get("상태") === "active")
+      .map((document) => document.repoRelativePath),
+  );
+  const activeDocPaths = new Set(managedDocPaths);
+  const deletedManagedDocPaths = new Set();
+  const deletedSkillPaths = new Set();
+  const deletedToolReadmePaths = new Set();
+
+  for (const deletedPath of deletedPaths) {
+    const normalized = normalizeRepoRelativePath(deletedPath);
+    if (isManagedDocPath(normalized)) {
+      deletedManagedDocPaths.add(normalized);
+    } else if (isSkillPath(normalized)) {
+      deletedSkillPaths.add(normalized);
+    } else if (isToolReadmePath(normalized)) {
+      deletedToolReadmePaths.add(normalized);
+    }
+  }
+
+  const errors = [];
+  const allStalePaths = new Set([
+    ...deletedManagedDocPaths,
+    ...deletedSkillPaths,
+    ...deletedToolReadmePaths,
+  ]);
+
+  for (const document of documents) {
+    if (document.metadata.get("상태") !== "active") {
+      continue;
+    }
+
+    for (const stalePath of findStalePathReferences(document.content, allStalePaths)) {
+      const staleKind = deletedManagedDocPaths.has(stalePath) ? "managed doc" :
+        deletedSkillPaths.has(stalePath) ? "skill" :
+        "tool README";
+      errors.push(
+        createError(
+          "stale-deleted-path-reference",
+          document.repoRelativePath,
+          `Active document references deleted ${staleKind} path \`${stalePath}\`. Remove the reference or update the path to its current location.`,
+        ),
+      );
+    }
+  }
+
+  for (const activeDocPath of activeDocPaths) {
+    const activeDoc = documents.find((d) => d.repoRelativePath === activeDocPath);
+    if (!activeDoc) {
+      continue;
+    }
+
+    for (const stalePath of findStalePathReferences(activeDoc.content, allStalePaths)) {
+      const staleKind = deletedManagedDocPaths.has(stalePath) ? "managed doc" :
+        deletedSkillPaths.has(stalePath) ? "skill" :
+        "tool README";
+      errors.push(
+        createError(
+          "stale-deleted-path-reference",
+          activeDocPath,
+          `Active document references deleted ${staleKind} path \`${stalePath}\`. Remove the reference or update the path to its current location.`,
+        ),
+      );
+    }
+  }
+
+  return errors;
+}
+
+async function getDeletedGitPaths(repoRoot) {
+  try {
+    const { stdout } = await promisify(execFile)(
+      "git",
+      ["diff", "--name-only", "--diff-filter=D", "HEAD"],
+      { cwd: repoRoot },
+    );
+    return stdout
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.replace(/\\/g, "/"));
+  } catch {
+    return [];
+  }
+}
+
+function isManagedDocPath(path) {
+  return path.endsWith(".md") &&
+    (path.startsWith("AGENTS.md") ||
+     path.startsWith("docs/") ||
+     path.startsWith(".codex/skills/"));
+}
+
+function isSkillPath(path) {
+  return path.startsWith(".codex/skills/") && path.endsWith("/");
+}
+
+function isToolReadmePath(path) {
+  return path.endsWith("README.md") && path.startsWith("tools/");
+}
+
+function findStalePathReferences(content, stalePaths) {
+  const found = new Set();
+  const stripped = stripFencedCodeBlocks(content);
+
+  for (const stalePath of stalePaths) {
+    const stalePathVariations = [
+      stalePath,
+      `./${stalePath}`,
+      `../${stalePath}`,
+      stalePath.replace(/^docs\//, ""),
+      stalePath.replace(/^\.codex\//, ""),
+    ];
+
+    for (const variation of stalePathVariations) {
+      const patterns = [
+        new RegExp(`\\[\\s*${escapeRegExp(variation)}[^\\]]*\\]\\([^)]+\\)`, "gu"),
+        new RegExp(`\\]\\([^)]*${escapeRegExp(variation)}\\)`, "gu"),
+      ];
+
+      for (const pattern of patterns) {
+        if (pattern.test(stripped)) {
+          found.add(stalePath);
+        }
+      }
+
+      if (stripped.includes(`${variation}`)) {
+        found.add(stalePath);
+      }
+    }
+  }
+
+  return [...found];
 }
 
 async function validateRuleHarnessAdvisoryMemory(repoRoot, documents) {
@@ -1776,6 +2167,96 @@ function getActiveNonProgressPlans(documents) {
     .filter((document) => isActivePlanDocPath(document.repoRelativePath))
     .filter((document) => document.metadata.get("상태") === "active")
     .filter((document) => document.metadata.get("role") === "plan");
+}
+
+function getEntryDocuments(documents) {
+  return documents.filter((document) =>
+    document.metadata.get("role") === "entry" &&
+    (document.repoRelativePath === "AGENTS.md" || document.repoRelativePath === "docs/index.md"),
+  );
+}
+
+function findDirectedCycles(graph) {
+  const cycles = [];
+  const seenCycleKeys = new Set();
+  const visiting = new Set();
+  const visited = new Set();
+  const stack = [];
+
+  function visit(node) {
+    if (visiting.has(node)) {
+      const cycle = stack.slice(stack.indexOf(node)).concat(node);
+      const cycleKey = cycle.slice(0, -1).sort().join("\n");
+      if (!seenCycleKeys.has(cycleKey)) {
+        seenCycleKeys.add(cycleKey);
+        cycles.push(cycle);
+      }
+      return;
+    }
+
+    if (visited.has(node)) {
+      return;
+    }
+
+    visiting.add(node);
+    stack.push(node);
+
+    for (const target of graph.get(node) || []) {
+      visit(target);
+    }
+
+    stack.pop();
+    visiting.delete(node);
+    visited.add(node);
+  }
+
+  for (const node of graph.keys()) {
+    visit(node);
+  }
+
+  return cycles;
+}
+
+function countInboundPlanReferences(documents, repoRoot, activePlans) {
+  const activePlanPaths = new Set(activePlans.map((document) => document.repoRelativePath));
+  const activePlanDocIds = new Map(
+    activePlans.map((document) => [document.metadata.get("doc_id"), document.repoRelativePath]),
+  );
+  const counts = new Map(activePlans.map((document) => [document.repoRelativePath, 0]));
+
+  for (const document of documents) {
+    if (document.repoRelativePath === "docs/index.md" || activePlanPaths.has(document.repoRelativePath)) {
+      continue;
+    }
+
+    const referenced = new Set();
+    for (const target of getDocumentMarkdownTargets(document, repoRoot)) {
+      if (activePlanPaths.has(target)) {
+        referenced.add(target);
+      }
+    }
+
+    for (const token of splitMetadataList(document.metadata.get("upstream") || "")) {
+      const target = activePlanDocIds.get(token);
+      if (target) {
+        referenced.add(target);
+      }
+    }
+
+    for (const target of referenced) {
+      counts.set(target, (counts.get(target) || 0) + 1);
+    }
+  }
+
+  return counts;
+}
+
+function countInternalResidualSignals(content) {
+  const signalPattern = /\b(?:residual|blocked|blocker|TODO|handoff|mismatch)\b|잔여|이관|막힘|차단|보류|미완료/u;
+  return stripFencedCodeBlocks(content)
+    .split(/\r?\n/u)
+    .filter((line) => signalPattern.test(line))
+    .length;
 }
 
 function getDocumentMarkdownTargets(document, repoRoot) {
@@ -1996,6 +2477,21 @@ function extractRepoImportedRuleSkillNames(content) {
   return [...names].sort((left, right) => left.localeCompare(right));
 }
 
+function extractRegisteredSkillNames(content) {
+  const names = new Set();
+  const lines = stripFencedCodeBlocks(content).split(/\r?\n/);
+
+  for (const line of lines) {
+    for (const token of extractInlineCodeTokens(line)) {
+      if (isSkillRouteToken(token)) {
+        names.add(token);
+      }
+    }
+  }
+
+  return [...names].sort((left, right) => left.localeCompare(right));
+}
+
 function getRepoLocalSkillNames(documents) {
   return documents
     .map((document) => {
@@ -2004,6 +2500,17 @@ function getRepoLocalSkillNames(documents) {
     })
     .filter(Boolean)
     .sort((left, right) => left.localeCompare(right));
+}
+
+function getTopLevelSkillDocuments(documents) {
+  return documents.filter((document) =>
+    /^\.codex\/skills\/(?!\.system\/)[^/]+\/SKILL\.md$/u.test(document.repoRelativePath),
+  );
+}
+
+function getSkillNameFromPath(repoRelativePath) {
+  const match = repoRelativePath.match(/^\.codex\/skills\/([^/]+)\/SKILL\.md$/u);
+  return match ? match[1] : null;
 }
 
 function extractSkillRouteNames(content) {
@@ -2022,7 +2529,7 @@ function extractSkillRouteNames(content) {
 }
 
 function isSkillRouteToken(token) {
-  return /^jg-[a-z0-9-]+$/u.test(token) || isRepoImportedRuleSkillToken(token);
+  return SKILL_ROUTE_TOKEN_PATTERN.test(token);
 }
 
 function isRelativeTarget(target) {

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-06",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "skill route registry coverage, entry dependency validation, reference compression advisory, and docs-lint recurrence prevention",
+  "observedMutationClass": "docs-lint skill route registry and trigger matrix coverage, SKILL.md description advisory, imported Unity route coverage, entry upstream dependency cycle lint, reciprocal entry route advisory, stale active plan reference compression advisory, and preserved hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload",
+  "acceptanceEvidenceClass": "docs-lint fixture tests, sync-closeout tests, rules:sync-closeout, and full rules lint; no gameplay or Unity runtime acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The skill trigger matrix lint recognized repo-local jg-* routes and registered rule-* routes, but did not compare repo-local skills against the routing registry, did not treat registered imported Unity skill routes as matrix coverage targets, and checked description length against matrix table cells instead of actual SKILL.md frontmatter. Entry document dependency shape and reference-compression candidates were also policy-only judgments without deterministic lint signals.",
+  "prevention": "Add deterministic registry checks for repo-local jg-* skills, make registered imported skill names from ops.skill-routing-registry participate in trigger matrix coverage, and move description budget advisories to actual top-level SKILL.md frontmatter. Add entry upstream cycle lint with a softer reciprocal-route advisory, plus a reference-compression candidate advisory for old active plans with residual signals and no non-index inbound references. Preserve recurrence hard-fail coverage anchors for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs tools/docs-lint/tests/sync-recurrence-closeout.test.mjs; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-4b46387ecf.json",
+    "tools/docs-lint/lib.mjs",
+    "tools/docs-lint/tests/docs-lint.test.mjs"
+  ]
+}

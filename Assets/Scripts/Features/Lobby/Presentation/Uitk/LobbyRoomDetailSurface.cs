@@ -69,7 +69,11 @@ namespace Features.Lobby.Presentation
 
             // csharp-guardrails: allow-null-defense
             if (_readyButton != null)
+            {
                 _readyButton.text = viewModel.ReadyButtonText;
+                _readyButton.tooltip = viewModel.ReadyToggleEnabled ? string.Empty : viewModel.ReadyBlockReason;
+                _readyButton.SetEnabled(viewModel.ReadyToggleEnabled);
+            }
             // csharp-guardrails: allow-null-defense
             if (_startButton != null)
                 _startButton.SetEnabled(viewModel.CanStartGame);

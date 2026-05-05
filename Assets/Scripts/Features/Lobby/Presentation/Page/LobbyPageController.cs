@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Features.Account.Application;
 using Features.Account.Domain;
+using Features.Garage.Application;
+using Features.Garage.Domain;
 using Features.Garage.Presentation;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
@@ -66,6 +68,9 @@ namespace Features.Lobby.Presentation
         private DomainEntityId _selectedRoomId;
         private RoomSnapshot _currentRoomSnapshot;
         private LobbyGarageSummaryViewModel _latestGarageSummary = LobbyGarageSummaryViewModel.Empty;
+        private bool _localReadyEligible;
+        private string _localReadyBlockReason = "Ready requires a saved Garage roster.";
+        private bool _hasGarageDraftState;
         private bool _localIsReady;
         private DomainEntityId _autoStartRequestedRoomId;
         private bool _hasCurrentRoomSnapshot;
@@ -107,6 +112,7 @@ namespace Features.Lobby.Presentation
             _eventBus.Subscribe<LobbyUpdatedEvent>(this, e => RenderLobby(e.Lobby));
             _eventBus.Subscribe<RoomListReceivedEvent>(this, RenderRoomList);
             _eventBus.Subscribe<RoomUpdatedEvent>(this, RenderRoom);
+            _eventBus.Subscribe<GarageDraftStateChangedEvent>(this, ApplyGarageDraftState);
 
 // csharp-guardrails: allow-null-defense
             _uitk?.ShowLobbyPage();
@@ -185,7 +191,14 @@ namespace Features.Lobby.Presentation
         public void RenderAccountState(AccountProfile profile, AccountData accountData)
         {
             BindAdapterSurface();
-            _latestGarageSummary = _presenter.BuildGarageSummary(accountData);
+            var accountGarageSummary = _presenter.BuildGarageSummary(accountData);
+            if (!_hasGarageDraftState)
+            {
+                _latestGarageSummary = accountGarageSummary;
+                _localReadyEligible = _latestGarageSummary.IsReady;
+                if (_localReadyEligible)
+                    _localReadyBlockReason = "Ready available";
+            }
 // csharp-guardrails: allow-null-defense
             _uitk?.RenderGarageSummary(_latestGarageSummary);
 // csharp-guardrails: allow-null-defense
@@ -350,10 +363,18 @@ namespace Features.Lobby.Presentation
 
         private void ToggleReady()
         {
+            var targetReady = !_localIsReady;
+            if (targetReady && !_localReadyEligible)
+            {
+// csharp-guardrails: allow-null-defense
+                _inputHandler?.PublishFailure(BuildReadyBlockMessage());
+                return;
+            }
+
 #if UNITY_EDITOR
             if (HasRoomMemberContext() && ShouldUseEditorPreviewRoomControls())
             {
-                UpdateEditorPreviewCurrentRoom(room => room.SetReady(_localMemberId, !_localIsReady));
+                UpdateEditorPreviewCurrentRoom(room => room.SetReady(_localMemberId, targetReady));
                 return;
             }
 #endif
@@ -361,10 +382,72 @@ namespace Features.Lobby.Presentation
             if (HasRoomMemberContext())
             {
 // csharp-guardrails: allow-null-defense
-                Result? result = _inputHandler?.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
+                Result? result = _inputHandler?.SetReady(_currentRoomId, _localMemberId, targetReady);
                 if (result.HasValue && result.Value.IsSuccess)
-                    UpdateCurrentRoomSnapshot(room => room.SetReady(_localMemberId, !_localIsReady));
+                    UpdateCurrentRoomSnapshot(room => room.SetReady(_localMemberId, targetReady));
             }
+        }
+
+        internal void ApplyGarageDraftState(GarageDraftStateChangedEvent e)
+        {
+            _hasGarageDraftState = true;
+            _localReadyEligible = e.ReadyEligible;
+            _localReadyBlockReason = string.IsNullOrWhiteSpace(e.BlockReason)
+                ? "Ready requires a saved Garage roster."
+                : e.BlockReason;
+            _latestGarageSummary = BuildGarageSummary(e);
+
+// csharp-guardrails: allow-null-defense
+            _uitk?.RenderGarageSummary(_latestGarageSummary);
+
+            if (!HasRoomMemberContext() || !_hasCurrentRoomSnapshot)
+                return;
+
+            if (_localIsReady && !_localReadyEligible)
+                SetLocalReady(false);
+            else
+// csharp-guardrails: allow-null-defense
+                _uitk?.RenderRoomWaiting(BuildRoomWaitingViewModel());
+        }
+
+        private void SetLocalReady(bool isReady)
+        {
+#if UNITY_EDITOR
+            if (HasRoomMemberContext() && ShouldUseEditorPreviewRoomControls())
+            {
+                UpdateEditorPreviewCurrentRoom(room => room.SetReady(_localMemberId, isReady));
+                return;
+            }
+#endif
+
+            if (!HasRoomMemberContext())
+                return;
+
+// csharp-guardrails: allow-null-defense
+            Result? result = _inputHandler?.SetReady(_currentRoomId, _localMemberId, isReady);
+            if (result.HasValue && result.Value.IsSuccess)
+                UpdateCurrentRoomSnapshot(room => room.SetReady(_localMemberId, isReady));
+        }
+
+        private string BuildReadyBlockMessage()
+        {
+            return string.IsNullOrWhiteSpace(_localReadyBlockReason)
+                ? "Ready requires a saved Garage roster."
+                : _localReadyBlockReason;
+        }
+
+        private static LobbyGarageSummaryViewModel BuildGarageSummary(GarageDraftStateChangedEvent e)
+        {
+            var savedUnitCount = Math.Max(0, e.SavedUnitCount);
+            return new LobbyGarageSummaryViewModel(
+                e.ReadyEligible ? "출격 가능" : "출격 보류",
+                $"저장된 유닛 {savedUnitCount}/{GarageRoster.MaxSlots}",
+                string.IsNullOrWhiteSpace(e.BlockReason)
+                    ? "Ready requires a saved Garage roster."
+                    : e.BlockReason,
+                savedUnitCount,
+                GarageRoster.MaxSlots,
+                e.ReadyEligible);
         }
 
         private void StartGame()
@@ -480,7 +563,9 @@ namespace Features.Lobby.Presentation
             return _presenter.BuildRoomWaiting(
                 _currentRoomSnapshot,
                 _localMemberId,
-                _latestGarageSummary);
+                _latestGarageSummary,
+                _localReadyEligible,
+                _localReadyBlockReason);
         }
 
         private LobbyRoomListViewModel BuildRoomsViewModel(DomainEntityId highlightedRoomId)

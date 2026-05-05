@@ -2,7 +2,6 @@ using Features.Account.Application.Ports;
 using Features.Garage;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
-using Features.Lobby.Application.Ports;
 using Features.Lobby.Infrastructure.Persistence;
 using Features.Lobby.Infrastructure.Photon;
 using Features.Lobby.Presentation;
@@ -23,8 +22,6 @@ internal sealed class LobbySceneInitializationFlow
         SoundPlayer soundPlayer,
         UnitSetup unitSetup,
         GarageSetup garageSetup,
-        ISceneLoaderPort sceneLoader,
-        string battleSceneName,
         IAccountDataPort accountDataPort,
         System.Action applyLoadedAccountSettings)
     {
@@ -33,7 +30,6 @@ internal sealed class LobbySceneInitializationFlow
         var syncHandler = new LobbyNetworkEventHandler(repository, eventBus, photonAdapter);
         var useCases = new LobbyUseCases(repository, photonAdapter, clock);
         var operationRecordStore = new OperationRecordJsonStore();
-        var sceneLoadHandler = new GameStartedSceneLoadEventHandler(eventBus, sceneLoader, battleSceneName);
 
         soundPlayer.Initialize(eventBus, SoundPlayer.LobbyOwnerId);
         applyLoadedAccountSettings?.Invoke();
@@ -63,20 +59,16 @@ internal sealed class LobbySceneInitializationFlow
             }
         }
 
-        return new LobbySceneInitializationResult(syncHandler, sceneLoadHandler);
+        return new LobbySceneInitializationResult(syncHandler);
     }
 }
 
 internal readonly struct LobbySceneInitializationResult
 {
     public LobbyNetworkEventHandler SyncHandler { get; }
-    public GameStartedSceneLoadEventHandler SceneLoadHandler { get; }
 
-    public LobbySceneInitializationResult(
-        LobbyNetworkEventHandler syncHandler,
-        GameStartedSceneLoadEventHandler sceneLoadHandler)
+    public LobbySceneInitializationResult(LobbyNetworkEventHandler syncHandler)
     {
         SyncHandler = syncHandler;
-        SceneLoadHandler = sceneLoadHandler;
     }
 }

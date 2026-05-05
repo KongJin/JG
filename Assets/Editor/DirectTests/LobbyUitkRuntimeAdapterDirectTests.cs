@@ -1,4 +1,7 @@
 using Features.Lobby.Presentation;
+using Features.Garage.Application;
+using Features.Lobby.Application.Events;
+using Features.Lobby.Domain;
 using NUnit.Framework;
 using ProjectSD.EditorTools.UnityMcp;
 using Shared.EventBus;
@@ -411,6 +414,87 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void RenderRoomWaiting_DisablesReadyWhenLocalDeckIsNotEligible()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.RenderRoomWaiting(new LobbyRoomWaitingViewModel(
+                    "Alpha",
+                    "1/4 | Normal",
+                    "참가자 대기 중",
+                    "호스트 Pilot",
+                    "연결 안정",
+                    new[]
+                    {
+                        new LobbyRoomParticipantViewModel(
+                            "Pilot",
+                            "Red",
+                            "대기",
+                            isReady: false,
+                            isLocal: true,
+                            isEmpty: false)
+                    },
+                    LobbyGarageSummaryViewModel.Empty,
+                    TeamType.Red,
+                    localIsOwner: true,
+                    localIsReady: false,
+                    canStartGame: false,
+                    isVisible: true,
+                    readyToggleEnabled: false,
+                    readyBlockReason: "Need 3 saved units"));
+
+                var root = fixture.Document.rootVisualElement;
+                var readyButton = Button(root, "RoomReadyButton");
+                Assert.IsFalse(readyButton.enabledSelf);
+                Assert.AreEqual("Need 3 saved units", readyButton.text);
+                Assert.AreEqual("Need 3 saved units", readyButton.tooltip);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void PageController_AutoCancelsReadyWhenGarageBecomesIneligible()
+        {
+            var documentObject = new GameObject("LobbyPageControllerReadyGateTest");
+            try
+            {
+                var document = documentObject.AddComponent<UIDocument>();
+                var controller = documentObject.AddComponent<LobbyPageController>();
+                var serialized = new SerializedObject(controller);
+                serialized.FindProperty("_document").objectReferenceValue = document;
+                serialized.FindProperty("_lobbyShellTree").objectReferenceValue = LoadTree(LobbyShellPath);
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+
+                controller.OpenLobbyPage();
+                var localMemberId = new DomainEntityId("pilot-1");
+                var room = CreateRoom("room-1", "Alpha", capacity: 4, ownerId: localMemberId.Value);
+                room.SetReady(localMemberId, true);
+                controller.RenderRoom(new RoomUpdatedEvent(room, localMemberId));
+
+                controller.ApplyGarageDraftState(new GarageDraftStateChangedEvent(
+                    savedUnitCount: 2,
+                    hasUnsavedChanges: true,
+                    readyEligible: false,
+                    blockReason: "Unsaved Garage changes"));
+
+                var root = document.rootVisualElement;
+                var readyButton = Button(root, "RoomReadyButton");
+                Assert.IsFalse(readyButton.enabledSelf);
+                Assert.AreEqual("Unsaved Garage changes", readyButton.text);
+                Assert.AreEqual("대기 중", root.Q<VisualElement>("RoomWaitingParticipantList")[0]
+                    .Q<Label>(className: "lobby-waiting-participant-status").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(documentObject);
+            }
+        }
+
+        [Test]
         public void CommandButtons_PublishSemanticClickSoundsOnce()
         {
             var fixture = CreateFixture();
@@ -564,6 +648,14 @@ namespace Tests.Editor
             var root = new VisualElement();
             LoadTree(LobbyShellPath).CloneTree(root);
             return root;
+        }
+
+        private static Room CreateRoom(string roomId, string roomName, int capacity, string ownerId)
+        {
+            var owner = new RoomMember(new DomainEntityId(ownerId), "Pilot", TeamType.Red, isReady: false);
+            var result = Room.Create(new DomainEntityId(roomId), roomName, capacity, owner);
+            Assert.IsFalse(result.IsFailure, result.Error);
+            return result.Value;
         }
 
         private static void AssertPageVisible(VisualElement root, string pageName)

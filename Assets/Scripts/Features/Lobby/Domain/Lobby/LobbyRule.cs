@@ -53,7 +53,7 @@ namespace Features.Lobby.Domain
 
             if (!room.CanStartGame())
             {
-                return Result.Failure("All players must be ready and room must have at least two members.");
+                return Result.Failure("All current room members must be ready.");
             }
 
             return Result.Success();
