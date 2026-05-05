@@ -17,6 +17,6 @@
     "artifacts/rules/issue-recurrence-closeout.d/local-garage-evaluation-cohesion-20260504.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-garage-render-context-factory-20260504.json",
     "artifacts/rules/issue-recurrence-closeout.json",
-    "docs/ops/presentation_layer_guardrails.md"
+    "docs/owners/operations/presentation_layer_guardrails.md"
   ]
 }

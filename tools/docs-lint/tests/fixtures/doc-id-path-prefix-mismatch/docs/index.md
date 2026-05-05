@@ -9,4 +9,4 @@
 
 ### `playtest/`
 
-- `reference`: [`demo.md`](./playtest/demo.md) - fixture checklist
+- `reference`: [`demo.md`](./owners/validation/demo.md) - fixture checklist

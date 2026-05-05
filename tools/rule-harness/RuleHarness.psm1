@@ -5517,7 +5517,7 @@ function Get-RuleHarnessHardcodedMcpUiSmokeFindings {
             -Severity $severity `
             -OwnerDoc 'tools/rule-harness/README.md' `
             -Title 'Hardcoded MCP UI smoke reintroduced' `
-            -Message ("Automation file '{0}' reintroduces hardcoded MCP UI smoke via '{1}'. Keep rule-harness on generic compile/status checks and move runtime verification to docs/playtest manual checklists or one-off diagnostics." -f [string]$file.relativePath, [string]$matchedLabel) `
+            -Message ("Automation file '{0}' reintroduces hardcoded MCP UI smoke via '{1}'. Keep rule-harness on generic compile/status checks and move runtime verification to docs/owners/validation manual checklists or one-off diagnostics." -f [string]$file.relativePath, [string]$matchedLabel) `
             -Evidence @([pscustomobject]@{ path = [string]$file.relativePath; line = [int]$evidence.line; snippet = [string]$evidence.snippet }) `
             -Confidence 'high' `
             -RemediationKind 'report_only' `

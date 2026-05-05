@@ -9,7 +9,7 @@
 > artifacts: `artifacts/unity/game-flow/actual-flow/`
 
 이 문서는 GameScene/BattleScene actual flow의 직접 실행 기준만 소유한다. 세부 구현 규칙은 관련 feature code와 runtime validation checklist를 따른다.
-Phase 5/9 2-client multiplayer sync acceptance는 별도 active plan 없이 [`runtime_validation_checklist.md`](../playtest/runtime_validation_checklist.md)가 소유한다.
+Phase 5/9 2-client multiplayer sync acceptance는 별도 active plan 없이 [`runtime_validation_checklist.md`](../../owners/validation/runtime_validation_checklist.md)가 소유한다.
 
 ## Current State
 

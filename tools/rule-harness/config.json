@@ -24,7 +24,7 @@
       "agent/*.md"
     ],
     "denylist": [
-      "docs/design/**"
+      "docs/owners/design/**"
     ]
   },
   "mutation": {

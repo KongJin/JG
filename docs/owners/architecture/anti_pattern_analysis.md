@@ -9,8 +9,8 @@
 > artifacts: none
 
 이 문서는 2026-05-04 기준 조사 기록이다. 현재 구현 기준은 owner 문서인
-[`../ops/codex_coding_guardrails.md`](../ops/codex_coding_guardrails.md)와
-[`../ops/presentation_layer_guardrails.md`](../ops/presentation_layer_guardrails.md)를 따른다.
+[`../operations/codex_coding_guardrails.md`](../operations/codex_coding_guardrails.md)와
+[`../operations/presentation_layer_guardrails.md`](../operations/presentation_layer_guardrails.md)를 따른다.
 
 ---
 

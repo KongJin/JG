@@ -143,8 +143,8 @@ feature dependency repair는 문서 우선순위를 고정한 채 동작한다.
 runtime 검증 운영 모델은 아래로 고정한다.
 - 하네스는 scene-specific runtime smoke를 자동 실행하지 않는다.
 - Unity MCP는 compile/status refresh와 generic console/hierarchy 진단에만 사용한다.
-- runtime 확인이 필요한 변경은 `manual-validation-required` 또는 `docs/playtest/runtime_validation_checklist.md` 기록으로 남긴다.
-- scope가 `AGENTS.md`, `docs/index.md`, `docs/ops/*`, `.codex/skills/jg-*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `tools/docs-lint/*`, `tools/rule-harness/*`, `artifacts/rules/issue-recurrence-closeout.json`, `artifacts/rules/issue-recurrence-closeout.d/*.json`로 시작하면 하네스는 이를 `rules-only scope`로 취급한다.
+- runtime 확인이 필요한 변경은 `manual-validation-required` 또는 `docs/owners/validation/runtime_validation_checklist.md` 기록으로 남긴다.
+- scope가 `AGENTS.md`, `docs/index.md`, `docs/owners/operations/*, docs/owners/ui-workflow/*`, `.codex/skills/jg-*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `tools/docs-lint/*`, `tools/rule-harness/*`, `artifacts/rules/issue-recurrence-closeout.json`, `artifacts/rules/issue-recurrence-closeout.d/*.json`로 시작하면 하네스는 이를 `rules-only scope`로 취급한다.
 - `rules-only scope`에서 feature code, scene/prefab, generated `.csproj` 같은 비규칙 target이 batch에 섞이면 `rules-scope-mutation-violation`으로 즉시 stop한다.
 - `rules-only scope`에서 patch plan target이 남으면 하네스는 `artifacts/rules/issue-recurrence-closeout.json` 또는 `artifacts/rules/issue-recurrence-closeout.d/*.json` closeout shard를 함께 검사한다.
   - `verification`은 항상 비어 있으면 안 된다.
@@ -280,7 +280,7 @@ LLM diagnose가 필요하면 예약 등록 때 `-EnableLlm` 또는 `-RequireLlm`
 - code/mixed batch의 기본 confidence는 보수적으로 계산한다. feature test asset이 없거나, UnityMcp/scene/prefab 범위를 건드리거나, cross-feature 범위가 넓으면 `low` 로 내려간다.
 - `low` confidence code/mixed batch는 auto-apply 대신 `manual-validation-required` 로 skip된다.
 - `rules-only scope`가 비규칙 target을 건드리려 하면 confidence와 무관하게 `rules-scope-mutation-violation`으로 stop되고, action item에는 owner docs만 수정하거나 user intent를 다시 잠그라는 안내가 남는다.
-- runtime smoke는 자동 하네스 범위 밖으로 공식 분리됐다. 관련 범위는 `manual-validation-required` 와 `docs/playtest/runtime_validation_checklist.md` 기록으로 넘긴다.
+- runtime smoke는 자동 하네스 범위 밖으로 공식 분리됐다. 관련 범위는 `manual-validation-required` 와 `docs/owners/validation/runtime_validation_checklist.md` 기록으로 넘긴다.
 - advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `AGENTS.md -> docs/index.md -> owner docs -> advisory memory -> current failure context` 순서다.
 
 ## 보고서 확인
@@ -336,7 +336,7 @@ feature dependency repair가 켜진 run에서는 `feature_dependency_refresh`, `
 - 반복 실패를 owner doc 규칙으로 올릴 시점은 `promotionCandidates` 또는 `latest-status.json.topPromotionCandidates`를 본다.
 - LLM 연결 실패가 보이면 `execution.llmApiBaseUrl`, `execution.logPath`, `actionItems`를 보고 API 키, 네트워크, endpoint를 함께 확인한다.
 - `manual-validation-required` 가 보이면 하네스가 아직 충분히 강한 inferred signal을 못 찾은 것이다. 해당 feature의 구조 규칙, static coverage, feature test asset 유무를 먼저 보강한다.
-- `remove-hardcoded-mcp-ui-smoke` 가 보이면 자동화 스크립트/워크플로우에 scene-specific UI flow가 다시 들어온 것이다. offending file을 제거하고 runtime 확인은 `docs/playtest/runtime_validation_checklist.md`로 옮긴다.
+- `remove-hardcoded-mcp-ui-smoke` 가 보이면 자동화 스크립트/워크플로우에 scene-specific UI flow가 다시 들어온 것이다. offending file을 제거하고 runtime 확인은 `docs/owners/validation/runtime_validation_checklist.md`로 옮긴다.
 - 예약 작업 산출물은 `latest-run.txt`로 run 디렉터리를 찾고, 그 디렉터리의 report/summary/log를 순서대로 열면 된다.
 - 예약 실행에서 `llmEnabled = false`는 정상 기본값이다. 하네스가 GLM 없이 돌며 남긴 static finding과 action item을 Codex 작업 큐처럼 읽는다.
 

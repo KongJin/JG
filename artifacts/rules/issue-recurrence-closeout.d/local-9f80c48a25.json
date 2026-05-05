@@ -15,7 +15,7 @@
     "artifacts/rules/issue-recurrence-closeout.d/local-9f80c48a25.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-presentation-domain-anti-pattern-20260504.json",
     "docs/index.md",
-    "docs/ops/codex_coding_guardrails.md",
-    "docs/ops/presentation_layer_guardrails.md"
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/operations/presentation_layer_guardrails.md"
   ]
 }

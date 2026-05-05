@@ -9,13 +9,13 @@
 
 ### `plans/`
 
-- `active`: [`progress.md`](./plans/progress.md) - fixture progress
-- `active`: [`p1.md`](./plans/p1.md) - fixture plan
-- `active`: [`p2.md`](./plans/p2.md) - fixture plan
-- `active`: [`p3.md`](./plans/p3.md) - fixture plan
-- `active`: [`p4.md`](./plans/p4.md) - fixture plan
-- `active`: [`p5.md`](./plans/p5.md) - fixture plan
-- `active`: [`p6.md`](./plans/p6.md) - fixture plan
-- `active`: [`p7.md`](./plans/p7.md) - fixture plan
-- `active`: [`p8.md`](./plans/p8.md) - fixture plan
-- `active`: [`p9.md`](./plans/p9.md) - fixture plan
+- `active`: [`progress.md`](./plans/current/progress.md) - fixture progress
+- `active`: [`p1.md`](./plans/active/p1.md) - fixture plan
+- `active`: [`p2.md`](./plans/active/p2.md) - fixture plan
+- `active`: [`p3.md`](./plans/active/p3.md) - fixture plan
+- `active`: [`p4.md`](./plans/active/p4.md) - fixture plan
+- `active`: [`p5.md`](./plans/active/p5.md) - fixture plan
+- `active`: [`p6.md`](./plans/active/p6.md) - fixture plan
+- `active`: [`p7.md`](./plans/active/p7.md) - fixture plan
+- `active`: [`p8.md`](./plans/active/p8.md) - fixture plan
+- `active`: [`p9.md`](./plans/active/p9.md) - fixture plan

@@ -23,7 +23,7 @@
     ".codex/skills/jg-stitch-unity-import/SKILL.md",
     ".codex/skills/jg-unity-workflow/SKILL.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-skill-entry-cohesion-20260502.json",
-    "docs/ops/cohesion_coupling_policy.md",
-    "docs/ops/unity_ui_authoring_workflow.md"
+    "docs/owners/operations/cohesion-coupling-policy.md",
+    "docs/owners/ui-workflow/unity-ui-authoring-workflow.md"
   ]
 }

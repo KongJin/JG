@@ -24,9 +24,9 @@
     "Assets/Scripts/Features/Unit/Domain/Unit.cs",
     "Assets/Scripts/Features/Unit/Domain/UnitComposition.cs",
     "artifacts/rules/issue-recurrence-closeout.d/local-presentation-domain-anti-pattern-20260504.json",
-    "docs/architecture/anti_pattern_analysis.md",
+    "docs/owners/architecture/anti_pattern_analysis.md",
     "docs/index.md",
-    "docs/ops/codex_coding_guardrails.md",
-    "docs/ops/presentation_layer_guardrails.md"
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/operations/presentation_layer_guardrails.md"
   ]
 }

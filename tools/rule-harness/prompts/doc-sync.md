@@ -18,7 +18,7 @@ Allowed edits:
 Forbidden edits:
 - changing architecture policy
 - adding new design principles
-- editing `docs/design/**`
+- editing `docs/owners/design/**`
 - changing code files
 - relaxing a rule to fit code
 

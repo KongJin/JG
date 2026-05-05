@@ -14,7 +14,7 @@
   "changedPaths": [
     "tools/workflow/test-feature-layer-dependencies.mjs",
     "package.json",
-    "docs/ops/presentation_layer_guardrails.md",
+    "docs/owners/operations/presentation_layer_guardrails.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-feature-layer-dependency-lint-20260504.json"
   ]
 }

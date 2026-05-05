@@ -9,7 +9,7 @@
 > artifacts: `artifacts/nova1492/`
 
 이 문서는 Nova1492 기반 generated content 후속 판단의 routing owner다.
-세계관/권리 경계는 [`../design/world_design.md`](../design/world_design.md)가, 실제 유닛/모듈 데이터 구조는 [`../design/module_data_structure.md`](../design/module_data_structure.md)가 소유한다.
+세계관/권리 경계는 [`../../owners/design/world_design.md`](../../owners/design/world_design.md)가, 실제 유닛/모듈 데이터 구조는 [`../../owners/design/module_data_structure.md`](../../owners/design/module_data_structure.md)가 소유한다.
 
 ## Current Judgment
 

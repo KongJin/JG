@@ -15,6 +15,6 @@
     ".github/workflows/docs-lint.yml",
     "artifacts/rules/issue-recurrence-closeout.d/local-be137c11ac.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-d68d415e0e.json",
-    "docs/ops/codex_coding_guardrails.md"
+    "docs/owners/operations/codex_coding_guardrails.md"
   ]
 }

@@ -10,13 +10,13 @@
 
 이 문서는 `ops.document-management-workflow`의 Closeout 원칙을 plan 문서에 적용하는 절차만 소유한다.
 plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현재 상태를 담는 문서다.
-`docs/plans/*.md`는 적용 대상이지 이 문서가 closeout/evidence owner로 소유하는 artifact가 아니다.
+`docs/plans/{current,active,reference,historical}/*.md`는 적용 대상이지 이 문서가 closeout/evidence owner로 소유하는 artifact가 아니다.
 
 ## 적용 범위
 
 적용한다:
 
-- `docs/plans/*.md`를 새로 작성할 때
+- `docs/plans/{current,active,reference,historical}/*.md`를 새로 작성할 때
 - 계획의 우선순위, acceptance, 실행 순서, 검증 기준을 실질적으로 바꿀 때
 - 사용자 제공 계획을 repo 기준으로 장기 reference로 채택할 때
 
@@ -31,7 +31,7 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 ## 세션 계획과 plan 문서
 
 작업 시작 전 계획의 기본값은 채팅 또는 세션 체크리스트다.
-`docs/plans/*.md`는 multi-session handoff, persistent acceptance/residual/blocked 판단, 여러 owner scope 고정이 필요할 때만 만든다.
+`docs/plans/{current,active,reference,historical}/*.md`는 multi-session handoff, persistent acceptance/residual/blocked 판단, 여러 owner scope 고정이 필요할 때만 만든다.
 `progress.md` 한 줄이나 기존 owner 문서의 짧은 섹션으로 충분하면 새 plan 문서를 만들지 않는다.
 
 ## 요청 Triage Lite

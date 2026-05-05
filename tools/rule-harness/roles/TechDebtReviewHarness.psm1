@@ -158,8 +158,8 @@ function Get-TechDebtHeuristicPatterns {
             title = 'Active plan residual debt marker'
             severity = 'low'
             regex = '(?i)\b(TODO|FIXME|HACK|placeholder|residual)\b'
-            include = @('docs/plans/')
-            pathRegex = '^docs/plans/progress\.md$'
+            include = @('docs/plans/current/')
+            pathRegex = '^docs/plans/current/progress\.md$'
             message = 'Active progress tracking still describes residual work or placeholders that need owner follow-up.'
         }
     )
@@ -170,7 +170,7 @@ function Get-TechDebtHeuristicFindings {
         [Parameter(Mandatory)][string]$RepoRoot
     )
 
-    $scanRoots = @('Assets/Scripts', 'Assets/Editor', 'tools', 'docs/plans')
+    $scanRoots = @('Assets/Scripts', 'Assets/Editor', 'tools', 'docs/plans/current', 'docs/plans/active')
     $patterns = @(Get-TechDebtHeuristicPatterns)
     $findings = [System.Collections.Generic.List[object]]::new()
     $seen = @{}

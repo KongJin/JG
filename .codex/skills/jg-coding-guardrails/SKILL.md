@@ -21,9 +21,9 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read owner doc `docs/ops/codex_coding_guardrails.md`.
-4. Read `docs/ops/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or acceptance language.
-5. Read `docs/ops/document_management_workflow.md` if the task changes docs, rules, skill triggers, or closeout language.
+3. Read owner doc `docs/owners/operations/codex_coding_guardrails.md`.
+4. Read `docs/owners/operations/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or acceptance language.
+5. Read `docs/owners/operations/document_management_workflow.md` if the task changes docs, rules, skill triggers, or closeout language.
 6. Read the relevant lane owner docs and concrete files, tests, logs, contracts, or artifacts being changed.
 
 ## Route

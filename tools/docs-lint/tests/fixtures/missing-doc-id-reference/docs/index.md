@@ -8,5 +8,5 @@
 > upstream: repo.agents
 > artifacts: none
 
-- `active`: [real.md](./ops/real.md)
-- `active`: [demo.md](./plans/demo.md)
+- `active`: [real.md](./owners/operations/real.md)
+- `active`: [demo.md](./plans/active/demo.md)

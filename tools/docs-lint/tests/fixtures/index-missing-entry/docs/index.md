@@ -8,4 +8,4 @@
 > upstream: repo.agents
 > artifacts: none
 
-- `active`: [progress.md](./plans/progress.md)
+- `active`: [progress.md](./plans/current/progress.md)

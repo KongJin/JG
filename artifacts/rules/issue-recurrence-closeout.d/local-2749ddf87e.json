@@ -14,7 +14,7 @@
   "changedPaths": [
     ".codex/skills/jg-coding-guardrails/SKILL.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-2749ddf87e.json",
-    "docs/ops/codex_coding_guardrails.md",
-    "docs/ops/skill_trigger_matrix.md"
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/operations/skill_trigger_matrix.md"
   ]
 }

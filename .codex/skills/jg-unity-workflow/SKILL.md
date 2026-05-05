@@ -21,12 +21,12 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read `docs/ops/unity-ui-authoring-workflow.md` for Unity UI/UX authoring routes, forbidden paths, and evidence gates.
-4. Read `docs/ops/cohesion-coupling-policy.md` when owner boundaries, responsibility split, runtime contract, or hidden dependency matters.
-5. Read `docs/ops/stitch_data_workflow.md` and `docs/ops/stitch_structured_handoff_contract.md` when the Unity work depends on Stitch source freeze or execution contracts.
-6. Read `docs/ops/acceptance_reporting_guardrails.md`, especially Fresh Evidence Discipline, before using acceptance, blocked, mismatch, closeout, visual/capture, or fresh-evidence language.
+3. Read `docs/owners/ui-workflow/unity-ui-authoring-workflow.md` for Unity UI/UX authoring routes, forbidden paths, and evidence gates.
+4. Read `docs/owners/operations/cohesion-coupling-policy.md` when owner boundaries, responsibility split, runtime contract, or hidden dependency matters.
+5. Read `docs/owners/ui-workflow/stitch_data_workflow.md` and `docs/owners/ui-workflow/stitch_structured_handoff_contract.md` when the Unity work depends on Stitch source freeze or execution contracts.
+6. Read `docs/owners/operations/acceptance_reporting_guardrails.md`, especially Fresh Evidence Discipline, before using acceptance, blocked, mismatch, closeout, visual/capture, or fresh-evidence language.
 7. Read `tools/unity-mcp/README.md` for MCP routes, compile preflight, locks, helper commands, and execution caveats.
-8. Read `docs/plans/progress.md` or relevant active plan when current priority, residual, or runtime smoke owner matters.
+8. Read `docs/plans/current/progress.md` or relevant active plan when current priority, residual, or runtime smoke owner matters.
 
 ## Route
 

@@ -13,6 +13,6 @@
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.d/local-runtime-static-ui-ownership-20260504.json",
-    "docs/ops/presentation_layer_guardrails.md"
+    "docs/owners/operations/presentation_layer_guardrails.md"
   ]
 }

@@ -21,7 +21,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read owner doc `docs/ops/acceptance_reporting_guardrails.md`, especially Root Cause Investigation, Recurrence Check, and Fresh Evidence Discipline.
+3. Read owner doc `docs/owners/operations/acceptance_reporting_guardrails.md`, especially Root Cause Investigation, Recurrence Check, and Fresh Evidence Discipline.
 4. Read the concrete code, docs, logs, tests, artifacts, scene/prefab contracts, captures, or runs involved in the issue.
 
 ## Route

@@ -16,7 +16,7 @@
     "artifacts/rules/issue-recurrence-closeout.d/local-d03c7705cf.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json",
     "docs/index.md",
-    "docs/ops/skill_routing_registry.md",
-    "docs/ops/skill_trigger_matrix.md"
+    "docs/owners/operations/skill_routing_registry.md",
+    "docs/owners/operations/skill_trigger_matrix.md"
   ]
 }

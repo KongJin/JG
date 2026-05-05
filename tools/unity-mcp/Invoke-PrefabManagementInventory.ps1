@@ -231,7 +231,7 @@ $inventory = [ordered]@{
 $approvalManifest = [ordered]@{
     schemaVersion = "1.0.0"
     generatedAt = $inventory.generatedAt
-    owner = "docs/ops/unity_ui_authoring_workflow.md"
+    owner = "docs/owners/ui-workflow/unity-ui-authoring-workflow.md"
     prefabs = $approvedRecords
 }
 

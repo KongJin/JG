@@ -21,11 +21,11 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths and active document registry.
-3. Read owner doc `docs/ops/document_management_workflow.md`.
-4. Read `docs/ops/cohesion-coupling-policy.md` when judging whether content belongs together or should split.
-5. Read `docs/ops/plan_authoring_review_workflow.md` when creating, deleting, compressing, or substantially changing `docs/plans/*`.
-6. Read `docs/ops/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, residual, or closeout language.
-7. Read `docs/ops/skill_routing_registry.md` and `docs/ops/skill_trigger_matrix.md` when skill route or trigger wording changes.
+3. Read owner doc `docs/owners/operations/document_management_workflow.md`.
+4. Read `docs/owners/operations/cohesion-coupling-policy.md` when judging whether content belongs together or should split.
+5. Read `docs/owners/operations/plan_authoring_review_workflow.md` when creating, deleting, compressing, or substantially changing `docs/plans/*`.
+6. Read `docs/owners/operations/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, residual, or closeout language.
+7. Read `docs/owners/operations/skill_routing_registry.md` and `docs/owners/operations/skill_trigger_matrix.md` when skill route or trigger wording changes.
 
 ## Route
 

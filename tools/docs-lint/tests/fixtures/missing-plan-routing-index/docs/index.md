@@ -10,4 +10,4 @@
 
 | 상황 | 먼저 볼 문서 |
 |---|---|
-| 지금 뭐가 진행 중인지 확인 | [`progress.md`](./plans/progress.md) |
+| 지금 뭐가 진행 중인지 확인 | [`progress.md`](./plans/current/progress.md) |

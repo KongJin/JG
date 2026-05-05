@@ -15,8 +15,8 @@
     ".codex/skills/jg-doc-lifecycle/SKILL.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-d5613a8c22.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-f4017976d7.json",
-    "docs/ops/document_management_workflow.md",
-    "docs/ops/skill_routing_registry.md",
-    "docs/ops/skill_trigger_matrix.md"
+    "docs/owners/operations/document_management_workflow.md",
+    "docs/owners/operations/skill_routing_registry.md",
+    "docs/owners/operations/skill_trigger_matrix.md"
   ]
 }

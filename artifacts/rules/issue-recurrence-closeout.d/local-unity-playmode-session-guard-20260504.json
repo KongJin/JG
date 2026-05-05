@@ -13,7 +13,7 @@
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.d/local-unity-playmode-session-guard-20260504.json",
-    "docs/ops/codex_coding_guardrails.md",
-    "docs/ops/unity-ui-authoring-workflow.md"
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/ui-workflow/unity-ui-authoring-workflow.md"
   ]
 }

@@ -140,7 +140,7 @@ Type: AFK
 
 작업:
 
-- `docs/design/ui_foundations.md`의 Presentation Naming/Current Runtime Targets에 shell routing helper 기준을 짧게 반영한다.
+- `docs/owners/design/ui_foundations.md`의 Presentation Naming/Current Runtime Targets에 shell routing helper 기준을 짧게 반영한다.
 - helper와 layer를 혼동하지 않도록 `LobbyShellPageRouter`가 adapter 내부 helper임을 명시한다.
 
 Acceptance:
@@ -152,7 +152,7 @@ Acceptance:
 
 Mechanical validation:
 
-- `rg -n "LobbyShellPageRouter|SetPageVisibility|SetNavState|SetShell|UitkElements" Assets/Scripts Assets/Editor docs/design/ui_foundations.md`
+- `rg -n "LobbyShellPageRouter|SetPageVisibility|SetNavState|SetShell|UitkElements" Assets/Scripts Assets/Editor docs/owners/design/ui_foundations.md`
 - `dotnet build JG.slnx -v:minimal`
 - Unity EditMode:
   - `Tests.Editor.LobbyUitkRuntimeAdapterDirectTests`

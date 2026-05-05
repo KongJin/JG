@@ -9,5 +9,5 @@
 
 ### `plans/`
 
-- `active`: [`a.md`](./plans/a.md) - active plan A
-- `active`: [`b.md`](./plans/b.md) - active plan B
+- `active`: [`a.md`](./plans/active/a.md) - active plan A
+- `active`: [`b.md`](./plans/active/b.md) - active plan B

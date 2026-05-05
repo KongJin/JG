@@ -23,9 +23,9 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve owner paths.
-3. Read `docs/ops/codex_coding_guardrails.md`, especially `Forward Rule Capture`, for the behavior rule.
-4. Read `docs/ops/document_management_workflow.md` for owner/lifecycle rules.
-5. Read `docs/ops/skill_routing_registry.md` and `docs/ops/skill_trigger_matrix.md` if creating or changing a skill trigger.
+3. Read `docs/owners/operations/codex_coding_guardrails.md`, especially `Forward Rule Capture`, for the behavior rule.
+4. Read `docs/owners/operations/document_management_workflow.md` for owner/lifecycle rules.
+5. Read `docs/owners/operations/skill_routing_registry.md` and `docs/owners/operations/skill_trigger_matrix.md` if creating or changing a skill trigger.
 
 ## Route
 

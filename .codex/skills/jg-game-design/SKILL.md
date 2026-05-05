@@ -21,12 +21,12 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read `docs/design/game_design.md` for product direction, MVP scope, core fun, and domain language.
-4. Read `docs/design/world_design.md` for Nova1492 tone, story, naming, rights, and release-gate questions.
-5. Read `docs/design/unit_module_design.md` for unit/module rules, stats, cost, roles, and balance.
-6. Read `docs/design/module_data_structure.md` for implementation-facing data shape.
-7. Read `docs/design/ui_foundations.md` for Lobby/Garage UI/UX, layout, tokens, and component vocabulary.
-8. Read `docs/ops/acceptance_reporting_guardrails.md` before using product/design acceptance language.
+3. Read `docs/owners/design/game_design.md` for product direction, MVP scope, core fun, and domain language.
+4. Read `docs/owners/design/world_design.md` for Nova1492 tone, story, naming, rights, and release-gate questions.
+5. Read `docs/owners/design/unit_module_design.md` for unit/module rules, stats, cost, roles, and balance.
+6. Read `docs/owners/design/module_data_structure.md` for implementation-facing data shape.
+7. Read `docs/owners/design/ui_foundations.md` for Lobby/Garage UI/UX, layout, tokens, and component vocabulary.
+8. Read `docs/owners/operations/acceptance_reporting_guardrails.md` before using product/design acceptance language.
 
 ## Route
 

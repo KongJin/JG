@@ -15,8 +15,8 @@
     "artifacts/rules/issue-recurrence-closeout.d/local-23a662fbe5.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-runtime-static-ui-ownership-20260504.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-unity-playmode-session-guard-20260504.json",
-    "docs/ops/codex_coding_guardrails.md",
-    "docs/ops/presentation_layer_guardrails.md",
-    "docs/ops/unity-ui-authoring-workflow.md"
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/operations/presentation_layer_guardrails.md",
+    "docs/owners/ui-workflow/unity-ui-authoring-workflow.md"
   ]
 }

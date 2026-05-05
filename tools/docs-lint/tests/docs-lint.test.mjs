@@ -109,12 +109,12 @@ async function writeMinimalActivePlanArtifactRepo(root, artifactMetadata) {
 > upstream: repo.agents
 > artifacts: none
 
-- \`active\`: [demo.md](./plans/demo.md) - active plan
+- \`active\`: [demo.md](./plans/active/demo.md) - active plan
 `,
   );
   await writeFile(
     root,
-    "docs/plans/demo.md",
+    "docs/plans/active/demo.md",
     `# Demo Plan
 
 > 마지막 업데이트: 2026-04-30
@@ -390,7 +390,7 @@ test("reports stale repo paths in rules artifact markdown inventories", async ()
     await writeFile(
       repoRoot,
       "artifacts/rules/inventory.md",
-      "# Inventory\n\nStale owner: `docs/ops/missing_owner.md`\n",
+      "# Inventory\n\nStale owner: `docs/owners/operations/missing_owner.md`\n",
     );
 
     const result = await lintRepository(repoRoot, {
@@ -438,7 +438,7 @@ test("accepts existing repo paths and glob examples in rules artifact markdown i
     );
     await writeFile(
       repoRoot,
-      "docs/ops/current_owner.md",
+      "docs/owners/operations/current_owner.md",
       `# Current Owner
 
 > 마지막 업데이트: 2026-05-01
@@ -453,7 +453,7 @@ test("accepts existing repo paths and glob examples in rules artifact markdown i
     await writeFile(
       repoRoot,
       "artifacts/rules/inventory.md",
-      "# Inventory\n\nCurrent owner: `docs/ops/current_owner.md`; example glob: `docs/plans/*.md`\n",
+      "# Inventory\n\nCurrent owner: `docs/owners/operations/current_owner.md`; example glob: `docs/plans/{current,active,reference,historical}/*.md`\n",
     );
 
     const result = await lintRepository(repoRoot, {
@@ -592,13 +592,13 @@ test("reports stale active documents as warnings only", async () => {
 > upstream: repo.agents
 > artifacts: none
 
-- \`active\`: [demo.md](./plans/demo.md) - demo plan
-- \`active\`: [demo_ops.md](./ops/demo_ops.md) - demo ops
+- \`active\`: [demo.md](./plans/active/demo.md) - demo plan
+- \`active\`: [demo_ops.md](./owners/operations/demo_ops.md) - demo ops
 `,
     );
     await writeFile(
       repoRoot,
-      "docs/plans/demo.md",
+      "docs/plans/active/demo.md",
       `# Demo Plan
 
 > 마지막 업데이트: 2026-05-01
@@ -612,7 +612,7 @@ test("reports stale active documents as warnings only", async () => {
     );
     await writeFile(
       repoRoot,
-      "docs/ops/demo_ops.md",
+      "docs/owners/operations/demo_ops.md",
       `# Demo Ops
 
 > 마지막 업데이트: 2026-05-01
@@ -674,13 +674,13 @@ ${agentsPadding}
 > upstream: repo.agents
 > artifacts: none
 
-- \`active\`: [progress.md](./plans/progress.md) - progress
-- \`active\`: [demo.md](./plans/demo.md) - demo plan
+- \`active\`: [progress.md](./plans/current/progress.md) - progress
+- \`active\`: [demo.md](./plans/active/demo.md) - demo plan
 `,
     );
     await writeFile(
       repoRoot,
-      "docs/plans/progress.md",
+      "docs/plans/current/progress.md",
       `# Progress
 
 > 마지막 업데이트: 2026-05-20
@@ -696,7 +696,7 @@ ${progressPadding}
     );
     await writeFile(
       repoRoot,
-      "docs/plans/demo.md",
+      "docs/plans/active/demo.md",
       `# Demo Plan
 
 > 마지막 업데이트: 2026-05-20
@@ -859,19 +859,19 @@ test("builds docs health summaries from lint results", () => {
     managedDocPaths: [
       "AGENTS.md",
       "docs/index.md",
-      "docs/plans/progress.md",
-      "docs/plans/demo.md",
+      "docs/plans/current/progress.md",
+      "docs/plans/active/demo.md",
     ],
     documents: [
       {
-        repoRelativePath: "docs/plans/progress.md",
+        repoRelativePath: "docs/plans/current/progress.md",
         metadata: new Map([
           ["상태", "active"],
           ["role", "plan"],
         ]),
       },
       {
-        repoRelativePath: "docs/plans/demo.md",
+        repoRelativePath: "docs/plans/active/demo.md",
         metadata: new Map([
           ["상태", "active"],
           ["role", "plan"],
@@ -891,7 +891,7 @@ test("builds docs health summaries from lint results", () => {
         code: "fixture-warning",
         line: null,
         message: "Fixture warning.",
-        path: "docs/plans/demo.md",
+        path: "docs/plans/active/demo.md",
       },
     ],
   };
@@ -901,7 +901,7 @@ test("builds docs health summaries from lint results", () => {
   assert.equal(report.blockingIssueCount, 1);
   assert.equal(report.warningCount, 1);
   assert.equal(report.activeNonProgressPlanBudget.current, 1);
-  assert.deepEqual(report.activeNonProgressPlanBudget.paths, ["docs/plans/demo.md"]);
+  assert.deepEqual(report.activeNonProgressPlanBudget.paths, ["docs/plans/active/demo.md"]);
   assert.deepEqual(report.errorsByCode, { "fixture-error": 1 });
   assert.deepEqual(report.warningsByCode, { "fixture-warning": 1 });
   assert.match(formatDocsHealthReport(report), /Docs health report/);
@@ -1092,7 +1092,7 @@ test("accepts distinct evidence directories across active plans", async () => {
 
 test("reports broad active plan artifact owner shapes", async () => {
   const rejectedArtifactShapes = [
-    "`docs/plans/*.md`",
+    "`docs/plans/{current,active,reference,historical}/*.md`",
     "`Assets/**`",
     "`Build/**`",
     "`Assets/UI/UIToolkit/AccountSync/`",
@@ -1276,12 +1276,12 @@ test("reports metadata upstream owner doc_id references that do not resolve", as
 > upstream: repo.agents
 > artifacts: none
 
-- \`active\`: [Demo](./ops/demo.md) - demo owner
+- \`active\`: [Demo](./owners/operations/demo.md) - demo owner
 `,
     );
     await writeFile(
       repoRoot,
-      "docs/ops/demo.md",
+      "docs/owners/operations/demo.md",
       `# Demo
 
 > 마지막 업데이트: 2026-04-30
@@ -1382,13 +1382,13 @@ test("reports global rule skill references missing from the skill routing regist
 
 ### \`ops/\`
 
-- \`active\`: [skill_routing_registry.md](./ops/skill_routing_registry.md) - skill registry
-- \`active\`: [demo.md](./ops/demo.md) - demo owner
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [demo.md](./owners/operations/demo.md) - demo owner
 `,
     );
     await writeFile(
       repoRoot,
-      "docs/ops/skill_routing_registry.md",
+      "docs/owners/operations/skill_routing_registry.md",
       `# Skill Routing Registry
 
 > 마지막 업데이트: 2026-05-01
@@ -1406,7 +1406,7 @@ test("reports global rule skill references missing from the skill routing regist
     );
     await writeFile(
       repoRoot,
-      "docs/ops/demo.md",
+      "docs/owners/operations/demo.md",
       `# Demo
 
 > 마지막 업데이트: 2026-05-01
@@ -1465,13 +1465,13 @@ test("accepts global rule skill references listed in the skill routing registry"
 
 ### \`ops/\`
 
-- \`active\`: [skill_routing_registry.md](./ops/skill_routing_registry.md) - skill registry
-- \`active\`: [demo.md](./ops/demo.md) - demo owner
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [demo.md](./owners/operations/demo.md) - demo owner
 `,
     );
     await writeFile(
       repoRoot,
-      "docs/ops/skill_routing_registry.md",
+      "docs/owners/operations/skill_routing_registry.md",
       `# Skill Routing Registry
 
 > 마지막 업데이트: 2026-05-01
@@ -1490,7 +1490,7 @@ test("accepts global rule skill references listed in the skill routing registry"
     );
     await writeFile(
       repoRoot,
-      "docs/ops/demo.md",
+      "docs/owners/operations/demo.md",
       `# Demo
 
 > 마지막 업데이트: 2026-05-01
@@ -1547,13 +1547,13 @@ test("reports skill trigger matrix routes that do not match managed skills", asy
 
 ### \`ops/\`
 
-- \`active\`: [skill_routing_registry.md](./ops/skill_routing_registry.md) - skill registry
-- \`active\`: [skill_trigger_matrix.md](./ops/skill_trigger_matrix.md) - skill trigger matrix
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [skill_trigger_matrix.md](./owners/operations/skill_trigger_matrix.md) - skill trigger matrix
 `,
     );
     await writeFile(
       repoRoot,
-      "docs/ops/skill_routing_registry.md",
+      "docs/owners/operations/skill_routing_registry.md",
       `# Skill Routing Registry
 
 > 마지막 업데이트: 2026-05-01
@@ -1571,7 +1571,7 @@ test("reports skill trigger matrix routes that do not match managed skills", asy
     );
     await writeFile(
       repoRoot,
-      "docs/ops/skill_trigger_matrix.md",
+      "docs/owners/operations/skill_trigger_matrix.md",
       `# Skill Trigger Matrix
 
 > 마지막 업데이트: 2026-05-01
@@ -1632,8 +1632,8 @@ test("reports repo-local skills missing from the skill trigger matrix", async ()
 
 ### \`ops/\`
 
-- \`active\`: [skill_routing_registry.md](./ops/skill_routing_registry.md) - skill registry
-- \`active\`: [skill_trigger_matrix.md](./ops/skill_trigger_matrix.md) - skill trigger matrix
+- \`active\`: [skill_routing_registry.md](./owners/operations/skill_routing_registry.md) - skill registry
+- \`active\`: [skill_trigger_matrix.md](./owners/operations/skill_trigger_matrix.md) - skill trigger matrix
 `,
     );
     await writeFile(
@@ -1657,7 +1657,7 @@ description: Fixture demo skill.
     );
     await writeFile(
       repoRoot,
-      "docs/ops/skill_routing_registry.md",
+      "docs/owners/operations/skill_routing_registry.md",
       `# Skill Routing Registry
 
 > 마지막 업데이트: 2026-05-01
@@ -1675,7 +1675,7 @@ description: Fixture demo skill.
     );
     await writeFile(
       repoRoot,
-      "docs/ops/skill_trigger_matrix.md",
+      "docs/owners/operations/skill_trigger_matrix.md",
       `# Skill Trigger Matrix
 
 > 마지막 업데이트: 2026-05-01
@@ -1818,7 +1818,7 @@ test("does not require recurrence closeout for ordinary plan document changes", 
   const result = await lintRepository(getFixturePath("valid-recurrence-closeout"), {
     includeGeneralChecks: false,
     includePolicyChecks: true,
-    changedFiles: ["docs/plans/progress.md"],
+    changedFiles: ["docs/plans/current/progress.md"],
   });
   assert.equal(result.errors.length, 0);
 });
@@ -1902,6 +1902,75 @@ Plan Mode / Codex 운영 규칙 확인: rule-operations owner 문서.
     assert.ok(
       result.errors.some((error) => error.code === "recurrence-closeout-missing-changed-path"),
     );
+  } finally {
+    if (previousChangedFilesEnv === undefined) {
+      delete process.env.RULES_LINT_CHANGED_FILES;
+    } else {
+      process.env.RULES_LINT_CHANGED_FILES = previousChangedFilesEnv;
+    }
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("does not require deleted rules-only paths in recurrence closeout changedPaths", async () => {
+  const previousChangedFilesEnv = process.env.RULES_LINT_CHANGED_FILES;
+  delete process.env.RULES_LINT_CHANGED_FILES;
+
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-deleted-closeout-path-"));
+  try {
+    await execFileAsync("git", ["init"], { cwd: repoRoot });
+    await execFileAsync("git", ["config", "user.email", "fixture@example.test"], { cwd: repoRoot });
+    await execFileAsync("git", ["config", "user.name", "Fixture"], { cwd: repoRoot });
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS.md
+
+> 마지막 업데이트: 2026-05-05
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+Plan Mode / Codex 운영 규칙은 docs/index.md에서 current path 확인 후 rule-operations owner 문서로 라우팅하고, 그 lane에서는 mutation 금지.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "tools/docs-lint/deleted-fixture.md",
+      "# Deleted fixture\n",
+    );
+    await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+    await execFileAsync("git", ["commit", "-m", "baseline"], { cwd: repoRoot });
+    await fs.rm(path.join(repoRoot, "tools/docs-lint/deleted-fixture.md"));
+    const shardPath = "artifacts/rules/issue-recurrence-closeout.d/deleted-path.json";
+    await writeFile(
+      repoRoot,
+      shardPath,
+      `${JSON.stringify({
+        schemaVersion: 1,
+        updatedAt: "2026-05-05",
+        scope: "rules-only",
+        issueDetected: true,
+        declaredLane: "rules-only deleted path fixture",
+        observedMutationClass: `docs-lint fixture coverage for ${recurrenceCoverageText}`,
+        acceptanceEvidenceClass: "docs-lint unit test",
+        escalationRequired: false,
+        rootCause: `Deleted rules-only paths are git evidence, not active repo paths for ${recurrenceCoverageText}.`,
+        prevention: `Changed closeout coverage so ${recurrenceCoverageText} shards can omit deleted paths.`,
+        verification: "node --test tools/docs-lint/tests/docs-lint.test.mjs",
+        blockedReason: "",
+        changedPaths: [shardPath],
+      }, null, 2)}\n`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: false,
+      includePolicyChecks: true,
+    });
+    assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
   } finally {
     if (previousChangedFilesEnv === undefined) {
       delete process.env.RULES_LINT_CHANGED_FILES;

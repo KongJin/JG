@@ -14,12 +14,12 @@
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.d/local-progress-owner-lifecycle-20260502.json",
     "docs/index.md",
-    "docs/plans/game_scene_flow_validation_closeout_plan.md",
-    "docs/plans/non_stitch_ui_stitch_reimport_plan.md",
-    "docs/plans/progress.md",
-    "docs/plans/technical_debt_recurrence_prevention_plan.md",
-    "docs/plans/webgl_audio_closeout_plan.md",
-    "docs/playtest/runtime_validation_checklist.md",
-    "docs/playtest/webgl_smoke_checklist.md"
+    "docs/plans/active/game_scene_flow_validation_closeout_plan.md",
+    "docs/plans/reference/non_stitch_ui_stitch_reimport_plan.md",
+    "docs/plans/current/progress.md",
+    "docs/plans/reference/technical_debt_recurrence_prevention_plan.md",
+    "docs/plans/active/webgl-audio-closeout.md",
+    "docs/owners/validation/runtime_validation_checklist.md",
+    "docs/owners/validation/webgl_smoke_checklist.md"
   ]
 }

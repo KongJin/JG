@@ -23,7 +23,7 @@ Rules:
   - `mixed_fix`
   - `report_only`
 - Only documentation-safe findings may become `rule_fix`.
-- Never target `docs/design/**` for automatic edits.
+- Never target `docs/owners/design/**` for automatic edits.
 - Favor conservative classifications.
 
 Return JSON only with this shape:

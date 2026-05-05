@@ -21,9 +21,9 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read owner doc `docs/ops/cohesion-coupling-policy.md`.
-4. Read `docs/ops/document_management_workflow.md` if the review becomes document lifecycle execution.
-5. Read `docs/ops/acceptance_reporting_guardrails.md` before using acceptance, blocked, mismatch, residual, or root-cause language.
+3. Read owner doc `docs/owners/operations/cohesion-coupling-policy.md`.
+4. Read `docs/owners/operations/document_management_workflow.md` if the review becomes document lifecycle execution.
+5. Read `docs/owners/operations/acceptance_reporting_guardrails.md` before using acceptance, blocked, mismatch, residual, or root-cause language.
 6. Read relevant lane owner docs and the concrete files, docs, scene/prefab contracts, scripts, or tool entrypoints being reviewed.
 
 ## Route

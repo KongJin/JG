@@ -9,4 +9,4 @@
 
 ### `design/`
 
-- `active`: [`module_data_structure.md`](./design/module_data_structure.md) - fixture module data
+- `active`: [`module_data_structure.md`](./owners/design/module_data_structure.md) - fixture module data

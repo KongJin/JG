@@ -9,4 +9,4 @@
 
 ### `plans/`
 
-- `active`: [`demo.md`](./plans/demo.md) - fixture active plan
+- `active`: [`demo.md`](./plans/active/demo.md) - fixture active plan

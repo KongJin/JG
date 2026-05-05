@@ -21,11 +21,11 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read `docs/ops/stitch_data_workflow.md` for source freeze, active contracts, and handoff ownership.
-4. Read `docs/ops/stitch_structured_handoff_contract.md` for manifest/map/presentation completeness.
-5. Read `docs/ops/unity-ui-authoring-workflow.md` for UI Toolkit candidate, runtime replacement, and evidence gates.
-6. Read `docs/design/ui_foundations.md` for Lobby/Garage layout, tokens, and component vocabulary.
-7. Read `docs/ops/acceptance_reporting_guardrails.md` before reporting pilot success, runtime success, blocked, mismatch, or accepted.
+3. Read `docs/owners/ui-workflow/stitch_data_workflow.md` for source freeze, active contracts, and handoff ownership.
+4. Read `docs/owners/ui-workflow/stitch_structured_handoff_contract.md` for manifest/map/presentation completeness.
+5. Read `docs/owners/ui-workflow/unity-ui-authoring-workflow.md` for UI Toolkit candidate, runtime replacement, and evidence gates.
+6. Read `docs/owners/design/ui_foundations.md` for Lobby/Garage layout, tokens, and component vocabulary.
+7. Read `docs/owners/operations/acceptance_reporting_guardrails.md` before reporting pilot success, runtime success, blocked, mismatch, or accepted.
 8. Read `tools/stitch-unity/README.md` and `tools/unity-mcp/README.md` for execution commands when needed.
 
 ## Route

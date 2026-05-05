@@ -9,4 +9,4 @@
 
 ### `plans/`
 
-- `active`: [`progress.md`](./plans/progress.md) - fixture progress
+- `active`: [`progress.md`](./plans/current/progress.md) - fixture progress

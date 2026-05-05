@@ -21,7 +21,7 @@ $uiSurfaceChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @
     "^Assets/UI/",
     "^Assets/Scripts/Shared/Ui/",
     "^tools/unity-mcp/",
-    "^docs/playtest/runtime_validation_checklist\.md$"
+    "^docs/owners/validation/runtime_validation_checklist\.md$"
 ))
 $docsChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^docs/", "^AGENTS\.md$", "^\.codex/skills/"))
 $artifactChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^artifacts/"))
@@ -68,7 +68,7 @@ if ($suggestions.Count -eq 0) {
     $suggestions.Add([PSCustomObject]@{
         Priority = 9
         Lane = "status"
-        Suggestion = "No dirty-worktree-specific suggestion. Start from docs/plans/progress.md current focus."
+        Suggestion = "No dirty-worktree-specific suggestion. Start from docs/plans/current/progress.md current focus."
         Command = "Get-Content docs\plans\progress.md"
     })
 }

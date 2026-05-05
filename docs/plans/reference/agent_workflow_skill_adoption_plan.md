@@ -31,15 +31,15 @@
 
 | Upstream skill | JG fit | Adoption target | Notes |
 |---|---|---|---|
-| `grill-me` | high | `docs/ops/codex_coding_guardrails.md`, `docs/ops/document_management_workflow.md` | 구현/문서 변경 전 모호한 결정을 질문으로 잠그는 loop만 흡수한다. 코드에서 확인 가능한 질문은 먼저 탐색한다는 원칙이 JG `Assumption Handling`과 잘 맞는다. |
-| `grill-with-docs` | high | `docs/ops/codex_coding_guardrails.md`, `docs/ops/document_management_workflow.md`, relevant `design/*` owner | `CONTEXT.md`/ADR 생성 방식은 그대로 쓰지 않는다. 대신 용어 확정은 현재 design owner로, 되돌리기 어려운 결정은 적절한 ops/design/plan owner로 라우팅한다. |
-| `diagnose` | high | `.codex/skills/jg-issue-investigation/SKILL.md`, `docs/ops/acceptance_reporting_guardrails.md` | 이미 가설 검증 loop는 존재한다. 추가 흡수 후보는 fast feedback loop, repro fidelity, targeted instrumentation, debug cleanup, regression seam 판정이다. |
-| `tdd` | high | `docs/ops/codex_coding_guardrails.md`, relevant validation/test owner | vertical red-green-refactor와 behavior-first test 기준을 흡수한다. JG에서는 Unity direct/EditMode/smoke 기준과 함께 owner별 검증으로 번역해야 한다. |
-| `zoom-out` | medium | `.codex/skills/jg-coupling-review/SKILL.md`, `docs/ops/cohesion-coupling-policy.md` | unfamiliar code/doc area에서 바로 수정하지 않고 caller/module/owner map을 먼저 만드는 습관만 흡수한다. |
-| `improve-codebase-architecture` | medium | `.codex/skills/jg-coupling-review/SKILL.md`, `docs/ops/cohesion-coupling-policy.md` | deletion test, interface-as-test-surface, deep module vocabulary는 유용하다. 단, 일반 score나 전역 hard-fail로 만들지 않고 review gate로만 둔다. |
-| `to-issues` | medium | `docs/ops/plan_authoring_review_workflow.md` | GitHub issue 생성은 보류한다. thin vertical slice, HITL/AFK 구분, dependency order 개념만 JG plan/TODO 작성법으로 번역 가능하다. |
-| `to-prd` | low | `docs/ops/plan_authoring_review_workflow.md`, `docs/design/game_design.md` when product scope is involved | 현재 대화와 repo 탐색으로 PRD를 합성하는 방식은 유용하지만, JG에서는 issue tracker가 아니라 owner plan 또는 design owner로 남긴다. |
-| `triage` | partial | `docs/ops/plan_authoring_review_workflow.md` | 요청 category와 next action을 고르는 triage-lite만 흡수한다. GitHub issue/label/comment state machine은 공식 current path가 아니므로 계속 보류한다. |
+| `grill-me` | high | `docs/owners/operations/codex_coding_guardrails.md`, `docs/owners/operations/document_management_workflow.md` | 구현/문서 변경 전 모호한 결정을 질문으로 잠그는 loop만 흡수한다. 코드에서 확인 가능한 질문은 먼저 탐색한다는 원칙이 JG `Assumption Handling`과 잘 맞는다. |
+| `grill-with-docs` | high | `docs/owners/operations/codex_coding_guardrails.md`, `docs/owners/operations/document_management_workflow.md`, relevant `design/*` owner | `CONTEXT.md`/ADR 생성 방식은 그대로 쓰지 않는다. 대신 용어 확정은 현재 design owner로, 되돌리기 어려운 결정은 적절한 ops/design/plan owner로 라우팅한다. |
+| `diagnose` | high | `.codex/skills/jg-issue-investigation/SKILL.md`, `docs/owners/operations/acceptance_reporting_guardrails.md` | 이미 가설 검증 loop는 존재한다. 추가 흡수 후보는 fast feedback loop, repro fidelity, targeted instrumentation, debug cleanup, regression seam 판정이다. |
+| `tdd` | high | `docs/owners/operations/codex_coding_guardrails.md`, relevant validation/test owner | vertical red-green-refactor와 behavior-first test 기준을 흡수한다. JG에서는 Unity direct/EditMode/smoke 기준과 함께 owner별 검증으로 번역해야 한다. |
+| `zoom-out` | medium | `.codex/skills/jg-coupling-review/SKILL.md`, `docs/owners/operations/cohesion-coupling-policy.md` | unfamiliar code/doc area에서 바로 수정하지 않고 caller/module/owner map을 먼저 만드는 습관만 흡수한다. |
+| `improve-codebase-architecture` | medium | `.codex/skills/jg-coupling-review/SKILL.md`, `docs/owners/operations/cohesion-coupling-policy.md` | deletion test, interface-as-test-surface, deep module vocabulary는 유용하다. 단, 일반 score나 전역 hard-fail로 만들지 않고 review gate로만 둔다. |
+| `to-issues` | medium | `docs/owners/operations/plan_authoring_review_workflow.md` | GitHub issue 생성은 보류한다. thin vertical slice, HITL/AFK 구분, dependency order 개념만 JG plan/TODO 작성법으로 번역 가능하다. |
+| `to-prd` | low | `docs/owners/operations/plan_authoring_review_workflow.md`, `docs/owners/design/game_design.md` when product scope is involved | 현재 대화와 repo 탐색으로 PRD를 합성하는 방식은 유용하지만, JG에서는 issue tracker가 아니라 owner plan 또는 design owner로 남긴다. |
+| `triage` | partial | `docs/owners/operations/plan_authoring_review_workflow.md` | 요청 category와 next action을 고르는 triage-lite만 흡수한다. GitHub issue/label/comment state machine은 공식 current path가 아니므로 계속 보류한다. |
 | `setup-matt-pocock-skills` | no direct adoption | `AGENTS.md`, `docs/index.md` already cover route setup | JG는 이미 entry/registry/owner route가 있다. `docs/agents/*`를 새 SSOT로 추가하지 않는다. |
 | `write-a-skill` | no direct adoption | global `skill-creator` skill | 현재 설치된 skill creator가 더 넓은 workflow를 소유한다. |
 | `caveman` | no adoption | none | 개인 커뮤니케이션 모드이며 repo policy로 둘 내용이 아니다. |

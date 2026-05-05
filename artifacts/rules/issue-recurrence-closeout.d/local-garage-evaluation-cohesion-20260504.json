@@ -19,7 +19,7 @@
     "Assets/Editor/DirectTests/GaragePagePresenterDirectTests.cs",
     "Assets/Editor/DirectTests/PublishGarageDraftStateDirectTests.cs",
     "Assets/Editor/DirectTests/PublishGarageDraftStateDirectTests.cs.meta",
-    "docs/architecture/anti_pattern_analysis.md",
+    "docs/owners/architecture/anti_pattern_analysis.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-garage-evaluation-cohesion-20260504.json"
   ]
 }

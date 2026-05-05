@@ -2,7 +2,7 @@
 
 > updated_at: 2026-04-25
 > scope: rules-only
-> owner_plan: historical rule revision trace cleanup plan, now superseded by `docs/ops/document_management_workflow.md`
+> owner_plan: historical rule revision trace cleanup plan, now superseded by `docs/owners/operations/document_management_workflow.md`
 
 ## Search Scope
 
@@ -34,10 +34,10 @@ Search terms:
 
 | Candidate | Classification | Decision |
 |---|---|---|
-| `docs/ops/document_management_workflow.md` old trace closeout rule | active-current | Keep. This is the owner rule added by Phase 0. |
-| `docs/ops/plan_authoring_review_workflow.md` conflict/over-scope closeout check | active-current | Keep. This is related instruction-fit policy, not stale. |
-| Historical rule revision trace cleanup plan body | historical/reference | Closed; current owner is `docs/ops/document_management_workflow.md`. |
-| Historical rule trigger skill extraction plan Phase 3 note about conflict/over-scope instruction fit | historical/reference | Closed; current trigger owners are `docs/ops/skill_trigger_matrix.md` and `docs/ops/skill_routing_registry.md`. |
+| `docs/owners/operations/document_management_workflow.md` old trace closeout rule | active-current | Keep. This is the owner rule added by Phase 0. |
+| `docs/owners/operations/plan_authoring_review_workflow.md` conflict/over-scope closeout check | active-current | Keep. This is related instruction-fit policy, not stale. |
+| Historical rule revision trace cleanup plan body | historical/reference | Closed; current owner is `docs/owners/operations/document_management_workflow.md`. |
+| Historical rule trigger skill extraction plan Phase 3 note about conflict/over-scope instruction fit | historical/reference | Closed; current trigger owners are `docs/owners/operations/skill_trigger_matrix.md` and `docs/owners/operations/skill_routing_registry.md`. |
 | `docs/index.md` registry entry for this plan | active-current | Update to `reference` when this plan is completed. |
 | `rule-operations` skill trigger for old trace/stale rule | active-current | Keep. This is the routing trigger required by Phase 0. |
 | `rule-plan-authoring` skill references to existing-rule conflict and historical/reference preservation | active-current | Keep. This routes plan work and does not conflict with cleanup policy. |

@@ -228,7 +228,7 @@ target runtime prefab이 없어도 정상 케이스다.
 ## 읽기 순서
 
 1. `docs/index.md`
-2. `docs/ops/stitch_structured_handoff_contract.md`
+2. `docs/owners/ui-workflow/stitch_structured_handoff_contract.md`
 3. 관련 execution contract 구조
 4. 관련 translation artifact
-5. `docs/ops/unity-ui-authoring-workflow.md`
+5. `docs/owners/ui-workflow/unity-ui-authoring-workflow.md`

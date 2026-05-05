@@ -80,7 +80,7 @@ internal sealed class SampleSurface
 public sealed class PreviewSceneDriver : MonoBehaviour
 ```
 
-**정적 lint**: [`tools/workflow/test-feature-layer-dependencies.mjs`](../../tools/workflow/test-feature-layer-dependencies.mjs) (`npm run feature:layer:lint`, `rules:lint` 묶음에 포함)이 `Assets/Scripts/Features/<Feature>/(Domain|Application|Presentation|Infrastructure)/**/*.cs`의 `using` 선언을 검사한다.
+**정적 lint**: [`tools/workflow/test-feature-layer-dependencies.mjs`](../../../tools/workflow/test-feature-layer-dependencies.mjs) (`npm run feature:layer:lint`, `rules:lint` 묶음에 포함)이 `Assets/Scripts/Features/<Feature>/(Domain|Application|Presentation|Infrastructure)/**/*.cs`의 `using` 선언을 검사한다.
 
 - 허용 방향: `Presentation → Application → Domain`, `Infrastructure → {Application, Domain}`. 그 외 inner-feature 레이어 import는 hard-fail.
 - 자동 예외: 피처 루트 직속 파일(`Assets/Scripts/Features/<Feature>/<file>.cs` — `*Setup.cs`, `*SceneRoot.cs`, `*Bootstrap*.cs` 등 컴포지션 루트)과 `Presentation/Diagnostics/**`.
@@ -170,7 +170,7 @@ public sealed class RuntimeAdapter : MonoBehaviour
 - dynamic fill bar, preview visibility, selected highlight처럼 상태에 따라 달라지는 표현은 dedicated surface/render owner에서 다루되, `RuntimeAdapter`가 authored shell geometry owner로 다시 커지지 않게 유지한다.
 - `worldBound`, `resolvedStyle`, geometry callback을 써서 authored layout을 runtime repair하는 경로는 마지막 수단이 아니라 안티패턴 후보로 본다.
 
-**정적 lint**: [`tools/workflow/test-runtime-static-ui-ownership.mjs`](../../tools/workflow/test-runtime-static-ui-ownership.mjs) (`npm run runtime:static-ui-ownership:lint`, `policy:lint`, `rules:lint`)가 `Assets/Scripts/Features/**/Presentation/**/*RuntimeAdapter.cs`를 검사해 static geometry style write를 hard-fail한다.
+**정적 lint**: [`tools/workflow/test-runtime-static-ui-ownership.mjs`](../../../tools/workflow/test-runtime-static-ui-ownership.mjs) (`npm run runtime:static-ui-ownership:lint`, `policy:lint`, `rules:lint`)가 `Assets/Scripts/Features/**/Presentation/**/*RuntimeAdapter.cs`를 검사해 static geometry style write를 hard-fail한다.
 
 ## Async Operation State
 

@@ -9,4 +9,4 @@
 
 ### `plans/`
 
-- `draft`: [`done.md`](./plans/done.md) - fixture completed draft
+- `draft`: [`done.md`](./plans/active/done.md) - fixture completed draft

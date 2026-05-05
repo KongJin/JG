@@ -7,4 +7,4 @@
 > upstream: none
 > artifacts: none
 
-- `active`: [Plan](./plans/demo.md)
+- `active`: [Plan](./plans/active/demo.md)

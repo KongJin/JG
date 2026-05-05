@@ -14,8 +14,8 @@
   "changedPaths": [
     ".codex/skills/jg-forward-rule-capture/SKILL.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-forward-rule-capture-skill-20260502.json",
-    "docs/ops/codex_coding_guardrails.md",
-    "docs/ops/skill_routing_registry.md",
-    "docs/ops/skill_trigger_matrix.md"
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/operations/skill_routing_registry.md",
+    "docs/owners/operations/skill_trigger_matrix.md"
   ]
 }

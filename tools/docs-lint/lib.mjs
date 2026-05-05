@@ -74,11 +74,11 @@ const DOC_ID_REFERENCE_PATTERN =
   /^(repo|docs|ops|design|plans|playtest|discussions|tools|skill|historical)\.[a-z0-9]+(?:[-.][a-z0-9]+)*$/;
 const PLAN_MODE_PATTERNS = [/\bPlan Mode\b/u, /Plan 모드/u];
 const RULE_OPERATIONS_PATTERNS = [/\brule-operations\b/u];
-const ACCEPTANCE_GUARDRAILS_PATH = "docs/ops/acceptance_reporting_guardrails.md";
+const ACCEPTANCE_GUARDRAILS_PATH = "docs/owners/operations/acceptance_reporting_guardrails.md";
 const ISSUE_INVESTIGATION_SKILL_PATH = ".codex/skills/jg-issue-investigation/SKILL.md";
 const UNITY_WORKFLOW_SKILL_PATH = ".codex/skills/jg-unity-workflow/SKILL.md";
-const SKILL_ROUTING_REGISTRY_PATH = "docs/ops/skill_routing_registry.md";
-const SKILL_TRIGGER_MATRIX_PATH = "docs/ops/skill_trigger_matrix.md";
+const SKILL_ROUTING_REGISTRY_PATH = "docs/owners/operations/skill_routing_registry.md";
+const SKILL_TRIGGER_MATRIX_PATH = "docs/owners/operations/skill_trigger_matrix.md";
 const COHESION_COUPLING_OWNER_PATTERNS = [/\bops\.cohesion-coupling-policy\b/u];
 const ACCEPTANCE_GUARDRAILS_OWNER_PATTERNS = [/\bops\.acceptance-reporting-guardrails\b/u];
 const GLOBAL_RULE_SKILL_NAMES = new Set([
@@ -166,13 +166,26 @@ const ENTRY_POLICY_BODY_HEADINGS = new Set([
   "Fresh Evidence Discipline",
   "Behavior-First Test Loop",
 ]);
-const MODULE_DATA_STRUCTURE_PATH = "docs/design/module_data_structure.md";
+const MODULE_DATA_STRUCTURE_PATH = "docs/owners/design/module_data_structure.md";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 정의";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_END = "## 편성 데이터 (Garage Roster)";
 const RULE_HARNESS_ADVISORY_MEMORY_PATH = "tools/rule-harness/memory/advisory-memory.json";
+const PROGRESS_DOC_PATH = "docs/plans/current/progress.md";
 export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
 export const RECURRENCE_CLOSEOUT_DIR = "artifacts/rules/issue-recurrence-closeout.d";
 export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
+
+function isProgressDocPath(repoRelativePath) {
+  return repoRelativePath === PROGRESS_DOC_PATH;
+}
+
+function isAnyPlanDocPath(repoRelativePath) {
+  return repoRelativePath.startsWith("docs/plans/");
+}
+
+function isActivePlanDocPath(repoRelativePath) {
+  return repoRelativePath.startsWith("docs/plans/active/");
+}
 
 function validateRootCauseInvestigationContract(document) {
   if (document.repoRelativePath !== ACCEPTANCE_GUARDRAILS_PATH) {
@@ -1043,8 +1056,7 @@ function validateStaleActiveDocumentWarnings(document, now) {
 
   if (
     role === "plan"
-    && document.repoRelativePath.startsWith("docs/plans/")
-    && document.repoRelativePath !== "docs/plans/progress.md"
+    && isActivePlanDocPath(document.repoRelativePath)
     && ageDays > ACTIVE_PLAN_STALE_DAYS
   ) {
     return [
@@ -1075,7 +1087,7 @@ function validateDocumentSizeWarnings(document) {
   const status = document.metadata.get("상태");
 
   if (
-    document.repoRelativePath === "docs/plans/progress.md"
+    isProgressDocPath(document.repoRelativePath)
     && nonblankLineCount > PROGRESS_NONBLANK_LINE_WARNING_BUDGET
   ) {
     return [
@@ -1090,8 +1102,7 @@ function validateDocumentSizeWarnings(document) {
   if (
     status === "active"
     && role === "plan"
-    && document.repoRelativePath.startsWith("docs/plans/")
-    && document.repoRelativePath !== "docs/plans/progress.md"
+    && isActivePlanDocPath(document.repoRelativePath)
     && nonblankLineCount > ACTIVE_PLAN_NONBLANK_LINE_WARNING_BUDGET
   ) {
     return [
@@ -1205,9 +1216,22 @@ async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
     repoRoot,
     changedFiles: options.changedFiles,
   });
-  const relevantChangedFiles = changedFiles.filter(
-    (filePath) => isRulesOnlyRecurrenceTarget(filePath) && !isRecurrenceCloseoutArtifactPath(filePath),
-  );
+  const relevantChangedFiles = [];
+  for (const filePath of changedFiles) {
+    const normalizedPath = normalizeRepoRelativePath(filePath);
+    if (
+      !isRulesOnlyRecurrenceTarget(normalizedPath) ||
+      isRecurrenceCloseoutArtifactPath(normalizedPath)
+    ) {
+      continue;
+    }
+
+    if (!(await pathExists(path.join(repoRoot, normalizedPath)))) {
+      continue;
+    }
+
+    relevantChangedFiles.push(normalizedPath);
+  }
 
   if (relevantChangedFiles.length === 0) {
     return [];
@@ -1271,7 +1295,7 @@ async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
     }
   }
 
-  for (const changedFile of relevantChangedFiles.map((entry) => normalizeRepoRelativePath(entry))) {
+  for (const changedFile of relevantChangedFiles) {
     if (!coveredChangedPaths.has(changedFile)) {
       errors.push(
         createError(
@@ -1957,7 +1981,7 @@ function validateActivePlanArtifactShapes(documents) {
 
 function validateProgressEvidenceOverload(documents) {
   const progressDocument = documents.find(
-    (document) => document.repoRelativePath === "docs/plans/progress.md",
+    (document) => isProgressDocPath(document.repoRelativePath),
   );
   if (!progressDocument) {
     return [];
@@ -2172,8 +2196,7 @@ function fsSyncPathExists(absolutePath) {
 
 function getActiveNonProgressPlans(documents) {
   return documents
-    .filter((document) => document.repoRelativePath.startsWith("docs/plans/"))
-    .filter((document) => document.repoRelativePath !== "docs/plans/progress.md")
+    .filter((document) => isActivePlanDocPath(document.repoRelativePath))
     .filter((document) => document.metadata.get("상태") === "active")
     .filter((document) => document.metadata.get("role") === "plan");
 }
@@ -2471,7 +2494,7 @@ function getExpectedDocIdPrefix(repoRelativePath) {
     return "docs.";
   }
 
-  if (repoRelativePath.startsWith("docs/design/")) {
+  if (repoRelativePath.startsWith("docs/owners/design/")) {
     return "design.";
   }
 
@@ -2479,16 +2502,23 @@ function getExpectedDocIdPrefix(repoRelativePath) {
     return "discussions.";
   }
 
-  if (repoRelativePath.startsWith("docs/ops/")) {
+  if (
+    repoRelativePath.startsWith("docs/owners/operations/") ||
+    repoRelativePath.startsWith("docs/owners/ui-workflow/")
+  ) {
     return "ops.";
   }
 
-  if (repoRelativePath.startsWith("docs/plans/")) {
+  if (isAnyPlanDocPath(repoRelativePath)) {
     return "plans.";
   }
 
-  if (repoRelativePath.startsWith("docs/playtest/")) {
+  if (repoRelativePath.startsWith("docs/owners/validation/")) {
     return "playtest.";
+  }
+
+  if (repoRelativePath.startsWith("docs/owners/architecture/")) {
+    return "architecture.";
   }
 
   if (repoRelativePath.startsWith("tools/")) {
@@ -2755,7 +2785,8 @@ export function isRulesOnlyRecurrenceTarget(repoRelativePath) {
   if (
     normalized === "AGENTS.md" ||
     normalized === "docs/index.md" ||
-    normalized.startsWith("docs/ops/") ||
+    normalized.startsWith("docs/owners/operations/") ||
+    normalized.startsWith("docs/owners/ui-workflow/") ||
     /^\.codex\/skills\/jg-[^/]+\//u.test(normalized) ||
     normalized.startsWith(".githooks/") ||
     normalized.startsWith("tools/docs-lint/") ||

@@ -9,4 +9,4 @@
 
 ### `plans/`
 
-- `active`: [`progress.md`](./plans/progress.md) - progress
+- `active`: [`progress.md`](./plans/current/progress.md) - progress

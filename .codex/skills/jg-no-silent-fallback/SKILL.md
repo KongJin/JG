@@ -21,10 +21,10 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve current owner paths.
-3. Read `docs/ops/codex_coding_guardrails.md`, especially Fail-Closed Contract Rule.
-4. Read `docs/ops/cohesion-coupling-policy.md` before judging hidden coupling or fallback ownership.
-5. Read `docs/ops/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or recurrence language.
-6. Read `docs/plans/technical_debt_recurrence_prevention_plan.md` when the issue is runtime repair or default-value masking recurrence.
+3. Read `docs/owners/operations/codex_coding_guardrails.md`, especially Fail-Closed Contract Rule.
+4. Read `docs/owners/operations/cohesion-coupling-policy.md` before judging hidden coupling or fallback ownership.
+5. Read `docs/owners/operations/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or recurrence language.
+6. Read `docs/plans/reference/technical_debt_recurrence_prevention_plan.md` when the issue is runtime repair or default-value masking recurrence.
 7. Read the concrete files, tests, scene/prefab contracts, generated assets, reports, or captures showing the missing contract.
 
 ## Route
